@@ -4,7 +4,7 @@
 // Dynamically sets the backend server target: uses relative URL when hosted locally, and points to Render backend URL when hosted on Vercel.
 const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
   ? (window.location.port === '5500' ? 'http://localhost:3000' : '')
-  : 'https://ai-aptitude-e6lj.onrender.com'; // User's deployed Render backend URL
+  : 'https://ai-aptitude1.onrender.com'; // Deployed Render backend Web Service URL
 
 function fetchApi(path, options) {
   return fetch(`${API_BASE}${path}`, options);
