@@ -5,6 +5,10 @@ const AppRouter = {
   currentView: "landing",
 
   switchView(viewId) {
+    if (window.StudentPortal && window.StudentPortal.isTestActive) {
+      alert("⚠️ Navigation Blocked: You cannot navigate away from the active test screen until you submit the assessment.");
+      return;
+    }
     this.currentView = viewId;
 
     // Toggle active view panel
@@ -71,32 +75,63 @@ const AppAuth = {
     const desc = document.getElementById("auth-desc");
     const submitBtn = document.getElementById("btn-auth-submit");
     const toggleBlock = document.getElementById("auth-toggle-container");
+    const usernameLabel = document.querySelector("label[for='auth-username']");
+    const usernameInput = document.getElementById("auth-username");
+    const regNoContainer = document.getElementById("auth-regno-container");
+    const regNoInput = document.getElementById("auth-regno");
+    const passwordContainer = document.getElementById("auth-password-container");
+    const passwordInput = document.getElementById("auth-password");
 
     if (this.authRole === "admin") {
       title.textContent = "Admin Portal Secure Login";
       desc.textContent = "Enter system administrator credentials.";
       submitBtn.textContent = "Sign In as Administrator 🛡️";
       toggleBlock.style.display = "none"; // Admin cannot sign up
+      
+      // Admin requires password
+      if (passwordContainer) passwordContainer.style.display = "block";
+      if (passwordInput) passwordInput.required = true;
+      if (regNoContainer) regNoContainer.style.display = "none";
+      if (regNoInput) regNoInput.required = false;
+      if (usernameLabel) usernameLabel.textContent = "Username";
+      if (usernameInput) {
+        usernameInput.placeholder = "e.g. admin";
+        usernameInput.setAttribute("autocomplete", "username");
+      }
     } else {
-      toggleBlock.style.display = "none"; // Student cannot sign up either
+      toggleBlock.style.display = "none"; // Student cannot sign up
       this.isSignUpMode = false;
-      title.textContent = "Student Sign In";
-      desc.textContent = "Access your training tests and AI diagnostics.";
-      submitBtn.textContent = "Sign In &rarr;";
+      title.textContent = "Student Portal Entry";
+      desc.textContent = "Enter your display name and registration details to enter.";
+      submitBtn.textContent = "Enter Student Dashboard &rarr;";
+      
+      // Student requires Reg No but NOT password
+      if (passwordContainer) passwordContainer.style.display = "none";
+      if (passwordInput) {
+        passwordInput.required = false;
+        passwordInput.value = "";
+      }
+      if (regNoContainer) regNoContainer.style.display = "block";
+      if (regNoInput) regNoInput.required = true;
+      if (usernameLabel) usernameLabel.textContent = "Student Name / Username";
+      if (usernameInput) {
+        usernameInput.placeholder = "e.g. John Doe";
+        usernameInput.removeAttribute("autocomplete");
+      }
     }
   },
 
   async handleAuthSubmit(event) {
     event.preventDefault();
     const userVal = document.getElementById("auth-username").value.trim();
+    const regNoVal = document.getElementById("auth-regno") ? document.getElementById("auth-regno").value.trim() : "";
     const passVal = document.getElementById("auth-password").value;
 
-    if (!userVal || !passVal) {
-      alert("Please provide both username and password.");
-      return;
-    }
-
     if (this.authRole === "admin") {
+      if (!userVal || !passVal) {
+        alert("Please provide both username and password.");
+        return;
+      }
       // Validate against dynamic credentials stored in AppStore
       const adminCreds = window.AppStore.getAdminCredentials();
       if (userVal.toLowerCase() === adminCreds.username.toLowerCase() && passVal === adminCreds.password) {
@@ -107,31 +142,27 @@ const AppAuth = {
         alert("Invalid administrator username or password.");
       }
     } else {
-      // Student portal auth
-      if (this.isSignUpMode) {
-        try {
-          await window.AppStore.registerStudent(userVal, passVal);
-          alert("Account registered successfully! Logging you in...");
-          const user = { username: userVal, role: "student" };
-          window.AppStore.setCurrentUser(user);
-          window.AppRouter.switchView("student-dashboard");
-        } catch (err) {
-          alert(err.message);
-        }
+      // Student portal auth (Username & Reg No, no passwords)
+      if (!userVal || !regNoVal) {
+        alert("Please provide both your display name and registration number.");
+        return;
+      }
+      const student = await window.AppStore.authenticateStudent(userVal, regNoVal);
+      if (student) {
+        const user = { username: student.username, role: "student" };
+        window.AppStore.setCurrentUser(user);
+        window.AppRouter.switchView("student-dashboard");
       } else {
-        const student = await window.AppStore.authenticateStudent(userVal, passVal);
-        if (student) {
-          const user = { username: student.username, role: "student" };
-          window.AppStore.setCurrentUser(user);
-          window.AppRouter.switchView("student-dashboard");
-        } else {
-          alert("Invalid student credentials. Register a new account if you do not have one.");
-        }
+        alert("Failed to access student portal.");
       }
     }
   },
 
   logout() {
+    if (window.StudentPortal && window.StudentPortal.isTestActive) {
+      alert("⚠️ Action Blocked: You cannot log out while the assessment is active.");
+      return;
+    }
     window.AppStore.setCurrentUser(null);
     window.AppRouter.switchView("landing");
   }

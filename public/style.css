@@ -1173,3 +1173,70 @@ header.app-header {
   color: var(--text-secondary);
 }
 
+/* Custom additions for layout and anti-cheat */
+.admin-corner-link {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  opacity: 0.6;
+  transition: var(--transition-smooth);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  z-index: 100;
+}
+.admin-corner-link:hover {
+  opacity: 1;
+  color: var(--neon-teal);
+  border-color: rgba(20, 184, 166, 0.3);
+  background: rgba(20, 184, 166, 0.05);
+  box-shadow: 0 0 10px rgba(20, 184, 166, 0.1);
+}
+.test-taking-view {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+/* Centered Student Portal card pulsing glow & lift animation */
+.student-card {
+  border: 1px solid rgba(99, 102, 241, 0.25) !important;
+  box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.7), 0 0 20px rgba(99, 102, 241, 0.15) !important;
+  animation: pulseGlow 3s infinite alternate ease-in-out;
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.4s ease !important;
+}
+.student-card:hover {
+  transform: translateY(-8px) scale(1.02) !important;
+  box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.8), 0 0 30px rgba(99, 102, 241, 0.35) !important;
+  border-color: rgba(99, 102, 241, 0.6) !important;
+}
+@keyframes pulseGlow {
+  0% {
+    box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.7), 0 0 15px rgba(99, 102, 241, 0.1);
+    border-color: rgba(99, 102, 241, 0.2);
+  }
+  100% {
+    box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.7), 0 0 25px rgba(99, 102, 241, 0.25);
+    border-color: rgba(99, 102, 241, 0.45);
+  }
+}
+
+/* Premium Form Input styling */
+.form-input {
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  background: rgba(15, 23, 42, 0.8) !important;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease !important;
+}
+.form-input:focus {
+  border-color: var(--neon-indigo) !important;
+  box-shadow: 0 0 12px rgba(99, 102, 241, 0.25) !important;
+  outline: none !important;
+}

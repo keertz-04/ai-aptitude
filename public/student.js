@@ -35,24 +35,25 @@ const StudentPortal = {
     
     const violationsChip = document.getElementById("test-violations-count");
     if (violationsChip) {
-      violationsChip.textContent = `Violations: ${StudentPortal.tabViolations}/3`;
+      violationsChip.textContent = `Violations: ${StudentPortal.tabViolations}/1`;
     }
 
     StudentPortal.isAlertShowing = true;
-    if (StudentPortal.tabViolations >= 3) {
-      alert("Assessment Auto-Submitted: You have switched tabs or left the active screen more than 2 times. Your current selections are being submitted.");
-      StudentPortal.isAlertShowing = false;
-      StudentPortal.submitTest();
-    } else {
-      alert(`⚠️ Security Violation: Leaving the active assessment tab or window is strictly prohibited.\n\nWarning count: ${StudentPortal.tabViolations}/3. Reaching 3 violations will trigger automatic submission of your test.`);
-      StudentPortal.isAlertShowing = false;
-    }
+    alert("🚫 Assessment Terminated: Swapping tabs or leaving the assessment screen is strictly prohibited. Your active test has been automatically submitted.");
+    StudentPortal.isAlertShowing = false;
+    StudentPortal.submitTest();
   },
 
   preventCheat(e) {
     if (StudentPortal.isTestActive) {
       e.preventDefault();
       alert("⚠️ Action Blocked: Copying, pasting, cutting, and right-clicking are strictly prohibited during the assessment to maintain test integrity.");
+    }
+  },
+
+  preventDragStart(e) {
+    if (StudentPortal.isTestActive) {
+      e.preventDefault();
     }
   },
 
@@ -66,10 +67,16 @@ const StudentPortal = {
       return;
     }
     
-    // Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+Shift+C, Ctrl+U
-    if (e.ctrlKey && (e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67) || e.keyCode === 85)) {
+    // Ctrl+Shift+I, J, C, Ctrl+U (source), Ctrl+P (print), Ctrl+S (save), Ctrl+F (find)
+    if (e.ctrlKey && (
+      (e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) || 
+      e.keyCode === 85 || // Ctrl+U
+      e.keyCode === 80 || // Ctrl+P
+      e.keyCode === 83 || // Ctrl+S
+      e.keyCode === 70    // Ctrl+F
+    )) {
       e.preventDefault();
-      alert("⚠️ Action Blocked: Developer tools and source viewing are disabled during the test.");
+      alert("⚠️ Action Blocked: This keyboard shortcut is disabled during the assessment.");
       return;
     }
   },
@@ -282,13 +289,14 @@ const StudentPortal = {
     const violationsChip = document.getElementById("test-violations-count");
     if (violationsChip) {
       violationsChip.style.display = "inline-flex";
-      violationsChip.textContent = `Violations: 0/3`;
+      violationsChip.textContent = `Violations: 0/1`;
     }
 
     // Bind event handlers so they can be removed exactly
     this.boundPreventExitHandler = this.preventExitHandler.bind(this);
     this.boundHandleTabLeave = this.handleTabLeave.bind(this);
     this.boundPreventCheat = this.preventCheat.bind(this);
+    this.boundPreventDragStart = this.preventDragStart.bind(this);
     this.boundKeyDownCheat = this.handleKeyDownCheat.bind(this);
 
     window.addEventListener("beforeunload", this.boundPreventExitHandler);
@@ -299,6 +307,7 @@ const StudentPortal = {
     document.addEventListener("cut", this.boundPreventCheat);
     document.addEventListener("contextmenu", this.boundPreventCheat);
     document.addEventListener("keydown", this.boundKeyDownCheat);
+    document.addEventListener("dragstart", this.boundPreventDragStart);
 
     // Start timer (countdown based on admin roundDurationLimit)
     const limitMinutes = tourState.roundDurationLimit || 10;
@@ -447,6 +456,7 @@ const StudentPortal = {
     document.removeEventListener("cut", this.boundPreventCheat || this.preventCheat);
     document.removeEventListener("contextmenu", this.boundPreventCheat || this.preventCheat);
     document.removeEventListener("keydown", this.boundKeyDownCheat || this.handleKeyDownCheat);
+    document.removeEventListener("dragstart", this.boundPreventDragStart || this.preventDragStart);
 
     // Reset warning style on timer chip if it was warnings
     const timerChip = document.querySelector(".timer-chip");

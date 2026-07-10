@@ -38,25 +38,22 @@
           Evaluate machine learning metrics, logical algorithms, and semantic parsing speed. Backed by automated performance diagnosis.
         </p>
 
-        <div class="portal-grid">
-          <!-- Student Card -->
-          <div class="glass-card portal-card student-card" onclick="AppAuth.openAuth('student')">
-            <div class="portal-icon">🎓</div>
-            <h3>Student Portal</h3>
-            <p>Register profile, take the reasoning test, and view your automated assessment roadmap.</p>
-            <button class="btn btn-primary full-width">Enter Student Portal &rarr;</button>
+          <div class="portal-grid" style="display: flex; justify-content: center; max-width: 500px; margin: 0 auto;">
+            <!-- Student Card -->
+            <div class="glass-card portal-card student-card" onclick="AppAuth.openAuth('student')" style="width: 100%;">
+              <div class="portal-icon">🎓</div>
+              <h3>Student Portal</h3>
+              <p>Enter your name and registration details to access the assessment dashboard.</p>
+              <button class="btn btn-primary full-width">Enter Student Portal &rarr;</button>
+            </div>
           </div>
 
-          <!-- Admin Card -->
-          <div class="glass-card portal-card admin-card" onclick="AppAuth.openAuth('admin')">
-            <div class="portal-icon">🛡️</div>
-            <h3>Administrator Portal</h3>
-            <p>Manage the question bank, import question matrices via JSON, and track test performance logs.</p>
-            <button class="btn btn-teal full-width">Enter Admin Portal &rarr;</button>
+          <!-- Small Admin Link in the bottom right corner -->
+          <div class="admin-corner-link" onclick="AppAuth.openAuth('admin')">
+            🛡️ Admin Login
           </div>
         </div>
-      </div>
-    </section>
+      </section>
 
     <!-- View: Auth Forms -->
     <section class="view-panel" id="view-auth">
@@ -67,11 +64,15 @@
         </div>
 
         <form id="auth-form">
-          <div class="form-group">
+          <div class="form-group" id="auth-username-container">
             <label class="form-label" for="auth-username">Username</label>
             <input type="text" id="auth-username" class="form-input" placeholder="e.g. nivia" required autocomplete="username">
           </div>
-          <div class="form-group">
+          <div class="form-group" id="auth-regno-container" style="display: none;">
+            <label class="form-label" for="auth-regno">Registration Number</label>
+            <input type="text" id="auth-regno" class="form-input" placeholder="e.g. REG12345">
+          </div>
+          <div class="form-group" id="auth-password-container">
             <label class="form-label" for="auth-password">Password</label>
             <input type="password" id="auth-password" class="form-input" placeholder="••••••••" required autocomplete="current-password">
           </div>

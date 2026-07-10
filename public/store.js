@@ -1,6 +1,15 @@
 // store.js
 // REST API database Client mapping frontend calls to MongoDB via a memory cache for instant responsiveness.
 
+// Dynamically sets the backend server target: uses relative URL when hosted locally, and points to Render backend URL when hosted on Vercel.
+const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+  ? ''
+  : 'https://ai-aptitude-backend.onrender.com'; // TODO: Replace with your actual Render backend URL when deployed!
+
+function fetchApi(path, options) {
+  return fetch(`${API_BASE}${path}`, options);
+}
+
 const AppStore = {
   _questions: [],
   _results: [],
@@ -15,25 +24,25 @@ const AppStore = {
   async syncFromServer() {
     try {
       // 1. Fetch Admin credentials
-      const adminRes = await fetch('/api/auth/admin/credentials');
+      const adminRes = await fetchApi('/api/auth/admin/credentials');
       if (adminRes.ok) {
         this._adminCredentials = await adminRes.json();
       }
 
       // 2. Fetch Tournament state
-      const tourRes = await fetch('/api/tournament');
+      const tourRes = await fetchApi('/api/tournament');
       if (tourRes.ok) {
         this._tournamentState = await tourRes.json();
       }
 
       // 3. Fetch Questions bank
-      const qRes = await fetch('/api/questions');
+      const qRes = await fetchApi('/api/questions');
       if (qRes.ok) {
         this._questions = await qRes.json();
       }
 
       // 4. Fetch Results attempts logs
-      const rRes = await fetch('/api/results');
+      const rRes = await fetchApi('/api/results');
       if (rRes.ok) {
         this._results = await rRes.json();
       }
@@ -52,7 +61,7 @@ const AppStore = {
   async saveTournamentState(state) {
     this._tournamentState = state;
     try {
-      const res = await fetch('/api/tournament', {
+      const res = await fetchApi('/api/tournament', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(state)
@@ -74,7 +83,7 @@ const AppStore = {
     };
     this._results = [];
     try {
-      await fetch('/api/tournament/reset', { method: 'POST' });
+      await fetchApi('/api/tournament/reset', { method: 'POST' });
     } catch (err) {
       console.error('Failed to reset tournament database:', err);
     }
@@ -87,7 +96,7 @@ const AppStore = {
 
   async addQuestion(questionData) {
     try {
-      const res = await fetch('/api/questions', {
+      const res = await fetchApi('/api/questions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(questionData)
@@ -113,7 +122,7 @@ const AppStore = {
     this._questions[qIndex] = { ...this._questions[qIndex], ...updatedData };
 
     try {
-      const res = await fetch(`/api/questions/${dbId}`, {
+      const res = await fetchApi(`/api/questions/${dbId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updatedData)
@@ -136,7 +145,7 @@ const AppStore = {
     this._questions.splice(qIndex, 1);
 
     try {
-      await fetch(`/api/questions/${dbId}`, { method: 'DELETE' });
+      await fetchApi(`/api/questions/${dbId}`, { method: 'DELETE' });
     } catch (err) {
       console.error('Failed to delete question:', err);
     }
@@ -144,9 +153,9 @@ const AppStore = {
 
   async resetQuestions() {
     try {
-      const res = await fetch('/api/setup/reset-defaults', { method: 'POST' });
+      const res = await fetchApi('/api/setup/reset-defaults', { method: 'POST' });
       if (res.ok) {
-        const qRes = await fetch('/api/questions');
+        const qRes = await fetchApi('/api/questions');
         if (qRes.ok) {
           this._questions = await qRes.json();
         }
@@ -163,7 +172,7 @@ const AppStore = {
 
   async saveResult(result) {
     try {
-      const res = await fetch('/api/results', {
+      const res = await fetchApi('/api/results', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(result)
@@ -186,7 +195,7 @@ const AppStore = {
   async clearResults() {
     this._results = [];
     try {
-      await fetch('/api/results', { method: 'DELETE' });
+      await fetchApi('/api/results', { method: 'DELETE' });
     } catch (err) {
       console.error('Failed to clear results logs:', err);
     }
@@ -208,7 +217,7 @@ const AppStore = {
 
   // --- Student Management & Authentication ---
   async registerStudent(username, password) {
-    const res = await fetch('/api/auth/student/register', {
+    const res = await fetchApi('/api/auth/student/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, password })
@@ -220,11 +229,11 @@ const AppStore = {
     return data;
   },
 
-  async authenticateStudent(username, password) {
-    const res = await fetch('/api/auth/student/login', {
+  async authenticateStudent(username, regNo) {
+    const res = await fetchApi('/api/auth/student/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password })
+      body: JSON.stringify({ username, regNo })
     });
     if (res.ok) {
       return await res.json();
@@ -240,7 +249,7 @@ const AppStore = {
   async saveAdminCredentials(creds) {
     this._adminCredentials = creds;
     try {
-      await fetch('/api/auth/admin/credentials', {
+      await fetchApi('/api/auth/admin/credentials', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(creds)

@@ -18,8 +18,15 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Database Connection
 mongoose.connect(MONGODB_URI)
-  .then(() => {
+  .then(async () => {
     console.log('Successfully connected to MongoDB.');
+    // Drop legacy unique index on username if present to prevent validation issues
+    try {
+      await mongoose.connection.db.collection('students').dropIndex('username_1');
+      console.log('Successfully dropped old unique username index.');
+    } catch (e) {
+      // Index might not exist or collection not created yet, ignore
+    }
     seedDatabase();
   })
   .catch(err => console.error('MongoDB connection error:', err));
@@ -55,8 +62,8 @@ const ResultSchema = new mongoose.Schema({
 const Result = mongoose.model('Result', ResultSchema);
 
 const StudentSchema = new mongoose.Schema({
-  username: { type: String, required: true, unique: true, lowercase: true },
-  password: { type: String, required: true }
+  username: { type: String, required: true },
+  regNo: { type: String, required: true, unique: true, lowercase: true }
 });
 const Student = mongoose.model('Student', StudentSchema);
 
@@ -208,13 +215,30 @@ app.post('/api/auth/student/register', async (req, res) => {
 
 app.post('/api/auth/student/login', async (req, res) => {
   try {
-    const { username, password } = req.body;
-    const student = await Student.findOne({ username: username.toLowerCase(), password });
-    if (!student) {
-      return res.status(401).json({ error: 'Invalid student credentials.' });
+    const { username, regNo } = req.body;
+    console.log(`Login attempt received on server: username="${username}", regNo="${regNo}"`);
+    if (!username || !regNo) {
+      return res.status(400).json({ error: 'Username and Registration Number are required.' });
     }
-    res.json({ username: student.username });
+    const normalizedRegNo = regNo.trim().toLowerCase();
+    const cleanUsername = username.trim();
+    
+    let student = await Student.findOne({ regNo: normalizedRegNo });
+    if (!student) {
+      // Auto-create/register student under this registration number and username
+      student = new Student({ username: cleanUsername, regNo: normalizedRegNo });
+      await student.save();
+      console.log(`Auto-registered new student: ${cleanUsername} (Reg No: ${normalizedRegNo})`);
+    } else {
+      // Update username if they logged in with a different name
+      if (student.username !== cleanUsername) {
+        student.username = cleanUsername;
+        await student.save();
+      }
+    }
+    res.json({ username: student.username, regNo: student.regNo });
   } catch (err) {
+    console.error('Login error caught on server:', err);
     res.status(500).json({ error: err.message });
   }
 });
@@ -414,9 +438,9 @@ async function seedDatabase() {
     // 4. Seed Default Student credentials
     const studentCount = await Student.countDocuments();
     if (studentCount === 0) {
-      const defaultStudent = new Student({ username: 'student', password: 'student' });
+      const defaultStudent = new Student({ username: 'Default Student', regNo: 'reg12345' });
       await defaultStudent.save();
-      console.log('Seeded default student credentials: student/student.');
+      console.log('Seeded default student credentials: Default Student / reg12345.');
     }
   } catch (err) {
     console.error('Seeding database failed:', err);
