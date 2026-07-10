@@ -1,0 +1,18 @@
+{
+  "name": "ai-aptitude-portal",
+  "version": "1.0.0",
+  "description": "Full-stack AI Aptitude Assessment Portal using Node.js, Express, and MongoDB",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "mongoose": "^8.4.1"
+  },
+  "author": "AI Aptitude Portal Team",
+  "license": "ISC"
+}

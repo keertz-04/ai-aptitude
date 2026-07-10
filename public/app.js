@@ -1,0 +1,165 @@
+// app.js
+// Bootstraps routing, handles signups/logins, and coordinates UI transitions.
+
+const AppRouter = {
+  currentView: "landing",
+
+  switchView(viewId) {
+    this.currentView = viewId;
+
+    // Toggle active view panel
+    document.querySelectorAll(".view-panel").forEach(panel => {
+      if (panel.id === `view-${viewId}`) {
+        panel.classList.add("active");
+      } else {
+        panel.classList.remove("active");
+      }
+    });
+
+    // Update global header elements based on session state
+    this.updateHeader();
+
+    // Call view-specific load hooks
+    if (viewId === "student-dashboard") {
+      window.StudentPortal.initDashboard();
+    } else if (viewId === "admin-dashboard") {
+      window.AdminPortal.initDashboard();
+    }
+  },
+
+  updateHeader() {
+    const user = window.AppStore.getCurrentUser();
+    const navPanel = document.getElementById("nav-user-panel");
+    const logoutBtn = document.getElementById("btn-header-logout");
+
+    if (user) {
+      navPanel.style.display = "flex";
+      logoutBtn.style.display = "inline-flex";
+
+      const badge = document.getElementById("header-user-badge");
+      badge.className = `user-badge ${user.role}-badge`;
+      badge.innerHTML = `<span class="badge-dot"></span>${user.username} (${user.role.toUpperCase()})`;
+    } else {
+      navPanel.style.display = "none";
+      logoutBtn.style.display = "none";
+    }
+  }
+};
+
+const AppAuth = {
+  authRole: "student", // "student" or "admin"
+  isSignUpMode: false,
+
+  openAuth(role) {
+    this.authRole = role;
+    this.isSignUpMode = false;
+    
+    // Clear forms
+    document.getElementById("auth-form").reset();
+    
+    this.updateAuthFormView();
+    window.AppRouter.switchView("auth");
+  },
+
+  toggleAuthMode() {
+    this.isSignUpMode = !this.isSignUpMode;
+    this.updateAuthFormView();
+  },
+
+  updateAuthFormView() {
+    const title = document.getElementById("auth-title");
+    const desc = document.getElementById("auth-desc");
+    const submitBtn = document.getElementById("btn-auth-submit");
+    const toggleBlock = document.getElementById("auth-toggle-container");
+
+    if (this.authRole === "admin") {
+      title.textContent = "Admin Portal Secure Login";
+      desc.textContent = "Enter system administrator credentials.";
+      submitBtn.textContent = "Sign In as Administrator 🛡️";
+      toggleBlock.style.display = "none"; // Admin cannot sign up
+    } else {
+      toggleBlock.style.display = "none"; // Student cannot sign up either
+      this.isSignUpMode = false;
+      title.textContent = "Student Sign In";
+      desc.textContent = "Access your training tests and AI diagnostics.";
+      submitBtn.textContent = "Sign In &rarr;";
+    }
+  },
+
+  async handleAuthSubmit(event) {
+    event.preventDefault();
+    const userVal = document.getElementById("auth-username").value.trim();
+    const passVal = document.getElementById("auth-password").value;
+
+    if (!userVal || !passVal) {
+      alert("Please provide both username and password.");
+      return;
+    }
+
+    if (this.authRole === "admin") {
+      // Validate against dynamic credentials stored in AppStore
+      const adminCreds = window.AppStore.getAdminCredentials();
+      if (userVal.toLowerCase() === adminCreds.username.toLowerCase() && passVal === adminCreds.password) {
+        const user = { username: "Administrator", role: "admin" };
+        window.AppStore.setCurrentUser(user);
+        window.AppRouter.switchView("admin-dashboard");
+      } else {
+        alert("Invalid administrator username or password.");
+      }
+    } else {
+      // Student portal auth
+      if (this.isSignUpMode) {
+        try {
+          await window.AppStore.registerStudent(userVal, passVal);
+          alert("Account registered successfully! Logging you in...");
+          const user = { username: userVal, role: "student" };
+          window.AppStore.setCurrentUser(user);
+          window.AppRouter.switchView("student-dashboard");
+        } catch (err) {
+          alert(err.message);
+        }
+      } else {
+        const student = await window.AppStore.authenticateStudent(userVal, passVal);
+        if (student) {
+          const user = { username: student.username, role: "student" };
+          window.AppStore.setCurrentUser(user);
+          window.AppRouter.switchView("student-dashboard");
+        } else {
+          alert("Invalid student credentials. Register a new account if you do not have one.");
+        }
+      }
+    }
+  },
+
+  logout() {
+    window.AppStore.setCurrentUser(null);
+    window.AppRouter.switchView("landing");
+  }
+};
+
+// Bootstrap application on page load
+window.addEventListener("DOMContentLoaded", async () => {
+  window.AppStore.init();
+  
+  // Wait for the local data cache to sync from MongoDB
+  await window.AppStore.syncFromServer();
+
+  const user = window.AppStore.getCurrentUser();
+  if (user) {
+    if (user.role === "admin") {
+      window.AppRouter.switchView("admin-dashboard");
+    } else {
+      window.AppRouter.switchView("student-dashboard");
+    }
+  } else {
+    window.AppRouter.switchView("landing");
+  }
+
+  // Set event listeners for forms
+  document.getElementById("auth-form").addEventListener("submit", (e) => window.AppAuth.handleAuthSubmit(e));
+  document.getElementById("question-form").addEventListener("submit", (e) => window.AdminPortal.saveQuestion(e));
+});
+
+// Bind to window
+window.AppRouter = AppRouter;
+window.AppAuth = AppAuth;

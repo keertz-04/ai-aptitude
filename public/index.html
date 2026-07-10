@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Aptitude Portal - Assessment & Evaluation Dashboard</title>
+  <meta name="description" content="Evaluate system-level reasoning, logical sequences, and ML dynamics with our AI-driven automated appraisal dashboard.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="app-container">
+    
+    <!-- Application Header -->
+    <header class="app-header">
+      <div class="logo-container" onclick="AppRouter.switchView('landing')">
+        <div class="logo-icon">A</div>
+        <div class="logo-text">AI Aptitude Portal</div>
+      </div>
+      
+      <div class="nav-user-panel" id="nav-user-panel" style="display: none;">
+        <span id="header-user-badge" class="user-badge">
+          <span class="badge-dot"></span>Guest User
+        </span>
+        <button id="btn-header-logout" class="btn btn-secondary btn-sm" onclick="AppAuth.logout()">
+          Logout &rarr;
+        </button>
+      </div>
+    </header>
+
+    <!-- MAIN VIEWS -->
+
+    <!-- View: Landing Page -->
+    <section class="view-panel active" id="view-landing">
+      <div class="landing-view">
+        <h1 class="hero-title">Measure Tech & Reasoning <br><span class="gradient-title-text">Aptitude Instantly</span></h1>
+        <p class="hero-subtitle">
+          Evaluate machine learning metrics, logical algorithms, and semantic parsing speed. Backed by automated performance diagnosis.
+        </p>
+
+        <div class="portal-grid">
+          <!-- Student Card -->
+          <div class="glass-card portal-card student-card" onclick="AppAuth.openAuth('student')">
+            <div class="portal-icon">🎓</div>
+            <h3>Student Portal</h3>
+            <p>Register profile, take the reasoning test, and view your automated assessment roadmap.</p>
+            <button class="btn btn-primary full-width">Enter Student Portal &rarr;</button>
+          </div>
+
+          <!-- Admin Card -->
+          <div class="glass-card portal-card admin-card" onclick="AppAuth.openAuth('admin')">
+            <div class="portal-icon">🛡️</div>
+            <h3>Administrator Portal</h3>
+            <p>Manage the question bank, import question matrices via JSON, and track test performance logs.</p>
+            <button class="btn btn-teal full-width">Enter Admin Portal &rarr;</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- View: Auth Forms -->
+    <section class="view-panel" id="view-auth">
+      <div class="glass-card auth-view">
+        <div class="auth-header">
+          <h2 id="auth-title">Portal Access</h2>
+          <p id="auth-desc">Authenticate to continue your testing dashboard.</p>
+        </div>
+
+        <form id="auth-form">
+          <div class="form-group">
+            <label class="form-label" for="auth-username">Username</label>
+            <input type="text" id="auth-username" class="form-input" placeholder="e.g. nivia" required autocomplete="username">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="auth-password">Password</label>
+            <input type="password" id="auth-password" class="form-input" placeholder="••••••••" required autocomplete="current-password">
+          </div>
+
+          <button type="submit" id="btn-auth-submit" class="btn btn-primary btn-block">Sign In</button>
+        </form>
+
+        <button type="button" class="btn btn-secondary btn-block mt-8" onclick="AppRouter.switchView('landing')">&larr; Back to Home</button>
+
+        <div class="auth-footer" id="auth-toggle-container">
+          <p id="auth-toggle-link-text">Need an account? <span class="auth-toggle-link" onclick="AppAuth.toggleAuthMode()">Sign Up here</span></p>
+        </div>
+        
+        <div class="auth-footer" style="margin-top: 16px; font-size: 0.8rem; opacity: 0.6;">
+          <p>💡 Tip: For Admin login, use username <strong>admin</strong> and password <strong>admin</strong>.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- View: Student Dashboard -->
+    <section class="view-panel" id="view-student-dashboard">
+      <div class="student-dashboard-view">
+        
+        <!-- Welcome Card -->
+        <div class="glass-card welcome-banner">
+          <div class="banner-welcome">
+            <h2>Welcome back, <span id="student-username-greet">User</span>!</h2>
+            <p>Your testing history and analytical cognitive metrics are synchronized.</p>
+          </div>
+          <button id="btn-student-start-test" class="btn btn-teal" onclick="StudentPortal.startTest()">
+            Start Aptitude Assessment ⚡
+          </button>
+        </div>
+
+        <!-- Aggregate Statistics -->
+        <div class="dashboard-stats-grid">
+          <div class="glass-card stat-item">
+            <div class="stat-icon indigo">📝</div>
+            <div>
+              <div class="stat-number" id="stat-tests-completed">0</div>
+              <div class="stat-label">Tests Completed</div>
+            </div>
+          </div>
+          <div class="glass-card stat-item">
+            <div class="stat-icon teal">🎯</div>
+            <div>
+              <div class="stat-number" id="stat-avg-score">0%</div>
+              <div class="stat-label">Average Accuracy</div>
+            </div>
+          </div>
+          <div class="glass-card stat-item">
+            <div class="stat-icon indigo">🏆</div>
+            <div>
+              <div class="stat-number" id="stat-highest-score">0%</div>
+              <div class="stat-label">Highest Score</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- History & Actions Layout -->
+        <div class="student-main-layout">
+          <!-- History -->
+          <div class="glass-card">
+            <h3>Test History Logs</h3>
+            <p class="mb-16" style="color: var(--text-secondary); font-size: 0.9rem;">Click any previous attempt to examine your diagnostic performance roadmap.</p>
+            
+            <div class="past-results-list" id="past-results-list">
+              <!-- Dynamically populated past results -->
+            </div>
+          </div>
+
+          <!-- Instructions Card -->
+          <div class="glass-card" style="display: flex; flex-direction: column; gap: 16px;">
+            <h3>Evaluation Instructions</h3>
+            <ul style="padding-left: 20px; color: var(--text-secondary); font-size: 0.9rem; display: flex; flex-direction: column; gap: 12px;">
+              <li>The assessment evaluates 4 core intelligence vectors: Quantitative, Logical, Verbal, and AI Knowledge.</li>
+              <li>Pacing metrics are captured. Speed & precision determine your cognitive archetype profile.</li>
+              <li>Answers are logged instantly. Do not exit the page during an active timer.</li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- View: Test Taking Screen -->
+    <section class="view-panel" id="view-test-taking">
+      <div class="glass-card test-taking-view">
+        
+        <!-- Test Header -->
+        <div class="test-header">
+          <div class="test-info-chips">
+            <span class="info-chip" id="test-question-category">Quantitative</span>
+            <span class="info-chip" id="test-question-index">Question 1 of 10</span>
+            <span class="info-chip" id="test-violations-count" style="background: rgba(244, 63, 94, 0.15); color: var(--neon-pink); border-color: rgba(244, 63, 94, 0.3); display: none;">Violations: 0/3</span>
+          </div>
+          <div class="info-chip timer-chip">
+            ⏱️ <span id="test-timer">00:00</span>
+          </div>
+        </div>
+
+        <!-- Progress Indicator -->
+        <div class="progress-bar-container">
+          <div class="progress-bar-fill" id="test-progress"></div>
+        </div>
+
+        <!-- Active Question Panel -->
+        <div class="question-panel">
+          <h3 id="test-question-text">Loading question text...</h3>
+          
+          <div class="options-container" id="test-options-container">
+            <!-- Dynamically populated option buttons -->
+          </div>
+        </div>
+
+        <!-- Test Navigation Controls -->
+        <div class="test-controls">
+          <button class="btn btn-secondary" id="btn-test-prev" onclick="StudentPortal.prevQuestion()">
+            &larr; Previous
+          </button>
+          <button class="btn btn-primary" id="btn-test-next" onclick="StudentPortal.nextQuestion()">
+            Next Question &rarr;
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- View: Results & AI Report Screen -->
+    <section class="view-panel" id="view-results">
+      <div class="results-view">
+        
+        <!-- Score & Stats Brief -->
+        <div class="glass-card mb-24">
+          <div class="results-header-grid">
+            
+            <!-- Circular score ring -->
+            <div class="score-circular-section">
+              <div class="score-ring-container">
+                <svg class="score-ring-svg" width="160" height="160">
+                  <circle class="score-ring-bg" cx="80" cy="80" r="70"></circle>
+                  <circle id="results-ring-circle" class="score-ring-active" cx="80" cy="80" r="70"></circle>
+                </svg>
+                <div class="score-ring-text">
+                  <div class="score-big-num" id="results-score-num">0</div>
+                  <div class="score-total-num" id="results-total-num">/10</div>
+                </div>
+              </div>
+              <span class="archetype-badge" id="results-archetype-badge">Systems Architect</span>
+              <span class="archetype-label">Cognitive Profile</span>
+            </div>
+
+            <!-- Stats Table -->
+            <div class="results-stats-details">
+              <h3>Diagnostic Results Overview</h3>
+              <p class="mb-16" style="color: var(--text-secondary); font-size: 0.92rem;">
+                Your responses have been processed by the automated evaluator. Pacing indexes and category statistics are listed below.
+              </p>
+              
+              <div class="details-row">
+                <span class="details-label">Time Taken</span>
+                <span class="details-val" id="res-val-time">0 seconds</span>
+              </div>
+              <div class="details-row">
+                <span class="details-label">Pacing Rate</span>
+                <span class="details-val" id="res-val-pacing">0.0s / question</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Radar Chart section -->
+        <div class="glass-card mb-24 chart-section">
+          <h3 class="chart-title">Subjective Category Mastery</h3>
+          <div class="radar-chart-container" id="radar-chart-wrap">
+            <!-- Dynamic SVG Radar Chart gets inserted here -->
+          </div>
+        </div>
+
+        <!-- AI Narrative Report Card -->
+        <div class="glass-card ai-report-panel mb-24">
+          <div class="ai-report-header">
+            <div class="ai-icon-pulse"></div>
+            <h3>Automated AI Evaluation Insights</h3>
+          </div>
+          <div id="ai-narrative-container">
+            <!-- AI narrative summary injected here -->
+          </div>
+        </div>
+
+        <!-- Back Controls -->
+        <div class="text-center">
+          <button class="btn btn-primary" onclick="AppRouter.switchView('student-dashboard')">
+            Return to Dashboard
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- View: Admin Dashboard -->
+    <section class="view-panel" id="view-admin-dashboard">
+      <div class="admin-dashboard-view">
+        
+        <!-- Admin Title and Tab Headers -->
+        <div class="admin-header-row">
+          <div>
+            <h2>Admin Assessment Portal</h2>
+            <p style="color: var(--text-secondary); font-size: 0.95rem;">Database controls, student test logs, and question bank manager.</p>
+          </div>
+          
+          <div class="admin-tabs">
+            <button class="tab-btn active" data-tab="questions" onclick="AdminPortal.switchTab('questions')">Questions Bank</button>
+            <button class="tab-btn" data-tab="results" onclick="AdminPortal.switchTab('results')">Student Attempts</button>
+            <button class="tab-btn" data-tab="tournament" onclick="AdminPortal.switchTab('tournament')">Tournament Control</button>
+            <button class="tab-btn" data-tab="settings" onclick="AdminPortal.switchTab('settings')">Settings</button>
+          </div>
+        </div>
+
+        <!-- Statistics Row -->
+        <div class="stats-grid-row">
+          <div class="glass-card stat-item">
+            <div class="stat-icon teal">📁</div>
+            <div>
+              <div class="stat-number" id="admin-stat-questions">0</div>
+              <div class="stat-label">Total Questions</div>
+            </div>
+          </div>
+          <div class="glass-card stat-item">
+            <div class="stat-icon teal">👥</div>
+            <div>
+              <div class="stat-number" id="admin-stat-attempts">0</div>
+              <div class="stat-label">Student Attempts</div>
+            </div>
+          </div>
+          <div class="glass-card stat-item">
+            <div class="stat-icon teal">📈</div>
+            <div>
+              <div class="stat-number" id="admin-stat-avg-score">0%</div>
+              <div class="stat-label">Cohort Average</div>
+            </div>
+          </div>
+          <div class="glass-card stat-item">
+            <div class="stat-icon teal">🏆</div>
+            <div>
+              <div class="stat-number" id="admin-stat-high-score">0%</div>
+              <div class="stat-label">High Score</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION: Questions Panel -->
+        <div class="admin-content-section active" id="admin-sec-questions">
+          <div class="glass-card">
+            
+            <div class="flex-between mb-24" style="flex-wrap: wrap; gap: 16px;">
+              <h3>Question bank matrix</h3>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <button class="btn btn-primary btn-sm" onclick="AdminPortal.openAddQuestionModal()">
+                  + Add New Question
+                </button>
+                <button class="btn btn-secondary btn-sm" onclick="AdminPortal.resetToDefaultQuestions()">
+                  Reset to Defaults
+                </button>
+                <button class="btn btn-secondary btn-sm" onclick="AdminPortal.exportQuestions()">
+                  Export JSON
+                </button>
+                <button class="btn btn-secondary btn-sm" onclick="AdminPortal.triggerJsonImport()">
+                  Import JSON
+                </button>
+                <!-- Hidden input for file upload -->
+                <input type="file" id="json-import-input" accept=".json" style="display: none;" onchange="AdminPortal.importQuestionsFile(event)">
+              </div>
+            </div>
+
+            <!-- Questions list table -->
+            <div class="table-responsive">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th style="width: 80px;">Index</th>
+                    <th style="width: 140px;">Category</th>
+                    <th>Question Description</th>
+                    <th>Correct Answer</th>
+                    <th style="width: 150px;">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-questions-tbody">
+                  <!-- Questions filled dynamically -->
+                </tbody>
+              </table>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- SECTION: Attempts Logs Panel -->
+        <div class="admin-content-section" id="admin-sec-results">
+          <div class="glass-card">
+            
+            <div class="flex-between mb-24">
+              <h3>Student testing records</h3>
+              <button class="btn btn-danger btn-sm" onclick="AdminPortal.clearAllResults()">
+                Clear Testing Logs ⚠️
+              </button>
+            </div>
+
+            <!-- Results list table -->
+            <div class="table-responsive">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>Student Name</th>
+                    <th>Date Taken</th>
+                    <th>Round</th>
+                    <th>Cognitive Profile Archetype</th>
+                    <th>Score & Accuracy</th>
+                    <th>Time Taken</th>
+                    <th>Violations (Anti-Cheat)</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-results-tbody">
+                  <!-- Student results filled dynamically -->
+                </tbody>
+              </table>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- SECTION: Tournament Panel -->
+        <div class="admin-content-section" id="admin-sec-tournament">
+          <div class="glass-card">
+            
+            <div class="flex-between mb-24" style="flex-wrap: wrap; gap: 16px;">
+              <div>
+                <h3>Tournament active phase: <span id="tour-active-round-label" style="color: var(--neon-teal);">Round 1</span></h3>
+                <p style="color: var(--text-secondary); font-size: 0.88rem; margin-top: 4px;">Track rankings and advance candidates through rounds.</p>
+              </div>
+              <button class="btn btn-secondary btn-sm" onclick="AdminPortal.resetTournament()">
+                Reset Tournament ⚠️
+              </button>
+            </div>
+
+            <!-- Dynamic Active controls injected via JS -->
+            <div id="tour-controls-wrap"></div>
+
+            <!-- Round Settings & Timing Form Card -->
+            <div class="glass-card mb-24" style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); padding: 20px; border-radius: var(--radius-sm); margin-bottom: 24px;">
+              <h4 style="margin-bottom: 8px;">Round Settings & Timing</h4>
+              <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 16px;">Configure assessment timing limit for the active round.</p>
+              <form id="round-settings-form" style="display: flex; align-items: flex-end; gap: 16px; flex-wrap: wrap;" onsubmit="AdminPortal.saveRoundSettings(event)">
+                <div class="form-group" style="margin: 0; flex: 1; min-width: 200px;">
+                  <label class="form-label" for="tour-round-duration">Round Duration (Minutes)</label>
+                  <input type="number" id="tour-round-duration" class="form-input" min="1" max="120" required value="10">
+                </div>
+                <button type="submit" class="btn btn-teal">Save Settings</button>
+              </form>
+            </div>
+
+            <!-- Active Round Leaderboard -->
+            <h4 class="mb-16">Active Round Leaderboard</h4>
+            <div class="table-responsive">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th style="width: 80px;">Rank</th>
+                    <th>Student Name</th>
+                    <th>Best Score</th>
+                    <th>Time Elapsed</th>
+                    <th>Progression Status</th>
+                  </tr>
+                </thead>
+                <tbody id="tour-leaderboard-tbody">
+                  <!-- Injected dynamically -->
+                </tbody>
+              </table>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- SECTION: Settings Panel -->
+        <div class="admin-content-section" id="admin-sec-settings">
+          <div class="glass-card" style="max-width: 500px; margin: 0 auto;">
+            <h3>Security & Portal Settings</h3>
+            <p style="color: var(--text-secondary); font-size: 0.88rem; margin-bottom: 24px;">Change the system administrator username or password.</p>
+            
+            <form id="admin-settings-form" onsubmit="AdminPortal.updateAdminCredentials(event)">
+              <div class="form-group">
+                <label class="form-label" for="setting-admin-username">Admin Username</label>
+                <input type="text" id="setting-admin-username" class="form-input" required placeholder="admin">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="setting-admin-password">New Password</label>
+                <input type="password" id="setting-admin-password" class="form-input" required placeholder="••••••••">
+              </div>
+              
+              <button type="submit" class="btn btn-teal full-width mt-16">Update Admin Credentials 🛡️</button>
+            </form>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </div>
+
+  <!-- MODALS -->
+
+  <!-- Modal: Create / Edit Question Form -->
+  <div class="modal-overlay" id="question-modal">
+    <div class="modal-content">
+      
+      <div class="modal-header">
+        <h3 class="modal-title" id="modal-q-title">Modify Question Form</h3>
+        <button class="modal-close" onclick="AdminPortal.toggleModal('question-modal', false)">&times;</button>
+      </div>
+      
+      <form id="question-form">
+        <div class="modal-body">
+          
+          <div class="form-group">
+            <label class="form-label" for="q-category">Aptitude category</label>
+            <select id="q-category" class="form-input" style="background: var(--bg-secondary);">
+              <option value="Quantitative">Quantitative</option>
+              <option value="Logical">Logical</option>
+              <option value="Verbal">Verbal</option>
+              <option value="AI & Tech">AI & Tech</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="q-round">Target tournament round</label>
+            <select id="q-round" class="form-input" style="background: var(--bg-secondary);">
+              <option value="1">Round 1 (General Aptitude)</option>
+              <option value="2">Round 2 (Tech & Logic)</option>
+              <option value="3">Round 3 (Systems & AI)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="q-text">Question Prompt</label>
+            <textarea id="q-text" class="form-input" rows="3" placeholder="Enter question description..." required></textarea>
+          </div>
+
+          <!-- Options -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+            <div class="form-group">
+              <label class="form-label" for="q-opt0">Option A</label>
+              <input type="text" id="q-opt0" class="form-input" placeholder="Answer option A" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="q-opt1">Option B</label>
+              <input type="text" id="q-opt1" class="form-input" placeholder="Answer option B" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="q-opt2">Option C</label>
+              <input type="text" id="q-opt2" class="form-input" placeholder="Answer option C" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="q-opt3">Option D</label>
+              <input type="text" id="q-opt3" class="form-input" placeholder="Answer option D" required>
+            </div>
+          </div>
+
+          <!-- Correct choice and explanation -->
+          <div class="form-group">
+            <label class="form-label" for="q-correct">Correct Option index</label>
+            <select id="q-correct" class="form-input" style="background: var(--bg-secondary);">
+              <option value="0">Option A</option>
+              <option value="1">Option B</option>
+              <option value="2">Option C</option>
+              <option value="3">Option D</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="q-explanation">AI explanation detail (Optional)</label>
+            <textarea id="q-explanation" class="form-input" rows="2" placeholder="Briefly describe the correct solution process..."></textarea>
+          </div>
+
+        </div>
+        
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="AdminPortal.toggleModal('question-modal', false)">Cancel</button>
+          <button type="submit" class="btn btn-teal">Save question item</button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+
+  <!-- SCRIPT LOADING -->
+  <script src="store.js"></script>
+  <script src="ai_evaluator.js"></script>
+  <script src="student.js"></script>
+  <script src="admin.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
