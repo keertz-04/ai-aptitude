@@ -48,6 +48,7 @@ const ResultSchema = new mongoose.Schema({
   timestamp: { type: Date, default: Date.now },
   round: { type: Number, required: true },
   answers: [Number],
+  questions: { type: mongoose.Schema.Types.Mixed },
   score: { type: Number, required: true },
   total: { type: Number, required: true },
   accuracy: { type: Number, required: true },

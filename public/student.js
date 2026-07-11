@@ -542,7 +542,11 @@ const StudentPortal = {
     document.getElementById("ai-narrative-container").innerHTML = res.narrativeReport;
 
     // Render Questions Review & Mistakes
-    this.renderQuestionsReview(res.questions, res.answers);
+    let questions = res.questions;
+    if (!questions || questions.length === 0) {
+      questions = window.AppStore.getQuestions().filter(q => q.round === res.round);
+    }
+    this.renderQuestionsReview(questions || [], res.answers);
 
     // Switch view
     window.AppRouter.switchView("results");
