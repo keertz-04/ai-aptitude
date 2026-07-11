@@ -541,126 +541,80 @@ const StudentPortal = {
     // Render AI Assessment Summary
     document.getElementById("ai-narrative-container").innerHTML = res.narrativeReport;
 
-    // Render SVG Radar Chart
-    this.renderRadarChart(res.categoryStats);
+    // Render Questions Review & Mistakes
+    this.renderQuestionsReview(res.questions, res.answers);
 
     // Switch view
     window.AppRouter.switchView("results");
   },
 
-  renderRadarChart(categoryStats) {
-    const container = document.getElementById("radar-chart-wrap");
+  renderQuestionsReview(questions, answers) {
+    const container = document.getElementById("mistakes-list-wrap");
+    if (!container) return;
     container.innerHTML = "";
 
-    const categories = Object.keys(categoryStats);
-    if (categories.length < 3) {
-      this.renderBarChart(categoryStats, container);
+    if (!questions || questions.length === 0) {
+      container.innerHTML = "<p class='text-muted' style='text-align: center; padding: 20px;'>No questions to display.</p>";
       return;
     }
 
-    const width = 320;
-    const height = 280;
-    const centerX = width / 2;
-    const centerY = height / 2 - 10;
-    const radius = 90;
+    questions.forEach((q, idx) => {
+      const studentAnsIdx = answers[idx];
+      const correctAnsIdx = q.correct;
+      const isCorrect = studentAnsIdx === correctAnsIdx;
 
-    let svgContent = `<svg width="100%" height="100%" viewBox="0 0 ${width} ${height}">`;
+      const qCard = document.createElement("div");
+      qCard.className = `mistake-card ${isCorrect ? "q-correct" : "q-incorrect"}`;
 
-    const gridLevels = [0.25, 0.5, 0.75, 1];
-    const numAxes = categories.length;
+      // Format options
+      let optionsHtml = "";
+      q.options.forEach((opt, oIdx) => {
+        let optClass = "review-option";
+        let optLabel = "";
 
-    gridLevels.forEach(level => {
-      let points = [];
-      for (let i = 0; i < numAxes; i++) {
-        const angle = (i * 2 * Math.PI) / numAxes - Math.PI / 2;
-        const x = centerX + radius * level * Math.cos(angle);
-        const y = centerY + radius * level * Math.sin(angle);
-        points.push(`${x},${y}`);
-      }
-      svgContent += `
-        <polygon points="${points.join(" ")}" 
-          fill="none" 
-          stroke="rgba(255, 255, 255, 0.05)" 
-          stroke-width="1" />
-      `;
-    });
+        if (oIdx === correctAnsIdx) {
+          optClass += " review-correct-option";
+          optLabel = " (Correct Answer)";
+        }
+        if (oIdx === studentAnsIdx) {
+          optClass += " review-selected-option";
+          if (!isCorrect) {
+            optClass += " review-incorrect-selection";
+            optLabel = " (Your Selection - Incorrect)";
+          } else {
+            optLabel = " (Your Selection - Correct)";
+          }
+        }
 
-    const axesPoints = [];
-    const studentPoints = [];
-
-    categories.forEach((cat, idx) => {
-      const angle = (idx * 2 * Math.PI) / numAxes - Math.PI / 2;
-      
-      const ax = centerX + radius * Math.cos(angle);
-      const ay = centerY + radius * Math.sin(angle);
-      axesPoints.push({ x: ax, y: ay });
-
-      svgContent += `
-        <line x1="${centerX}" y1="${centerY}" x2="${ax}" y2="${ay}" 
-          stroke="rgba(255, 255, 255, 0.08)" stroke-width="1.5" />
-      `;
-
-      const labelDistance = radius + 20;
-      const lx = centerX + labelDistance * Math.cos(angle);
-      const ly = centerY + labelDistance * Math.sin(angle);
-      let textAnchor = "middle";
-      if (Math.cos(angle) > 0.1) textAnchor = "start";
-      else if (Math.cos(angle) < -0.1) textAnchor = "end";
-
-      svgContent += `
-        <text x="${lx}" y="${ly + 4}" 
-          class="svg-axis-label" 
-          text-anchor="${textAnchor}" 
-          fill="#94a3b8" 
-          font-weight="500">${cat}</text>
-      `;
-
-      const stats = categoryStats[cat];
-      const ratio = stats.total > 0 ? stats.correct / stats.total : 0;
-      const sx = centerX + radius * ratio * Math.cos(angle);
-      const sy = centerY + radius * ratio * Math.sin(angle);
-      studentPoints.push(`${sx},${sy}`);
-    });
-
-    svgContent += `
-      <polygon points="${studentPoints.join(" ")}" 
-        class="svg-chart-poly animate-poly" />
-    `;
-
-    studentPoints.forEach(pt => {
-      const [x, y] = pt.split(",");
-      svgContent += `
-        <circle cx="${x}" cy="${y}" r="4" class="svg-chart-point" />
-      `;
-    });
-
-    svgContent += `</svg>`;
-    container.innerHTML = svgContent;
-  },
-
-  renderBarChart(categoryStats, container) {
-    let html = `<div style="width: 100%; display: flex; flex-direction: column; gap: 16px; margin-top: 10px;">`;
-    
-    Object.keys(categoryStats).forEach(cat => {
-      const stats = categoryStats[cat];
-      const percent = stats.total > 0 ? (stats.correct / stats.total) * 100 : 0;
-      
-      html += `
-        <div>
-          <div class="flex-between mb-16">
-            <span style="font-size: 0.95rem; font-weight: 500;">${cat}</span>
-            <span style="font-size: 0.9rem; font-weight: 600; color: var(--neon-teal);">${stats.correct}/${stats.total} (${Math.round(percent)}%)</span>
+        const marker = String.fromCharCode(65 + oIdx); // A, B, C, D
+        optionsHtml += `
+          <div class="${optClass}">
+            <span class="option-marker">${marker}</span>
+            <span class="option-text">${opt}${optLabel}</span>
           </div>
-          <div style="width:100%; height:8px; background:rgba(255,255,255,0.05); border-radius:50px; overflow:hidden;">
-            <div style="width: ${percent}%; height:100%; background:var(--grad-secondary); border-radius:50px;"></div>
-          </div>
+        `;
+      });
+
+      const badgeHtml = isCorrect 
+        ? `<span class="badge badge-success">✓ Correct</span>`
+        : `<span class="badge badge-danger">✗ Incorrect</span>`;
+
+      qCard.innerHTML = `
+        <div class="mistake-card-header">
+          <div class="mistake-q-num">Question ${idx + 1} <span class="category-tag">${q.category}</span></div>
+          ${badgeHtml}
+        </div>
+        <div class="mistake-q-text">${q.question}</div>
+        <div class="review-options-list">
+          ${optionsHtml}
+        </div>
+        <div class="mistake-explanation">
+          <strong>Explanation:</strong> ${q.explanation || "No explanation provided."}
         </div>
       `;
+      container.appendChild(qCard);
     });
-
-    html += `</div>`;
-    container.innerHTML = html;
-  }
+  },
 };
 
 window.StudentPortal = StudentPortal;
