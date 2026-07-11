@@ -5,7 +5,7 @@ const AppRouter = {
   currentView: "landing",
 
   switchView(viewId) {
-    if (window.StudentPortal && window.StudentPortal.isTestActive) {
+    if (window.StudentPortal && window.StudentPortal.isTestActive && viewId !== "test-taking") {
       alert("⚠️ Navigation Blocked: You cannot navigate away from the active test screen until you submit the assessment.");
       return;
     }
