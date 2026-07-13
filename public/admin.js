@@ -109,19 +109,27 @@ const AdminPortal = {
   },
 
   deleteQuestion(id) {
-    if (confirm("Are you sure you want to delete this question?")) {
-      window.AppStore.deleteQuestion(id);
-      this.renderQuestionsList();
-      this.renderStats();
-    }
+    window.showCustomConfirm(
+      "Delete Question",
+      "Are you sure you want to delete this question?",
+      () => {
+        window.AppStore.deleteQuestion(id);
+        this.renderQuestionsList();
+        this.renderStats();
+      }
+    );
   },
 
   resetToDefaultQuestions() {
-    if (confirm("This will overwrite existing questions with the standard preloaded set. Proceed?")) {
-      window.AppStore.resetQuestions();
-      this.renderQuestionsList();
-      this.renderStats();
-    }
+    window.showCustomConfirm(
+      "Reset Questions",
+      "This will overwrite existing questions with the standard preloaded set. Proceed?",
+      () => {
+        window.AppStore.resetQuestions();
+        this.renderQuestionsList();
+        this.renderStats();
+      }
+    );
   },
 
   // --- Question Modal Actions ---
@@ -168,7 +176,7 @@ const AdminPortal = {
     const explanation = document.getElementById("q-explanation").value.trim();
 
     if (!questionText || !opt0 || !opt1 || !opt2 || !opt3) {
-      alert("All fields including all 4 options are required.");
+      window.showCustomAlert("Validation Alert", "All fields including all 4 options are required.");
       return;
     }
 
@@ -240,11 +248,15 @@ const AdminPortal = {
   },
 
   clearAllResults() {
-    if (confirm("Are you sure you want to wipe all student testing records? This cannot be undone.")) {
-      window.AppStore.clearResults();
-      this.renderStudentResults();
-      this.renderStats();
-    }
+    window.showCustomConfirm(
+      "Clear All Results",
+      "Are you sure you want to wipe all student testing records? This cannot be undone.",
+      () => {
+        window.AppStore.clearResults();
+        this.renderStudentResults();
+        this.renderStats();
+      }
+    );
   },
 
   // --- Tournament Management Panel ---
@@ -367,13 +379,13 @@ const AdminPortal = {
     event.preventDefault();
     const durationLimit = parseInt(document.getElementById("tour-round-duration").value, 10);
     if (isNaN(durationLimit) || durationLimit < 1) {
-      alert("Please enter a valid duration (minimum 1 minute).");
+      window.showCustomAlert("Validation Alert", "Please enter a valid duration (minimum 1 minute).");
       return;
     }
     const state = window.AppStore.getTournamentState();
     state.roundDurationLimit = durationLimit;
     await window.AppStore.saveTournamentState(state);
-    alert("Round duration settings saved successfully!");
+    window.showCustomAlert("Settings Saved", "Round duration settings saved successfully!");
     this.renderTournamentTab();
   },
 
@@ -400,7 +412,7 @@ const AdminPortal = {
     });
 
     if (sortedAttempts.length === 0) {
-      alert(`No student attempts recorded for Round ${activeRound}. Cannot conclude the round.`);
+      window.showCustomAlert("Round Conclude Alert", `No student attempts recorded for Round ${activeRound}. Cannot conclude the round.`);
       return;
     }
 
@@ -412,7 +424,7 @@ const AdminPortal = {
       state.activeRound = 2;
       window.AppStore.saveTournamentState(state);
 
-      alert(`Round 1 Concluded! ${promoted.length} students advanced to Round 2:\n${promoted.join(", ")}`);
+      window.showCustomAlert("Round 1 Concluded", `Round 1 Concluded! ${promoted.length} students advanced to Round 2:<br><strong>${promoted.join(", ")}</strong>`);
     } else if (activeRound === 2) {
       const countToQualify = Math.ceil(sortedAttempts.length / 2);
       const promoted = sortedAttempts.slice(0, countToQualify).map(a => a.studentName);
@@ -421,7 +433,7 @@ const AdminPortal = {
       state.activeRound = 3;
       window.AppStore.saveTournamentState(state);
 
-      alert(`Round 2 Concluded! ${promoted.length} students advanced to Round 3:\n${promoted.join(", ")}`);
+      window.showCustomAlert("Round 2 Concluded", `Round 2 Concluded! ${promoted.length} students advanced to Round 3:<br><strong>${promoted.join(", ")}</strong>`);
     } else if (activeRound === 3) {
       // Crown top 3 winners
       const winners = sortedAttempts.slice(0, 3).map((a, idx) => ({
@@ -436,8 +448,8 @@ const AdminPortal = {
       state.winners = winners;
       window.AppStore.saveTournamentState(state);
 
-      const winnerNames = winners.map(w => `#${w.rank}: ${w.username} (${w.accuracy}%)`).join("\n");
-      alert(`Tournament Completed! Winners Declared:\n${winnerNames}`);
+      const winnerNames = winners.map(w => `#${w.rank}: ${w.username} (${w.accuracy}%)`).join("<br>");
+      window.showCustomAlert("Tournament Completed", `Tournament Completed! Winners Declared:<br><strong>${winnerNames}</strong>`);
     }
 
     this.renderTournamentTab();
@@ -445,12 +457,16 @@ const AdminPortal = {
   },
 
   resetTournament() {
-    if (confirm("Wipe all tournament states, current rounds, qualifications, and student results to restart?")) {
-      window.AppStore.resetTournament();
-      this.switchTab("questions");
-      this.renderStats();
-      alert("Tournament state has been reset successfully. All students can now take Round 1.");
-    }
+    window.showCustomConfirm(
+      "Reset Tournament",
+      "Wipe all tournament states, current rounds, qualifications, and student results to restart?",
+      () => {
+        window.AppStore.resetTournament();
+        this.switchTab("questions");
+        this.renderStats();
+        window.showCustomAlert("Tournament Reset", "Tournament state has been reset successfully. All students can now take Round 1.");
+      }
+    );
   },
 
   // --- JSON Import / Export ---
