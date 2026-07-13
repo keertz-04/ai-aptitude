@@ -68,6 +68,17 @@ const AppRouter = {
       }
     });
 
+    // Toggle visibility of the floating side mascot
+    const sideRobot = document.getElementById("side-robot-helper");
+    if (sideRobot) {
+      if (viewId === "landing" || viewId === "test-taking") {
+        // Hide on landing view and during active testing to prevent distraction
+        sideRobot.style.display = "none";
+      } else {
+        sideRobot.style.display = "flex";
+      }
+    }
+
     // Update global header elements based on session state
     this.updateHeader();
 
@@ -83,8 +94,10 @@ const AppRouter = {
     const user = window.AppStore.getCurrentUser();
     const navPanel = document.getElementById("nav-user-panel");
     const logoutBtn = document.getElementById("btn-header-logout");
+    const guestPanel = document.getElementById("nav-guest-panel");
 
     if (user) {
+      if (guestPanel) guestPanel.style.display = "none";
       navPanel.style.display = "flex";
       logoutBtn.style.display = "inline-flex";
 
@@ -92,6 +105,7 @@ const AppRouter = {
       badge.className = `user-badge ${user.role}-badge`;
       badge.innerHTML = `<span class="badge-dot"></span>${user.username} (${user.role.toUpperCase()})`;
     } else {
+      if (guestPanel) guestPanel.style.display = "flex";
       navPanel.style.display = "none";
       logoutBtn.style.display = "none";
     }

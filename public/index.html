@@ -18,6 +18,13 @@
         <div class="logo-text">Learn and Solve Aptitude</div>
       </div>
       
+      <!-- Guest navigation panel (Admin Login) -->
+      <div class="nav-guest-panel" id="nav-guest-panel">
+        <button class="btn btn-secondary btn-sm" onclick="AppAuth.openAuth('admin')">
+          🛡️ Admin Login
+        </button>
+      </div>
+
       <div class="nav-user-panel" id="nav-user-panel" style="display: none;">
         <span id="header-user-badge" class="user-badge">
           <span class="badge-dot"></span>Guest User
@@ -144,11 +151,6 @@
             <p>Access active examination segments, check performance metrics, and review round qualifications.</p>
             <button class="btn btn-primary full-width">Enter Student Portal &rarr;</button>
           </div>
-
-          <!-- Small Admin Link -->
-          <div class="admin-corner-link" onclick="AppAuth.openAuth('admin')">
-            🛡️ Admin Login
-          </div>
         </div>
 
       </div>
@@ -188,13 +190,6 @@
           <div class="feat-details">
             <h4>Leaderboard</h4>
             <p>Compete and rank</p>
-          </div>
-        </div>
-        <div class="feature-item">
-          <span class="feat-icon">📝</span>
-          <div class="feat-details">
-            <h4>Smart Reports</h4>
-            <p>Track & improve</p>
           </div>
         </div>
       </div>
@@ -716,6 +711,51 @@
         <button id="custom-alert-btn-ok" class="btn btn-teal">OK</button>
       </div>
     </div>
+  </div>
+
+  <!-- Floating Side Robot helper -->
+  <div id="side-robot-helper" class="side-robot-helper" style="display: none;">
+    <svg class="cute-robot-svg-side" viewBox="0 0 200 200" width="80" height="80">
+      <defs>
+        <linearGradient id="bodyGradSide" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#ffffff" />
+          <stop offset="100%" stop-color="#f3e8ff" />
+        </linearGradient>
+        <linearGradient id="pinkGradSide" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#ec4899" />
+          <stop offset="100%" stop-color="#db2777" />
+        </linearGradient>
+        <linearGradient id="screenGradSide" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#0f172a" />
+          <stop offset="100%" stop-color="#020617" />
+        </linearGradient>
+      </defs>
+      <!-- Head -->
+      <rect x="42" y="40" width="116" height="80" rx="26" fill="url(#bodyGradSide)" stroke="#e2e8f0" stroke-width="2" />
+      <!-- Screen/Face -->
+      <rect x="52" y="50" width="96" height="58" rx="16" fill="url(#screenGradSide)" />
+      <!-- Cyan Eyes -->
+      <path d="M 68 76 Q 78 64 88 76" fill="none" stroke="var(--neon-teal)" stroke-width="5" stroke-linecap="round" />
+      <path d="M 112 76 Q 122 64 132 76" fill="none" stroke="var(--neon-teal)" stroke-width="5" stroke-linecap="round" />
+      <!-- Blush -->
+      <ellipse cx="64" cy="88" rx="6" ry="3" fill="rgba(236, 72, 153, 0.5)" />
+      <ellipse cx="136" cy="88" rx="6" ry="3" fill="rgba(236, 72, 153, 0.5)" />
+      <!-- Pink Headphones -->
+      <path d="M 45 50 A 62 62 0 0 1 155 50" fill="none" stroke="url(#pinkGradSide)" stroke-width="6" stroke-linecap="round" />
+      <rect x="30" y="63" width="16" height="38" rx="8" fill="url(#pinkGradSide)" />
+      <rect x="154" y="63" width="16" height="38" rx="8" fill="url(#pinkGradSide)" />
+      <!-- Antenna -->
+      <rect x="97" y="24" width="6" height="18" rx="3" fill="url(#bodyGradSide)" />
+      <circle cx="100" cy="22" r="8" fill="url(#pinkGradSide)" />
+      <!-- Torso/Body (waving) -->
+      <rect x="72" y="120" width="56" height="40" rx="15" fill="url(#bodyGradSide)" stroke="#e2e8f0" stroke-width="2" />
+      <circle cx="100" cy="138" r="10" fill="none" stroke="url(#pinkGradSide)" stroke-width="2.5" />
+      <!-- Waving Arm -->
+      <g transform="translate(128, 114) rotate(-35)">
+        <rect x="0" y="0" width="14" height="26" rx="7" fill="url(#bodyGradSide)" stroke="#e2e8f0" stroke-width="1.5" />
+        <circle cx="7" cy="22" r="6" fill="url(#pinkGradSide)" />
+      </g>
+    </svg>
   </div>
 
   <!-- SCRIPT LOADING -->
