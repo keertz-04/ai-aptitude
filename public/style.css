@@ -1618,21 +1618,27 @@ header.app-header {
 .orbit-ring {
   position: absolute;
   border-radius: 50%;
-  border: 1px dashed rgba(99, 102, 241, 0.2);
   pointer-events: none;
 }
 
 .ring-1 {
   width: 220px;
   height: 220px;
-  animation: rotateClockwise 25s linear infinite;
+  border: 2px solid rgba(20, 184, 166, 0.35);
+  border-top-color: transparent;
+  border-bottom-color: transparent;
+  animation: rotateClockwise 12s linear infinite;
+  box-shadow: 0 0 25px rgba(20, 184, 166, 0.25);
 }
 
 .ring-2 {
-  width: 180px;
-  height: 180px;
-  animation: rotateCounter 15s linear infinite;
-  border-color: rgba(20, 184, 166, 0.15);
+  width: 175px;
+  height: 175px;
+  border: 1.5px solid rgba(236, 72, 153, 0.35);
+  border-left-color: transparent;
+  border-right-color: transparent;
+  animation: rotateCounter 8s linear infinite;
+  box-shadow: 0 0 20px rgba(236, 72, 153, 0.2);
 }
 
 @keyframes rotateClockwise {

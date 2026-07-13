@@ -47,30 +47,6 @@
           <p class="hero-subtitle">
             Evaluate your aptitude with intelligent assessments designed to measure, analyze and improve.
           </p>
-
-          <!-- Stats Grid -->
-          <div class="stats-grid">
-            <div class="stat-card">
-              <div class="stat-icon">📝</div>
-              <div class="stat-num">10,000+</div>
-              <div class="stat-label">Questions</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-icon">📈</div>
-              <div class="stat-num">95%</div>
-              <div class="stat-label">Accuracy</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-icon">👥</div>
-              <div class="stat-num">500+</div>
-              <div class="stat-label">Students</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-icon">🏆</div>
-              <div class="stat-num">24/7</div>
-              <div class="stat-label">AI Support</div>
-            </div>
-          </div>
         </div>
 
         <!-- Center Column: Animated Robot -->
@@ -81,33 +57,81 @@
           <div class="robot-glow-container">
             <div class="orbit-ring ring-1"></div>
             <div class="orbit-ring ring-2"></div>
-            <svg class="cute-robot-svg" viewBox="0 0 200 200" width="160" height="160">
+            <svg class="cute-robot-svg" viewBox="0 0 200 200" width="180" height="180">
               <defs>
-                <linearGradient id="robotGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stop-color="var(--neon-indigo)" />
-                  <stop offset="100%" stop-color="var(--neon-purple)" />
+                <linearGradient id="bodyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#ffffff" />
+                  <stop offset="100%" stop-color="#f3e8ff" />
                 </linearGradient>
-                <linearGradient id="eyeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stop-color="var(--neon-teal)" />
-                  <stop offset="100%" stop-color="#06b6d4" />
+                <linearGradient id="pinkGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#ec4899" />
+                  <stop offset="100%" stop-color="#db2777" />
                 </linearGradient>
+                <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#fbbf24" />
+                  <stop offset="100%" stop-color="#d97706" />
+                </linearGradient>
+                <linearGradient id="screenGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#0f172a" />
+                  <stop offset="100%" stop-color="#020617" />
+                </linearGradient>
+                <filter id="pinkGlow" x="-20%" y="-20%" width="140%" height="140%">
+                  <feGaussianBlur stdDeviation="6" result="blur" />
+                  <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                </filter>
               </defs>
-              <rect x="95" y="15" width="10" height="30" rx="5" fill="url(#robotGrad)" />
-              <circle cx="100" cy="15" r="8" fill="var(--neon-teal)" class="antenna-glow" />
-              <rect x="30" y="70" width="18" height="45" rx="9" fill="url(#robotGrad)" />
-              <rect x="152" y="70" width="18" height="45" rx="9" fill="url(#robotGrad)" />
-              <path d="M 40 70 A 60 60 0 0 1 160 70" fill="none" stroke="url(#robotGrad)" stroke-width="4" />
-              <rect x="45" y="40" width="110" height="90" rx="28" fill="rgba(15, 23, 42, 0.9)" stroke="url(#robotGrad)" stroke-width="3" />
-              <rect x="58" y="52" width="84" height="60" rx="16" fill="rgba(9, 13, 22, 0.95)" stroke="rgba(255,255,255,0.05)" />
-              <circle cx="80" cy="78" r="10" fill="url(#eyeGrad)" class="eye-glow" />
-              <circle cx="120" cy="78" r="10" fill="url(#eyeGrad)" class="eye-glow" />
-              <circle cx="82" cy="76" r="4" fill="#ffffff" />
-              <circle cx="122" cy="76" r="4" fill="#ffffff" />
-              <path d="M 88 98 Q 100 108 112 98" fill="none" stroke="var(--neon-teal)" stroke-width="3" stroke-linecap="round" />
               
-              <rect x="75" y="130" width="50" height="35" rx="10" fill="url(#robotGrad)" />
-              <circle cx="100" cy="148" r="8" fill="var(--neon-teal)" />
-              <path d="M 90 165 Q 100 195 110 165 Z" fill="rgba(20, 184, 166, 0.75)" class="robot-booster-flame" />
+              <!-- Robot shadow/jet booster flame -->
+              <path d="M 90 170 Q 100 198 110 170 Z" fill="rgba(236, 72, 153, 0.75)" class="robot-booster-flame" />
+
+              <!-- Legs & Feet (pink/white shoes) -->
+              <rect x="74" y="152" width="22" height="18" rx="7" fill="url(#pinkGrad)" />
+              <rect x="104" y="152" width="22" height="18" rx="7" fill="url(#pinkGrad)" />
+              <circle cx="85" cy="165" r="8" fill="#ffffff" />
+              <circle cx="115" cy="165" r="8" fill="#ffffff" />
+
+              <!-- Torso/Body -->
+              <rect x="68" y="112" width="64" height="46" rx="18" fill="url(#bodyGrad)" stroke="#e2e8f0" stroke-width="2" />
+              <!-- Chest speaker/button (cyan circular ring and gold inner core) -->
+              <circle cx="100" cy="133" r="14" fill="none" stroke="url(#goldGrad)" stroke-width="3" />
+              <circle cx="100" cy="133" r="8" fill="var(--neon-teal)" class="antenna-glow" />
+
+              <!-- Left Arm -->
+              <g transform="translate(48, 114) rotate(-25)">
+                <rect x="0" y="0" width="16" height="30" rx="8" fill="url(#bodyGrad)" stroke="#e2e8f0" stroke-width="1.5" />
+                <circle cx="8" cy="26" r="8" fill="url(#pinkGrad)" />
+              </g>
+              <!-- Right Arm (waving) -->
+              <g transform="translate(132, 102) rotate(45)">
+                <rect x="0" y="0" width="16" height="30" rx="8" fill="url(#bodyGrad)" stroke="#e2e8f0" stroke-width="1.5" />
+                <circle cx="8" cy="26" r="8" fill="url(#pinkGrad)" />
+              </g>
+
+              <!-- Neck -->
+              <rect x="92" y="103" width="16" height="12" rx="4" fill="url(#pinkGrad)" />
+
+              <!-- Head -->
+              <rect x="42" y="32" width="116" height="80" rx="26" fill="url(#bodyGrad)" stroke="#e2e8f0" stroke-width="2" />
+              <!-- Screen/Face -->
+              <rect x="52" y="42" width="96" height="58" rx="16" fill="url(#screenGrad)" />
+              
+              <!-- Cute Cyan Eyes (winking/happy arches like the picture) -->
+              <path d="M 68 70 Q 78 58 88 70" fill="none" stroke="var(--neon-teal)" stroke-width="5" stroke-linecap="round" class="eye-glow" />
+              <path d="M 112 70 Q 122 58 132 70" fill="none" stroke="var(--neon-teal)" stroke-width="5" stroke-linecap="round" class="eye-glow" />
+              <!-- Cute little blush lines -->
+              <ellipse cx="64" cy="82" rx="6" ry="3" fill="rgba(236, 72, 153, 0.5)" />
+              <ellipse cx="136" cy="82" rx="6" ry="3" fill="rgba(236, 72, 153, 0.5)" />
+
+              <!-- Headphones (band and cups) -->
+              <path d="M 45 42 A 62 62 0 0 1 155 42" fill="none" stroke="url(#pinkGrad)" stroke-width="6" stroke-linecap="round" />
+              <rect x="30" y="55" width="16" height="38" rx="8" fill="url(#pinkGrad)" filter="url(#pinkGlow)" />
+              <rect x="36" y="60" width="6" height="28" rx="3" fill="url(#bodyGrad)" />
+              <rect x="154" y="55" width="16" height="38" rx="8" fill="url(#pinkGrad)" filter="url(#pinkGlow)" />
+              <rect x="158" y="60" width="6" height="28" rx="3" fill="url(#bodyGrad)" />
+
+              <!-- Antenna on top -->
+              <rect x="97" y="16" width="6" height="18" rx="3" fill="url(#bodyGrad)" />
+              <circle cx="100" cy="14" r="8" fill="url(#pinkGrad)" class="antenna-glow" />
             </svg>
           </div>
         </div>
