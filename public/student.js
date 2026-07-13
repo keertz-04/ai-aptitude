@@ -39,15 +39,20 @@ const StudentPortal = {
     }
 
     StudentPortal.isAlertShowing = true;
-    alert("🚫 Assessment Terminated: Swapping tabs or leaving the assessment screen is strictly prohibited. Your active test has been automatically submitted.");
-    StudentPortal.isAlertShowing = false;
-    StudentPortal.submitTest();
+    window.showCustomAlert(
+      "Assessment Terminated",
+      "🚫 Swapping tabs or leaving the assessment screen is strictly prohibited. Your active test has been automatically submitted.",
+      () => {
+        StudentPortal.isAlertShowing = false;
+        StudentPortal.submitTest();
+      }
+    );
   },
 
   preventCheat(e) {
     if (StudentPortal.isTestActive) {
       e.preventDefault();
-      alert("⚠️ Action Blocked: Copying, pasting, cutting, and right-clicking are strictly prohibited during the assessment to maintain test integrity.");
+      window.showCustomAlert("Action Blocked", "⚠️ Copying, pasting, cutting, and right-clicking are strictly prohibited during the assessment to maintain test integrity.");
     }
   },
 
@@ -63,7 +68,7 @@ const StudentPortal = {
     // F12
     if (e.keyCode === 123) {
       e.preventDefault();
-      alert("⚠️ Action Blocked: Developer tools are disabled during the test.");
+      window.showCustomAlert("Action Blocked", "⚠️ Developer tools are disabled during the test.");
       return;
     }
     
@@ -76,7 +81,7 @@ const StudentPortal = {
       e.keyCode === 70    // Ctrl+F
     )) {
       e.preventDefault();
-      alert("⚠️ Action Blocked: This keyboard shortcut is disabled during the assessment.");
+      window.showCustomAlert("Action Blocked", "⚠️ This keyboard shortcut is disabled during the assessment.");
       return;
     }
   },
@@ -270,7 +275,7 @@ const StudentPortal = {
     // Filter questions by active round
     const questions = window.AppStore.getQuestions().filter(q => q.round === activeRound);
     if (questions.length === 0) {
-      alert(`No questions have been configured for Round ${activeRound} in the bank. Please contact an admin.`);
+      window.showCustomAlert("Round Alert", `No questions have been configured for Round ${activeRound} in the bank. Please contact an admin.`);
       return;
     }
 
@@ -332,9 +337,11 @@ const StudentPortal = {
       
       if (secondsLeft <= 0) {
         clearInterval(this.timerInterval);
-        document.getElementById("test-timer").textContent = "00:00";
-        alert("Time is up! Your assessment is being submitted automatically.");
-        this.submitTest();
+        window.showCustomAlert(
+          "Time is up!",
+          "Time is up! Your assessment is being submitted automatically.",
+          () => this.submitTest()
+        );
         return;
       }
       
@@ -425,13 +432,17 @@ const StudentPortal = {
     } else {
       const unansweredCount = this.answers.filter(a => a === null).length;
       if (unansweredCount > 0) {
-        if (confirm(`⚠️ Unanswered Questions: You have ${unansweredCount} question(s) that you haven't answered yet. Are you sure you want to finish and submit the assessment?`)) {
-          this.submitTest();
-        }
+        window.showCustomConfirm(
+          "Unanswered Questions",
+          `⚠️ You have <strong>${unansweredCount}</strong> question(s) that you haven't answered yet.<br><br>Are you sure you want to finish and submit the assessment?`,
+          () => this.submitTest()
+        );
       } else {
-        if (confirm("Are you sure you want to submit your assessment?")) {
-          this.submitTest();
-        }
+        window.showCustomConfirm(
+          "Confirm Submission",
+          "Are you sure you want to finish and submit your assessment?",
+          () => this.submitTest()
+        );
       }
     }
   },

@@ -1,12 +1,60 @@
-// app.js
-// Bootstraps routing, handles signups/logins, and coordinates UI transitions.
+// Global Custom Alert / Confirm Dialog functions
+window.showCustomAlert = function(title, message, callback) {
+  const overlay = document.getElementById("custom-alert-overlay");
+  const titleEl = document.getElementById("custom-alert-title");
+  const msgEl = document.getElementById("custom-alert-message");
+  const okBtn = document.getElementById("custom-alert-btn-ok");
+  const cancelBtn = document.getElementById("custom-alert-btn-cancel");
+  
+  titleEl.innerHTML = title;
+  msgEl.innerHTML = message;
+  
+  cancelBtn.style.display = "none";
+  okBtn.textContent = "OK";
+  okBtn.className = "btn btn-teal";
+  
+  overlay.style.display = "flex";
+  
+  okBtn.onclick = () => {
+    overlay.style.display = "none";
+    if (callback) callback();
+  };
+};
+
+window.showCustomConfirm = function(title, message, onConfirm, onCancel) {
+  const overlay = document.getElementById("custom-alert-overlay");
+  const titleEl = document.getElementById("custom-alert-title");
+  const msgEl = document.getElementById("custom-alert-message");
+  const okBtn = document.getElementById("custom-alert-btn-ok");
+  const cancelBtn = document.getElementById("custom-alert-btn-cancel");
+  
+  titleEl.innerHTML = title;
+  msgEl.innerHTML = message;
+  
+  cancelBtn.style.display = "inline-flex";
+  cancelBtn.className = "btn btn-secondary";
+  okBtn.textContent = "Confirm";
+  okBtn.className = "btn btn-teal";
+  
+  overlay.style.display = "flex";
+  
+  okBtn.onclick = () => {
+    overlay.style.display = "none";
+    if (onConfirm) onConfirm();
+  };
+  
+  cancelBtn.onclick = () => {
+    overlay.style.display = "none";
+    if (onCancel) onCancel();
+  };
+};
 
 const AppRouter = {
   currentView: "landing",
 
   switchView(viewId) {
     if (window.StudentPortal && window.StudentPortal.isTestActive && viewId !== "test-taking") {
-      alert("⚠️ Navigation Blocked: You cannot navigate away from the active test screen until you submit the assessment.");
+      window.showCustomAlert("Navigation Blocked", "⚠️ Navigation Blocked: You cannot navigate away from the active test screen until you submit the assessment.");
       return;
     }
     this.currentView = viewId;
@@ -144,7 +192,7 @@ const AppAuth = {
     } else {
       // Student portal auth (Username & Reg No, no passwords)
       if (!userVal || !regNoVal) {
-        alert("Please provide both your display name and registration number.");
+        window.showCustomAlert("Authentication Alert", "Please provide both your display name and registration number.");
         return;
       }
       const student = await window.AppStore.authenticateStudent(userVal, regNoVal);
@@ -153,14 +201,14 @@ const AppAuth = {
         window.AppStore.setCurrentUser(user);
         window.AppRouter.switchView("student-dashboard");
       } else {
-        alert("Failed to access student portal.");
+        window.showCustomAlert("Access Denied", "Failed to access student portal.");
       }
     }
   },
 
   logout() {
     if (window.StudentPortal && window.StudentPortal.isTestActive) {
-      alert("⚠️ Action Blocked: You cannot log out while the assessment is active.");
+      window.showCustomAlert("Action Blocked", "⚠️ Action Blocked: You cannot log out while the assessment is active.");
       return;
     }
     window.AppStore.setCurrentUser(null);

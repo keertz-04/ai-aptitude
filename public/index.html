@@ -14,8 +14,8 @@
     <!-- Application Header -->
     <header class="app-header">
       <div class="logo-container" onclick="AppRouter.switchView('landing')">
-        <div class="logo-icon">A</div>
-        <div class="logo-text">AI Aptitude Portal</div>
+        <div class="logo-icon">LS</div>
+        <div class="logo-text">Learn and Solve Aptitude</div>
       </div>
       
       <div class="nav-user-panel" id="nav-user-panel" style="display: none;">
@@ -553,6 +553,23 @@
         </div>
       </form>
 
+    </div>
+  </div>
+
+  <!-- Custom Modal Alert/Confirm Overlay -->
+  <div id="custom-alert-overlay" class="custom-alert-overlay" style="display: none;">
+    <div class="glass-card custom-alert-card">
+      <div class="custom-alert-header">
+        <span class="custom-alert-icon">⚠️</span>
+        <h3 id="custom-alert-title">Attention</h3>
+      </div>
+      <div class="custom-alert-body" id="custom-alert-message">
+        Warning message details.
+      </div>
+      <div class="custom-alert-footer">
+        <button id="custom-alert-btn-cancel" class="btn btn-secondary">Cancel</button>
+        <button id="custom-alert-btn-ok" class="btn btn-teal">OK</button>
+      </div>
     </div>
   </div>
 
