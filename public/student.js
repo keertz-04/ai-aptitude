@@ -247,7 +247,7 @@ const StudentPortal = {
 
       const card = document.createElement("div");
       card.className = "past-result-card";
-      card.onclick = () => this.showResults(res.id);
+      card.onclick = () => this.showResults(res._id || res.id);
 
       card.innerHTML = `
         <div class="result-card-info">
@@ -443,7 +443,7 @@ const StudentPortal = {
     }
   },
 
-  submitTest() {
+  async submitTest() {
     clearInterval(this.timerInterval);
 
     // Disable Proctoring / Cleanup listeners
@@ -489,16 +489,20 @@ const StudentPortal = {
       ...evaluation
     };
 
-    const savedResult = window.AppStore.saveResult(resultToSave);
+    const savedResult = await window.AppStore.saveResult(resultToSave);
 
     // Redirect to results view
-    this.showResults(savedResult.id);
+    this.showResults(savedResult._id || savedResult.id);
   },
 
   // --- Results Reporting & Visualization ---
   showResults(resultId) {
+    if (!resultId) {
+      alert("Test results not found.");
+      return;
+    }
     const results = window.AppStore.getResults();
-    const res = results.find(r => r.id === resultId || r._id === resultId);
+    const res = results.find(r => r._id === resultId || r.id === resultId);
     if (!res) {
       alert("Test results not found.");
       return;
@@ -516,7 +520,7 @@ const StudentPortal = {
     }
 
     // Dynamic Header
-    document.getElementById("results-archetype-badge").textContent = res.cognitiveProfile;
+    document.getElementById("results-archetype-badge").textContent = "Result Overview";
     
     // Circular Progress Ring animation
     const circle = document.getElementById("results-ring-circle");
@@ -538,8 +542,7 @@ const StudentPortal = {
     document.getElementById("res-val-time").textContent = `${res.timeTakenSeconds} seconds`;
     document.getElementById("res-val-pacing").textContent = `${res.avgTimePerQuestion.toFixed(1)}s / q`;
     
-    // Render AI Assessment Summary
-    document.getElementById("ai-narrative-container").innerHTML = res.narrativeReport;
+    // Render AI Assessment Summary removed from UI
 
     // Render Questions Review & Mistakes
     let questions = res.questions;

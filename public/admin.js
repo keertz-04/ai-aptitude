@@ -99,8 +99,8 @@ const AdminPortal = {
         <td title="Correct Option: ${correctOption}">${correctOption}</td>
         <td>
           <div class="action-btns-cell">
-            <button class="btn btn-secondary btn-sm" onclick="AdminPortal.openEditQuestionModal('${q.id}')">Edit</button>
-            <button class="btn btn-danger btn-sm" onclick="AdminPortal.deleteQuestion('${q.id}')">Delete</button>
+            <button class="btn btn-secondary btn-sm" onclick="AdminPortal.openEditQuestionModal('${q._id || q.id}')">Edit</button>
+            <button class="btn btn-danger btn-sm" onclick="AdminPortal.deleteQuestion('${q._id || q.id}')">Delete</button>
           </div>
         </td>
       `;
@@ -134,7 +134,7 @@ const AdminPortal = {
 
   openEditQuestionModal(id) {
     const questions = window.AppStore.getQuestions();
-    const q = questions.find(item => item.id === id);
+    const q = questions.find(item => item._id === id || item.id === id);
     if (!q) return;
 
     this.editingQuestionId = id;
