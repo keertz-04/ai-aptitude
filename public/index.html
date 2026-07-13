@@ -34,10 +34,54 @@
     <section class="view-panel active" id="view-landing">
       <div class="landing-split-container">
         
-        <!-- Left Hero Branding column with cute SVG chatbot robot -->
-        <div class="landing-hero-col">
-          <div class="cute-robot-banner">
-            <svg class="cute-robot-svg" viewBox="0 0 200 200" width="120" height="120">
+        <!-- Left Hero Branding column -->
+        <div class="landing-left-col">
+          <div class="platform-badge">
+            <span class="badge-pulse"></span>
+            ⚡ AI POWERED ASSESSMENT PLATFORM
+          </div>
+          
+          <h1 class="hero-title">Ganadipathy Tulsi's Jain Engineering College</h1>
+          <h2 class="hero-subtitle-tag">Department of Information Technology</h2>
+          
+          <p class="hero-subtitle">
+            Evaluate your aptitude with intelligent assessments designed to measure, analyze and improve.
+          </p>
+
+          <!-- Stats Grid -->
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon">📝</div>
+              <div class="stat-num">10,000+</div>
+              <div class="stat-label">Questions</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">📈</div>
+              <div class="stat-num">95%</div>
+              <div class="stat-label">Accuracy</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">👥</div>
+              <div class="stat-num">500+</div>
+              <div class="stat-label">Students</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">🏆</div>
+              <div class="stat-num">24/7</div>
+              <div class="stat-label">AI Support</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Center Column: Animated Robot -->
+        <div class="landing-center-col">
+          <div class="speech-bubble">
+            Let's Solve! 💜
+          </div>
+          <div class="robot-glow-container">
+            <div class="orbit-ring ring-1"></div>
+            <div class="orbit-ring ring-2"></div>
+            <svg class="cute-robot-svg" viewBox="0 0 200 200" width="160" height="160">
               <defs>
                 <linearGradient id="robotGrad" x1="0%" y1="0%" x2="100%" y2="100%">
                   <stop offset="0%" stop-color="var(--neon-indigo)" />
@@ -50,30 +94,30 @@
               </defs>
               <rect x="95" y="15" width="10" height="30" rx="5" fill="url(#robotGrad)" />
               <circle cx="100" cy="15" r="8" fill="var(--neon-teal)" class="antenna-glow" />
-              <rect x="35" y="70" width="15" height="40" rx="7" fill="url(#robotGrad)" />
-              <rect x="150" y="70" width="15" height="40" rx="7" fill="url(#robotGrad)" />
-              <rect x="45" y="40" width="110" height="90" rx="24" fill="rgba(15, 23, 42, 0.85)" stroke="url(#robotGrad)" stroke-width="3" />
-              <rect x="58" y="52" width="84" height="60" rx="14" fill="rgba(9, 13, 22, 0.9)" stroke="rgba(255,255,255,0.05)" />
+              <rect x="30" y="70" width="18" height="45" rx="9" fill="url(#robotGrad)" />
+              <rect x="152" y="70" width="18" height="45" rx="9" fill="url(#robotGrad)" />
+              <path d="M 40 70 A 60 60 0 0 1 160 70" fill="none" stroke="url(#robotGrad)" stroke-width="4" />
+              <rect x="45" y="40" width="110" height="90" rx="28" fill="rgba(15, 23, 42, 0.9)" stroke="url(#robotGrad)" stroke-width="3" />
+              <rect x="58" y="52" width="84" height="60" rx="16" fill="rgba(9, 13, 22, 0.95)" stroke="rgba(255,255,255,0.05)" />
               <circle cx="80" cy="78" r="10" fill="url(#eyeGrad)" class="eye-glow" />
               <circle cx="120" cy="78" r="10" fill="url(#eyeGrad)" class="eye-glow" />
               <circle cx="82" cy="76" r="4" fill="#ffffff" />
               <circle cx="122" cy="76" r="4" fill="#ffffff" />
               <path d="M 88 98 Q 100 108 112 98" fill="none" stroke="var(--neon-teal)" stroke-width="3" stroke-linecap="round" />
+              
+              <rect x="75" y="130" width="50" height="35" rx="10" fill="url(#robotGrad)" />
+              <circle cx="100" cy="148" r="8" fill="var(--neon-teal)" />
+              <path d="M 90 165 Q 100 195 110 165 Z" fill="rgba(20, 184, 166, 0.75)" class="robot-booster-flame" />
             </svg>
           </div>
-          
-          <h1 class="hero-title">Ganadipathy Tulsi's Jain Engineering College <br><span class="gradient-title-text">Information Technology</span></h1>
-          <p class="hero-subtitle">
-            Evaluate machine learning metrics, logical algorithms, and semantic parsing speed. Backed by automated performance diagnosis.
-          </p>
         </div>
 
         <!-- Right Portal Actions column -->
-        <div class="landing-portal-col">
+        <div class="landing-right-col">
           <div class="glass-card portal-card student-card" onclick="AppAuth.openAuth('student')">
             <div class="portal-icon">🎓</div>
             <h3>Student Portal</h3>
-            <p>Enter your name and registration details to access the assessment dashboard.</p>
+            <p>Access active examination segments, check performance metrics, and review round qualifications.</p>
             <button class="btn btn-primary full-width">Enter Student Portal &rarr;</button>
           </div>
 
@@ -83,6 +127,52 @@
           </div>
         </div>
 
+      </div>
+
+      <!-- Bottom Row Features footer bar -->
+      <div class="landing-features-footer">
+        <div class="feature-item">
+          <span class="feat-icon">⚙️</span>
+          <div class="feat-details">
+            <h4>AI Based Tests</h4>
+            <p>Smart evaluations</p>
+          </div>
+        </div>
+        <div class="feature-item">
+          <span class="feat-icon">⚡</span>
+          <div class="feat-details">
+            <h4>Adaptive Difficulty</h4>
+            <p>Adjusts to your level</p>
+          </div>
+        </div>
+        <div class="feature-item">
+          <span class="feat-icon">📊</span>
+          <div class="feat-details">
+            <h4>Performance Analytics</h4>
+            <p>Detailed insights</p>
+          </div>
+        </div>
+        <div class="feature-item">
+          <span class="feat-icon">⏱️</span>
+          <div class="feat-details">
+            <h4>Instant Results</h4>
+            <p>Real-time scoring</p>
+          </div>
+        </div>
+        <div class="feature-item">
+          <span class="feat-icon">🏆</span>
+          <div class="feat-details">
+            <h4>Leaderboard</h4>
+            <p>Compete and rank</p>
+          </div>
+        </div>
+        <div class="feature-item">
+          <span class="feat-icon">📝</span>
+          <div class="feat-details">
+            <h4>Smart Reports</h4>
+            <p>Track & improve</p>
+          </div>
+        </div>
       </div>
       </section>
 
