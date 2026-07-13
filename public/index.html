@@ -32,27 +32,58 @@
 
     <!-- View: Landing Page -->
     <section class="view-panel active" id="view-landing">
-      <div class="landing-view">
-        <h1 class="hero-title">Ganadipathy Tulsi's Jain Engineering College <br><span class="gradient-title-text">Information Technology</span></h1>
-        <p class="hero-subtitle">
-          Evaluate machine learning metrics, logical algorithms, and semantic parsing speed. Backed by automated performance diagnosis.
-        </p>
+      <div class="landing-split-container">
+        
+        <!-- Left Hero Branding column with cute SVG chatbot robot -->
+        <div class="landing-hero-col">
+          <div class="cute-robot-banner">
+            <svg class="cute-robot-svg" viewBox="0 0 200 200" width="120" height="120">
+              <defs>
+                <linearGradient id="robotGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="var(--neon-indigo)" />
+                  <stop offset="100%" stop-color="var(--neon-purple)" />
+                </linearGradient>
+                <linearGradient id="eyeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="var(--neon-teal)" />
+                  <stop offset="100%" stop-color="#06b6d4" />
+                </linearGradient>
+              </defs>
+              <rect x="95" y="15" width="10" height="30" rx="5" fill="url(#robotGrad)" />
+              <circle cx="100" cy="15" r="8" fill="var(--neon-teal)" class="antenna-glow" />
+              <rect x="35" y="70" width="15" height="40" rx="7" fill="url(#robotGrad)" />
+              <rect x="150" y="70" width="15" height="40" rx="7" fill="url(#robotGrad)" />
+              <rect x="45" y="40" width="110" height="90" rx="24" fill="rgba(15, 23, 42, 0.85)" stroke="url(#robotGrad)" stroke-width="3" />
+              <rect x="58" y="52" width="84" height="60" rx="14" fill="rgba(9, 13, 22, 0.9)" stroke="rgba(255,255,255,0.05)" />
+              <circle cx="80" cy="78" r="10" fill="url(#eyeGrad)" class="eye-glow" />
+              <circle cx="120" cy="78" r="10" fill="url(#eyeGrad)" class="eye-glow" />
+              <circle cx="82" cy="76" r="4" fill="#ffffff" />
+              <circle cx="122" cy="76" r="4" fill="#ffffff" />
+              <path d="M 88 98 Q 100 108 112 98" fill="none" stroke="var(--neon-teal)" stroke-width="3" stroke-linecap="round" />
+            </svg>
+          </div>
+          
+          <h1 class="hero-title">Ganadipathy Tulsi's Jain Engineering College <br><span class="gradient-title-text">Information Technology</span></h1>
+          <p class="hero-subtitle">
+            Evaluate machine learning metrics, logical algorithms, and semantic parsing speed. Backed by automated performance diagnosis.
+          </p>
+        </div>
 
-          <div class="portal-grid" style="display: flex; justify-content: center; max-width: 500px; margin: 0 auto;">
-            <!-- Student Card -->
-            <div class="glass-card portal-card student-card" onclick="AppAuth.openAuth('student')" style="width: 100%;">
-              <div class="portal-icon">🎓</div>
-              <h3>Student Portal</h3>
-              <p>Enter your name and registration details to access the assessment dashboard.</p>
-              <button class="btn btn-primary full-width">Enter Student Portal &rarr;</button>
-            </div>
+        <!-- Right Portal Actions column -->
+        <div class="landing-portal-col">
+          <div class="glass-card portal-card student-card" onclick="AppAuth.openAuth('student')">
+            <div class="portal-icon">🎓</div>
+            <h3>Student Portal</h3>
+            <p>Enter your name and registration details to access the assessment dashboard.</p>
+            <button class="btn btn-primary full-width">Enter Student Portal &rarr;</button>
           </div>
 
-          <!-- Small Admin Link in the bottom right corner -->
+          <!-- Small Admin Link -->
           <div class="admin-corner-link" onclick="AppAuth.openAuth('admin')">
             🛡️ Admin Login
           </div>
         </div>
+
+      </div>
       </section>
 
     <!-- View: Auth Forms -->
