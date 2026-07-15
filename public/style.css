@@ -1497,17 +1497,21 @@ header.app-header {
   font-weight: 800;
   line-height: 1.25;
   color: var(--text-primary);
-  margin-bottom: 10px;
+  margin-bottom: 20px;
   font-family: var(--font-display);
   letter-spacing: -0.5px;
 }
 
 .hero-subtitle-tag {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: var(--neon-purple);
+  font-size: 1.35rem;
+  font-weight: 850;
+  background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
   margin-bottom: 16px;
   font-family: var(--font-display);
+  text-shadow: 0 0 15px rgba(236, 72, 153, 0.25);
+  display: inline-block;
 }
 
 .landing-left-col .hero-subtitle {
