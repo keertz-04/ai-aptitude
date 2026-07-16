@@ -552,13 +552,27 @@
             <!-- Round Settings & Timing Form Card -->
             <div class="glass-card mb-24" style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); padding: 20px; border-radius: var(--radius-sm); margin-bottom: 24px;">
               <h4 style="margin-bottom: 8px;">Round Settings & Timing</h4>
-              <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 16px;">Configure assessment timing limit for the active round.</p>
-              <form id="round-settings-form" style="display: flex; align-items: flex-end; gap: 16px; flex-wrap: wrap;" onsubmit="AdminPortal.saveRoundSettings(event)">
-                <div class="form-group" style="margin: 0; flex: 1; min-width: 200px;">
-                  <label class="form-label" for="tour-round-duration">Round Duration (Minutes)</label>
-                  <input type="number" id="tour-round-duration" class="form-input" min="1" max="120" required value="10">
+              <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 16px;">Configure assessment timing limit and display names for each tournament round.</p>
+              <form id="round-settings-form" style="display: flex; flex-direction: column; gap: 16px;" onsubmit="AdminPortal.saveRoundSettings(event)">
+                <div style="display: flex; gap: 16px; flex-wrap: wrap; width: 100%;">
+                  <div class="form-group" style="margin: 0; flex: 1; min-width: 180px;">
+                    <label class="form-label" for="tour-round-duration">Round Duration (Minutes)</label>
+                    <input type="number" id="tour-round-duration" class="form-input" min="1" max="120" required value="10">
+                  </div>
+                  <div class="form-group" style="margin: 0; flex: 1; min-width: 180px;">
+                    <label class="form-label" for="tour-round1-name">Round 1 Custom Name</label>
+                    <input type="text" id="tour-round1-name" class="form-input" required placeholder="Round 1">
+                  </div>
+                  <div class="form-group" style="margin: 0; flex: 1; min-width: 180px;">
+                    <label class="form-label" for="tour-round2-name">Round 2 Custom Name</label>
+                    <input type="text" id="tour-round2-name" class="form-input" required placeholder="Round 2">
+                  </div>
+                  <div class="form-group" style="margin: 0; flex: 1; min-width: 180px;">
+                    <label class="form-label" for="tour-round3-name">Round 3 Custom Name</label>
+                    <input type="text" id="tour-round3-name" class="form-input" required placeholder="Round 3">
+                  </div>
                 </div>
-                <button type="submit" class="btn btn-teal">Save Settings</button>
+                <button type="submit" class="btn btn-teal" style="align-self: flex-start;">Save Settings</button>
               </form>
             </div>
 
@@ -637,9 +651,9 @@
           <div class="form-group">
             <label class="form-label" for="q-round">Target tournament round</label>
             <select id="q-round" class="form-input" style="background: var(--bg-secondary);">
-              <option value="1">Round 1 (General Aptitude)</option>
-              <option value="2">Round 2 (Tech & Logic)</option>
-              <option value="3">Round 3 (Systems & AI)</option>
+              <option value="1" id="q-round-opt-1">Round 1 (General Aptitude)</option>
+              <option value="2" id="q-round-opt-2">Round 2 (Tech & Logic)</option>
+              <option value="3" id="q-round-opt-3">Round 3 (Systems & AI)</option>
             </select>
           </div>
 

@@ -5,6 +5,15 @@ const StudentPortal = {
   activeQuestions: [],
   currentIndex: 0,
   answers: [],
+
+  getRoundName(roundNum) {
+    const state = window.AppStore.getTournamentState();
+    if (!state) return `Round ${roundNum}`;
+    if (roundNum === 1) return state.round1Name || "Round 1";
+    if (roundNum === 2) return state.round2Name || "Round 2";
+    if (roundNum === 3) return state.round3Name || "Round 3";
+    return `Round ${roundNum}`;
+  },
   timerInterval: null,
   secondsElapsed: 0,
   tabViolations: 0,
@@ -169,7 +178,7 @@ const StudentPortal = {
         <div class="status-notice-icon">❌</div>
         <div>
           <h4>Keep Pushing Forward!</h4>
-          <p>You did not qualify to advance to Round ${activeRound} this time, but this is just the beginning of your growth journey. Analytical and computational reasoning is a muscle that strengthens with practice. Review your past test logs, focus on your growth areas, and come back stronger! Failure is not the opposite of success; it is a part of it. 🌟</p>
+          <p>You did not qualify to advance to ${this.getRoundName(activeRound)} this time, but this is just the beginning of your growth journey. Analytical and computational reasoning is a muscle that strengthens with practice. Review your past test logs, focus on your growth areas, and come back stronger! Failure is not the opposite of success; it is a part of it. 🌟</p>
         </div>
       `;
       startTestBtn.style.display = "none";
@@ -184,7 +193,7 @@ const StudentPortal = {
       statusBanner.innerHTML = `
         <div class="status-notice-icon">⏳</div>
         <div>
-          <h4>Round ${activeRound} Complete</h4>
+          <h4>${this.getRoundName(activeRound)} Complete</h4>
           <p>Awaiting administrator evaluation. The cohort leaderboards are being compiled to determine progression.</p>
         </div>
       `;
@@ -197,20 +206,20 @@ const StudentPortal = {
           <div class="status-notice-icon">🎉</div>
           <div>
             <h4>Congratulations! You have Qualified!</h4>
-            <p>Outstanding job! Your strong performance in the previous round has earned you a spot in <strong>Round ${activeRound}</strong>. You have demonstrated excellent cognitive execution. Prepare yourself, and click below to launch the next assessment phase! ⚡</p>
+            <p>Outstanding job! Your strong performance in the previous round has earned you a spot in <strong>${this.getRoundName(activeRound)}</strong>. You have demonstrated excellent cognitive execution. Prepare yourself, and click below to launch the next assessment phase! ⚡</p>
           </div>
         `;
       } else {
         statusBanner.innerHTML = `
           <div class="status-notice-icon">⚡</div>
           <div>
-            <h4>Eligible for Round ${activeRound}</h4>
-            <p>Round ${activeRound} is now active. Launch your test session to submit your evaluation metrics.</p>
+            <h4>Eligible for ${this.getRoundName(activeRound)}</h4>
+            <p>${this.getRoundName(activeRound)} is now active. Launch your test session to submit your evaluation metrics.</p>
           </div>
         `;
       }
       startTestBtn.style.display = "inline-flex";
-      startTestBtn.textContent = `Start Round ${activeRound} Assessment ⚡`;
+      startTestBtn.textContent = `Start ${this.getRoundName(activeRound)} Assessment ⚡`;
     }
   },
 
@@ -257,10 +266,10 @@ const StudentPortal = {
       card.innerHTML = `
         <div class="result-card-info">
           <h4>${res.cognitiveProfile || "Aptitude Assessment"}</h4>
-          <p>${dateStr} • Round ${res.round} • Duration: ${res.timeTakenSeconds}s</p>
+          <p>${dateStr} • ${this.getRoundName(res.round)} • Duration: ${res.timeTakenSeconds}s</p>
         </div>
         <div class="result-card-score">
-          <span class="score-badge">R${res.round}: ${res.score}/${res.total} (${Math.round(res.accuracy)}%)</span>
+          <span class="score-badge">${this.getRoundName(res.round)}: ${res.score}/${res.total} (${Math.round(res.accuracy)}%)</span>
         </div>
       `;
       historyList.appendChild(card);
@@ -275,7 +284,7 @@ const StudentPortal = {
     // Filter questions by active round
     const questions = window.AppStore.getQuestions().filter(q => q.round === activeRound);
     if (questions.length === 0) {
-      window.showCustomAlert("Round Alert", `No questions have been configured for Round ${activeRound} in the bank. Please contact an admin.`);
+      window.showCustomAlert("Round Alert", `No questions have been configured for ${this.getRoundName(activeRound)} in the bank. Please contact an admin.`);
       return;
     }
 

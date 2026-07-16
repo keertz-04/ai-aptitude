@@ -79,7 +79,10 @@ const AppStore = {
       activeRound: 1,
       qualifiedForRound2: [],
       qualifiedForRound3: [],
-      winners: []
+      winners: [],
+      round1Name: "Round 1",
+      round2Name: "Round 2",
+      round3Name: "Round 3"
     };
     this._results = [];
     try {

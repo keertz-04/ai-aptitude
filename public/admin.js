@@ -5,6 +5,15 @@ const AdminPortal = {
   currentTab: "questions",
   editingQuestionId: null,
 
+  getRoundName(roundNum) {
+    const state = window.AppStore.getTournamentState();
+    if (!state) return `Round ${roundNum}`;
+    if (roundNum === 1) return state.round1Name || "Round 1";
+    if (roundNum === 2) return state.round2Name || "Round 2";
+    if (roundNum === 3) return state.round3Name || "Round 3";
+    return `Round ${roundNum}`;
+  },
+
   initDashboard() {
     this.renderStats();
     this.switchTab(this.currentTab);
@@ -94,7 +103,7 @@ const AdminPortal = {
       row.innerHTML = `
         <td><strong>#${idx + 1}</strong></td>
         <td><span class="cat-badge ${catClass}">${q.category}</span></td>
-        <td><span class="score-badge" style="background:rgba(255,255,255,0.05); color:white; border-color:rgba(255,255,255,0.1)">Round ${qRound}</span></td>
+        <td><span class="score-badge" style="background:rgba(255,255,255,0.05); color:white; border-color:rgba(255,255,255,0.1)">${this.getRoundName(qRound)}</span></td>
         <td title="${q.question}">${questionSnippet}</td>
         <td title="Correct Option: ${correctOption}">${correctOption}</td>
         <td>
@@ -237,7 +246,7 @@ const AdminPortal = {
       row.innerHTML = `
         <td><strong>${res.studentName}</strong></td>
         <td>${dateStr}</td>
-        <td>Round ${res.round}</td>
+        <td>${this.getRoundName(res.round)}</td>
         <td>${res.cognitiveProfile || "Balanced Thinker"}</td>
         <td><span class="score-badge">${res.score}/${res.total} (${Math.round(res.accuracy)}%)</span></td>
         <td>${res.timeTakenSeconds}s</td>
@@ -264,12 +273,26 @@ const AdminPortal = {
     const state = window.AppStore.getTournamentState();
     const results = window.AppStore.getResults();
 
-    document.getElementById("tour-active-round-label").textContent = `Round ${state.activeRound}`;
+    document.getElementById("tour-active-round-label").textContent = this.getRoundName(state.activeRound);
     
     const durationInput = document.getElementById("tour-round-duration");
     if (durationInput) {
       durationInput.value = state.roundDurationLimit || 10;
     }
+
+    const r1Input = document.getElementById("tour-round1-name");
+    const r2Input = document.getElementById("tour-round2-name");
+    const r3Input = document.getElementById("tour-round3-name");
+    if (r1Input) r1Input.value = state.round1Name || "Round 1";
+    if (r2Input) r2Input.value = state.round2Name || "Round 2";
+    if (r3Input) r3Input.value = state.round3Name || "Round 3";
+
+    const opt1 = document.getElementById("q-round-opt-1");
+    const opt2 = document.getElementById("q-round-opt-2");
+    const opt3 = document.getElementById("q-round-opt-3");
+    if (opt1) opt1.textContent = `${this.getRoundName(1)} (General Aptitude)`;
+    if (opt2) opt2.textContent = `${this.getRoundName(2)} (Tech & Logic)`;
+    if (opt3) opt3.textContent = `${this.getRoundName(3)} (Systems & AI)`;
     
     const panelWrap = document.getElementById("tour-controls-wrap");
     panelWrap.innerHTML = "";
@@ -283,7 +306,7 @@ const AdminPortal = {
         </div>
       `;
     } else {
-      const btnText = state.activeRound === 3 ? "Conclude Tournament & Declare Winners 👑" : `Conclude Round ${state.activeRound} (Promote Top 50%) ➔`;
+      const btnText = state.activeRound === 3 ? "Conclude Tournament & Declare Winners 👑" : `Conclude ${this.getRoundName(state.activeRound)} (Promote Top 50%) ➔`;
       panelWrap.innerHTML = `
         <div class="mb-24 flex-between" style="flex-wrap: wrap; gap: 16px; background: rgba(99, 102, 241, 0.05); border: 1px solid rgba(99, 102, 241, 0.1); padding: 20px; border-radius: var(--radius-sm);">
           <div>
@@ -326,7 +349,7 @@ const AdminPortal = {
       leaderTbody.innerHTML = `
         <tr>
           <td colspan="5" class="empty-state">
-            <p>No students have taken the Round ${activeRound} test yet.</p>
+            <p>No students have taken the ${this.getRoundName(activeRound)} test yet.</p>
           </td>
         </tr>
       `;
@@ -382,10 +405,18 @@ const AdminPortal = {
       window.showCustomAlert("Validation Alert", "Please enter a valid duration (minimum 1 minute).");
       return;
     }
+    const r1Name = document.getElementById("tour-round1-name").value.trim() || "Round 1";
+    const r2Name = document.getElementById("tour-round2-name").value.trim() || "Round 2";
+    const r3Name = document.getElementById("tour-round3-name").value.trim() || "Round 3";
+
     const state = window.AppStore.getTournamentState();
     state.roundDurationLimit = durationLimit;
+    state.round1Name = r1Name;
+    state.round2Name = r2Name;
+    state.round3Name = r3Name;
+
     await window.AppStore.saveTournamentState(state);
-    window.showCustomAlert("Settings Saved", "Round duration settings saved successfully!");
+    window.showCustomAlert("Settings Saved", "Round settings saved successfully!");
     this.renderTournamentTab();
   },
 
@@ -412,7 +443,7 @@ const AdminPortal = {
     });
 
     if (sortedAttempts.length === 0) {
-      window.showCustomAlert("Round Conclude Alert", `No student attempts recorded for Round ${activeRound}. Cannot conclude the round.`);
+      window.showCustomAlert("Round Conclude Alert", `No student attempts recorded for ${this.getRoundName(activeRound)}. Cannot conclude the round.`);
       return;
     }
 
@@ -424,7 +455,7 @@ const AdminPortal = {
       state.activeRound = 2;
       window.AppStore.saveTournamentState(state);
 
-      window.showCustomAlert("Round 1 Concluded", `Round 1 Concluded! ${promoted.length} students advanced to Round 2:<br><strong>${promoted.join(", ")}</strong>`);
+      window.showCustomAlert(`${this.getRoundName(1)} Concluded`, `${this.getRoundName(1)} Concluded! ${promoted.length} students advanced to ${this.getRoundName(2)}:<br><strong>${promoted.join(", ")}</strong>`);
     } else if (activeRound === 2) {
       const countToQualify = Math.ceil(sortedAttempts.length / 2);
       const promoted = sortedAttempts.slice(0, countToQualify).map(a => a.studentName);
@@ -433,7 +464,7 @@ const AdminPortal = {
       state.activeRound = 3;
       window.AppStore.saveTournamentState(state);
 
-      window.showCustomAlert("Round 2 Concluded", `Round 2 Concluded! ${promoted.length} students advanced to Round 3:<br><strong>${promoted.join(", ")}</strong>`);
+      window.showCustomAlert(`${this.getRoundName(2)} Concluded`, `${this.getRoundName(2)} Concluded! ${promoted.length} students advanced to ${this.getRoundName(3)}:<br><strong>${promoted.join(", ")}</strong>`);
     } else if (activeRound === 3) {
       // Crown top 3 winners
       const winners = sortedAttempts.slice(0, 3).map((a, idx) => ({
