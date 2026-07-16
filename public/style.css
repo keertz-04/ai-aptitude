@@ -1242,6 +1242,10 @@ header.app-header {
 }
 
 /* Mistakes Analysis & Question Review Styles */
+.mistakes-container {
+  width: 100%;
+  text-align: left;
+}
 .mistake-card {
   background: rgba(255, 255, 255, 0.015);
   border: 1px solid rgba(255, 255, 255, 0.05);
@@ -1249,6 +1253,9 @@ header.app-header {
   padding: 22px;
   margin-bottom: 20px;
   transition: var(--transition-smooth);
+  width: 100%;
+  box-sizing: border-box;
+  text-align: left;
 }
 .mistake-card.q-correct {
   border-left: 4px solid var(--neon-teal);
@@ -1266,6 +1273,7 @@ header.app-header {
   margin-bottom: 12px;
   flex-wrap: wrap;
   gap: 8px;
+  text-align: left;
 }
 .mistake-q-num {
   font-family: var(--font-display);
@@ -1275,6 +1283,7 @@ header.app-header {
   display: flex;
   align-items: center;
   gap: 8px;
+  text-align: left;
 }
 .category-tag {
   font-size: 0.72rem;
@@ -1306,12 +1315,15 @@ header.app-header {
   margin-bottom: 18px;
   font-weight: 500;
   line-height: 1.5;
+  text-align: left;
 }
 .review-options-list {
   display: flex;
   flex-direction: column;
   gap: 10px;
   margin-bottom: 18px;
+  width: 100%;
+  text-align: left;
 }
 .review-option {
   display: flex;
@@ -1324,6 +1336,7 @@ header.app-header {
   font-size: 0.88rem;
   color: var(--text-secondary);
   transition: var(--transition-smooth);
+  text-align: left;
 }
 .option-marker {
   display: inline-flex;
@@ -1363,6 +1376,8 @@ header.app-header {
   font-size: 0.88rem;
   color: #cbd5e1;
   line-height: 1.5;
+  text-align: left;
+  margin-top: 12px;
 }
 
 /* Custom Alert/Confirm dialog overlay styles */
