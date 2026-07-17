@@ -617,6 +617,7 @@ header.app-header {
   font-weight: 600;
   margin-bottom: 24px;
   line-height: 1.5;
+  white-space: pre-wrap;
 }
 
 .options-container {
@@ -1316,6 +1317,7 @@ header.app-header {
   font-weight: 500;
   line-height: 1.5;
   text-align: left;
+  white-space: pre-wrap;
 }
 .review-options-list {
   display: flex;
@@ -1378,6 +1380,7 @@ header.app-header {
   line-height: 1.5;
   text-align: left;
   margin-top: 12px;
+  white-space: pre-wrap;
 }
 
 /* Custom Alert/Confirm dialog overlay styles */
