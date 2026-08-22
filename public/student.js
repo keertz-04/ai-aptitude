@@ -596,13 +596,13 @@ const StudentPortal = {
     if (!questions || questions.length === 0) {
       questions = window.AppStore.getQuestions().filter(q => q.round === res.round);
     }
-    this.renderQuestionsReview(questions || [], res.answers);
+    this.renderQuestionsReview(questions || [], res.answers, res);
 
     // Switch view
     window.AppRouter.switchView("results");
   },
 
-  renderQuestionsReview(questions, answers) {
+  renderQuestionsReview(questions, answers, res) {
     const container = document.getElementById("mistakes-list-wrap");
     if (!container) return;
     container.innerHTML = "";
@@ -612,13 +612,34 @@ const StudentPortal = {
       return;
     }
 
+    const currentUser = window.AppStore.getCurrentUser();
+    const isAdmin = currentUser && currentUser.role === "admin";
+    
+    // Check if the round for this test is concluded
+    let isRoundConcluded = false;
+    if (isAdmin) {
+      isRoundConcluded = true;
+    } else {
+      const tourState = window.AppStore.getTournamentState(res.department);
+      if (tourState) {
+        const isCompleted = tourState.winners && tourState.winners.length > 0;
+        if (isCompleted || tourState.activeRound > res.round) {
+          isRoundConcluded = true;
+        }
+      }
+    }
+
     questions.forEach((q, idx) => {
       const studentAnsIdx = answers[idx];
       const correctAnsIdx = q.correct;
       const isCorrect = studentAnsIdx === correctAnsIdx;
 
       const qCard = document.createElement("div");
-      qCard.className = `mistake-card ${isCorrect ? "q-correct" : "q-incorrect"}`;
+      if (isRoundConcluded) {
+        qCard.className = `mistake-card ${isCorrect ? "q-correct" : "q-incorrect"}`;
+      } else {
+        qCard.className = `mistake-card q-neutral`;
+      }
 
       // Format options
       let optionsHtml = "";
@@ -626,17 +647,25 @@ const StudentPortal = {
         let optClass = "review-option";
         let optLabel = "";
 
-        if (oIdx === correctAnsIdx) {
-          optClass += " review-correct-option";
-          optLabel = " (Correct Answer)";
-        }
-        if (oIdx === studentAnsIdx) {
-          optClass += " review-selected-option";
-          if (!isCorrect) {
-            optClass += " review-incorrect-selection";
-            optLabel = " (Your Selection - Incorrect)";
-          } else {
-            optLabel = " (Your Selection - Correct)";
+        if (isRoundConcluded) {
+          if (oIdx === correctAnsIdx) {
+            optClass += " review-correct-option";
+            optLabel = " (Correct Answer)";
+          }
+          if (oIdx === studentAnsIdx) {
+            optClass += " review-selected-option";
+            if (!isCorrect) {
+              optClass += " review-incorrect-selection";
+              optLabel = " (Your Selection - Incorrect)";
+            } else {
+              optLabel = " (Your Selection - Correct)";
+            }
+          }
+        } else {
+          // Hide correct/incorrect answers, only highlight what they selected
+          if (oIdx === studentAnsIdx) {
+            optClass += " review-selected-option";
+            optLabel = " (Your Selection)";
           }
         }
 
@@ -649,9 +678,25 @@ const StudentPortal = {
         `;
       });
 
-      const badgeHtml = isCorrect 
-        ? `<span class="badge badge-success">✓ Correct</span>`
-        : `<span class="badge badge-danger">✗ Incorrect</span>`;
+      let badgeHtml = "";
+      if (isRoundConcluded) {
+        badgeHtml = isCorrect 
+          ? `<span class="badge badge-success">✓ Correct</span>`
+          : `<span class="badge badge-danger">✗ Incorrect</span>`;
+      } else {
+        badgeHtml = `<span class="badge" style="background: rgba(255,255,255,0.08); color: var(--text-secondary);">✓ Submitted</span>`;
+      }
+
+      let explanationHtml = "";
+      if (isRoundConcluded) {
+        explanationHtml = `
+          <strong>Explanation:</strong> ${q.explanation || "No explanation provided."}
+        `;
+      } else {
+        explanationHtml = `
+          <span style="color: var(--text-secondary);">🔒 Explanations and correct answers will be unlocked once this round is concluded by the administrator.</span>
+        `;
+      }
 
       qCard.innerHTML = `
         <div class="mistake-card-header">
@@ -663,7 +708,7 @@ const StudentPortal = {
           ${optionsHtml}
         </div>
         <div class="mistake-explanation">
-          <strong>Explanation:</strong> ${q.explanation || "No explanation provided."}
+          ${explanationHtml}
         </div>
       `;
       container.appendChild(qCard);
