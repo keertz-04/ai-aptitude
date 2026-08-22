@@ -9,7 +9,31 @@ require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/ai_aptitude_portal';
+
+let MONGODB_URI = process.env.MONGODB_URI;
+if (!MONGODB_URI || MONGODB_URI === 'undefined' || MONGODB_URI.trim() === '') {
+  MONGODB_URI = 'mongodb://localhost:27017/ai_aptitude_portal';
+}
+
+let useInMemoryDb = false;
+const InMemoryDb = {
+  questions: [], // Seeded below
+  results: [],
+  students: [],
+  adminCred: { username: 'admin', password: 'admin' },
+  tournamentState: {
+    activeRound: 1,
+    qualifiedForRound2: [],
+    qualifiedForRound3: [],
+    winners: [],
+    roundDurationLimit: 10,
+    round1Name: 'Round 1',
+    round2Name: 'Round 2',
+    round3Name: 'Round 3',
+    institutionName: "Ganadipathy Tulsi's Jain Engineering College",
+    departmentName: "Department of Information Technology"
+  }
+};
 
 // Middleware
 app.use(cors());
@@ -17,7 +41,10 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Database Connection
-mongoose.connect(MONGODB_URI)
+console.log('Connecting to MongoDB...');
+mongoose.connect(MONGODB_URI, {
+  serverSelectionTimeoutMS: 5000 // Fast fail in 5 seconds to fallback
+})
   .then(async () => {
     console.log('Successfully connected to MongoDB.');
     // Drop legacy unique index on username if present to prevent validation issues
@@ -29,7 +56,11 @@ mongoose.connect(MONGODB_URI)
     }
     seedDatabase();
   })
-  .catch(err => console.error('MongoDB connection error:', err));
+  .catch(err => {
+    console.error('MongoDB connection error. Switching to in-memory database mode:', err);
+    useInMemoryDb = true;
+    seedDatabase();
+  });
 
 // --- Database Schemas & Models ---
 
@@ -93,6 +124,9 @@ const TournamentState = mongoose.model('TournamentState', TournamentStateSchema)
 // Questions API
 app.get('/api/questions', async (req, res) => {
   try {
+    if (useInMemoryDb) {
+      return res.json(InMemoryDb.questions);
+    }
     const questions = await Question.find();
     res.json(questions);
   } catch (err) {
@@ -102,6 +136,11 @@ app.get('/api/questions', async (req, res) => {
 
 app.post('/api/questions', async (req, res) => {
   try {
+    if (useInMemoryDb) {
+      const newQuestion = { _id: 'mem_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9), ...req.body };
+      InMemoryDb.questions.push(newQuestion);
+      return res.json(newQuestion);
+    }
     const newQuestion = new Question(req.body);
     await newQuestion.save();
     res.json(newQuestion);
@@ -112,6 +151,14 @@ app.post('/api/questions', async (req, res) => {
 
 app.put('/api/questions/:id', async (req, res) => {
   try {
+    if (useInMemoryDb) {
+      const idx = InMemoryDb.questions.findIndex(q => q._id === req.params.id);
+      if (idx !== -1) {
+        InMemoryDb.questions[idx] = { ...InMemoryDb.questions[idx], ...req.body };
+        return res.json(InMemoryDb.questions[idx]);
+      }
+      return res.status(404).json({ error: 'Question not found' });
+    }
     const updated = await Question.findByIdAndUpdate(req.params.id, req.body, { new: true });
     res.json(updated);
   } catch (err) {
@@ -121,6 +168,10 @@ app.put('/api/questions/:id', async (req, res) => {
 
 app.delete('/api/questions/:id', async (req, res) => {
   try {
+    if (useInMemoryDb) {
+      InMemoryDb.questions = InMemoryDb.questions.filter(q => q._id !== req.params.id);
+      return res.json({ success: true });
+    }
     await Question.findByIdAndDelete(req.params.id);
     res.json({ success: true });
   } catch (err) {
@@ -131,6 +182,9 @@ app.delete('/api/questions/:id', async (req, res) => {
 // Results API
 app.get('/api/results', async (req, res) => {
   try {
+    if (useInMemoryDb) {
+      return res.json(InMemoryDb.results);
+    }
     const results = await Result.find();
     res.json(results);
   } catch (err) {
@@ -140,6 +194,11 @@ app.get('/api/results', async (req, res) => {
 
 app.post('/api/results', async (req, res) => {
   try {
+    if (useInMemoryDb) {
+      const newResult = { _id: 'mem_' + Date.now(), timestamp: new Date(), ...req.body };
+      InMemoryDb.results.push(newResult);
+      return res.json(newResult);
+    }
     const newResult = new Result(req.body);
     await newResult.save();
     res.json(newResult);
@@ -150,6 +209,10 @@ app.post('/api/results', async (req, res) => {
 
 app.delete('/api/results', async (req, res) => {
   try {
+    if (useInMemoryDb) {
+      InMemoryDb.results = [];
+      return res.json({ success: true });
+    }
     await Result.deleteMany({});
     res.json({ success: true });
   } catch (err) {
@@ -160,6 +223,9 @@ app.delete('/api/results', async (req, res) => {
 // Tournament API
 app.get('/api/tournament', async (req, res) => {
   try {
+    if (useInMemoryDb) {
+      return res.json(InMemoryDb.tournamentState);
+    }
     let state = await TournamentState.findOne();
     if (!state) {
       state = new TournamentState();
@@ -173,6 +239,10 @@ app.get('/api/tournament', async (req, res) => {
 
 app.post('/api/tournament', async (req, res) => {
   try {
+    if (useInMemoryDb) {
+      Object.assign(InMemoryDb.tournamentState, req.body);
+      return res.json(InMemoryDb.tournamentState);
+    }
     let state = await TournamentState.findOne();
     if (!state) {
       state = new TournamentState(req.body);
@@ -188,6 +258,14 @@ app.post('/api/tournament', async (req, res) => {
 
 app.post('/api/tournament/reset', async (req, res) => {
   try {
+    if (useInMemoryDb) {
+      InMemoryDb.results = [];
+      InMemoryDb.tournamentState.activeRound = 1;
+      InMemoryDb.tournamentState.qualifiedForRound2 = [];
+      InMemoryDb.tournamentState.qualifiedForRound3 = [];
+      InMemoryDb.tournamentState.winners = [];
+      return res.json({ success: true });
+    }
     await Result.deleteMany({});
     let state = await TournamentState.findOne();
     if (state) {
@@ -207,6 +285,15 @@ app.post('/api/tournament/reset', async (req, res) => {
 app.post('/api/auth/student/register', async (req, res) => {
   try {
     const { username, password } = req.body;
+    if (useInMemoryDb) {
+      const exists = InMemoryDb.students.some(s => s.username.toLowerCase() === username.toLowerCase());
+      if (exists) {
+        return res.status(400).json({ error: 'Student username already exists.' });
+      }
+      const newStudent = { username, password };
+      InMemoryDb.students.push(newStudent);
+      return res.json({ username: newStudent.username });
+    }
     const exists = await Student.findOne({ username: username.toLowerCase() });
     if (exists) {
       return res.status(400).json({ error: 'Student username already exists.' });
@@ -229,6 +316,20 @@ app.post('/api/auth/student/login', async (req, res) => {
     const normalizedRegNo = regNo.trim().toLowerCase();
     const cleanUsername = username.trim();
     
+    if (useInMemoryDb) {
+      let student = InMemoryDb.students.find(s => s.regNo === normalizedRegNo);
+      if (!student) {
+        student = { username: cleanUsername, regNo: normalizedRegNo };
+        InMemoryDb.students.push(student);
+        console.log(`Auto-registered new student in-memory: ${cleanUsername} (Reg No: ${normalizedRegNo})`);
+      } else {
+        if (student.username !== cleanUsername) {
+          student.username = cleanUsername;
+        }
+      }
+      return res.json({ username: student.username, regNo: student.regNo });
+    }
+
     let student = await Student.findOne({ regNo: normalizedRegNo });
     if (!student) {
       // Auto-create/register student under this registration number and username
@@ -252,6 +353,9 @@ app.post('/api/auth/student/login', async (req, res) => {
 // Admin Credentials API
 app.get('/api/auth/admin/credentials', async (req, res) => {
   try {
+    if (useInMemoryDb) {
+      return res.json(InMemoryDb.adminCred);
+    }
     let creds = await AdminCred.findOne();
     if (!creds) {
       creds = new AdminCred();
@@ -266,6 +370,11 @@ app.get('/api/auth/admin/credentials', async (req, res) => {
 app.post('/api/auth/admin/credentials', async (req, res) => {
   try {
     const { username, password } = req.body;
+    if (useInMemoryDb) {
+      InMemoryDb.adminCred.username = username;
+      InMemoryDb.adminCred.password = password;
+      return res.json({ success: true });
+    }
     let creds = await AdminCred.findOne();
     if (!creds) {
       creds = new AdminCred({ username, password });
@@ -283,6 +392,10 @@ app.post('/api/auth/admin/credentials', async (req, res) => {
 // Reset questions to defaults
 app.post('/api/setup/reset-defaults', async (req, res) => {
   try {
+    if (useInMemoryDb) {
+      InMemoryDb.questions = DEFAULT_QUESTIONS.map((q, idx) => ({ _id: `q_${idx + 1}`, ...q }));
+      return res.json({ success: true });
+    }
     await Question.deleteMany({});
     await Question.insertMany(DEFAULT_QUESTIONS);
     res.json({ success: true });
@@ -417,6 +530,12 @@ const DEFAULT_QUESTIONS = [
 ];
 
 async function seedDatabase() {
+  if (useInMemoryDb) {
+    InMemoryDb.questions = DEFAULT_QUESTIONS.map((q, idx) => ({ _id: `q_${idx + 1}`, ...q }));
+    InMemoryDb.students = [{ username: 'Default Student', regNo: 'reg12345' }];
+    console.log('Seeded in-memory fallback database with default questions.');
+    return;
+  }
   try {
     // 1. Seed Admin credentials
     const adminCount = await AdminCred.countDocuments();
