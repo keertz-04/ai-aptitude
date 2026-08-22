@@ -42,6 +42,16 @@ const AdminPortal = {
       }
     });
 
+    // Show/hide department selector globally based on active tab
+    const selectorCard = document.getElementById("admin-global-dept-selector-card");
+    if (selectorCard) {
+      if (tabId === "results" || tabId === "tournament") {
+        selectorCard.style.display = "flex";
+      } else {
+        selectorCard.style.display = "none";
+      }
+    }
+
     // Render tab specific content
     if (tabId === "questions") {
       this.renderQuestionsList();
