@@ -658,9 +658,56 @@ const AdminPortal = {
         } else {
           winnersEl.innerHTML = `<span style="color: var(--text-secondary); font-size: 0.85rem;">Winners not declared yet</span>`;
         }
+
+        // Render quick conclude buttons inside the overview cards
+        const actionEl = document.getElementById(`summary-${lowerDept}-action`);
+        if (actionEl) {
+          actionEl.innerHTML = "";
+          if (s.winners && s.winners.length > 0) {
+            actionEl.innerHTML = `<span class="score-badge" style="width: 100%; text-align: center; background: rgba(20, 184, 166, 0.1); color: var(--neon-teal); border-color: rgba(20, 184, 166, 0.2);">🏆 Completed</span>`;
+          } else {
+            const btnText = s.activeRound === 3 ? "Conclude Tournament 👑" : `Conclude Round ${s.activeRound} ➔`;
+            actionEl.innerHTML = `<button class="btn btn-teal btn-sm" style="width: 100%; justify-content: center;" onclick="AdminPortal.concludeDeptRound('${dept}')">${btnText}</button>`;
+          }
+        }
       });
     } catch (err) {
       console.error('Failed to render all departments summary:', err);
+    }
+  },
+
+  async concludeDeptRound(dept) {
+    try {
+      const res = await fetchApi('/api/tournament/conclude-round', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ department: dept })
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        window.showCustomAlert("Error Concluding Round", data.error || "Failed to conclude round.");
+        return;
+      }
+
+      const data = await res.json();
+      window.AppStore._tournamentState[dept] = data.state;
+
+      if (data.activeRound === 2 || data.activeRound === 3) {
+        window.showCustomAlert(
+          `${data.state.round1Name || 'Round 1'} Concluded`,
+          `${data.state.round1Name || 'Round 1'} Concluded! ${data.promoted.length} students advanced to ${data.state.round2Name || 'Round 2'}:<br><strong>${data.promoted.join(", ")}</strong>`
+        );
+      } else if (data.activeRound === 4) {
+        const winnerNames = data.winners.map(w => `#${w.rank}: ${w.username} (${w.accuracy}%)`).join("<br>");
+        window.showCustomAlert("Tournament Completed", `Tournament Completed! Winners Declared:<br><strong>${winnerNames}</strong>`);
+      }
+
+      this.renderAllDepartmentsSummary();
+      this.renderStats();
+    } catch (err) {
+      console.error('Failed to conclude round:', err);
+      window.showCustomAlert("Error", "Server error concluding active round.");
     }
   },
 
