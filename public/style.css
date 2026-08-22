@@ -1885,3 +1885,28 @@ header.app-header {
   93% { transform: rotate(-8deg); }
   96% { transform: rotate(8deg); }
 }
+
+/* Department Selector Buttons Active State & Neon Highlights */
+.dept-select-btn {
+  background: rgba(255, 255, 255, 0.04) !important;
+  color: var(--text-secondary) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  font-weight: 600 !important;
+  padding: 8px 16px !important;
+  font-size: 0.85rem !important;
+  border-radius: 6px !important;
+  transition: all 0.25s ease !important;
+  cursor: pointer !important;
+}
+.dept-select-btn:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: var(--text-primary) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+}
+.dept-select-btn.active {
+  background: linear-gradient(135deg, var(--neon-teal), #0d9488) !important;
+  color: #ffffff !important;
+  border-color: var(--neon-teal) !important;
+  box-shadow: 0 0 14px rgba(20, 184, 166, 0.5) !important;
+  transform: translateY(-1px) !important;
+}
