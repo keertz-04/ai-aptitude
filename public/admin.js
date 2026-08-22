@@ -287,6 +287,11 @@ const AdminPortal = {
     if (r2Input) r2Input.value = state.round2Name || "Round 2";
     if (r3Input) r3Input.value = state.round3Name || "Round 3";
 
+    const instInput = document.getElementById("tour-institution-name");
+    const deptInput = document.getElementById("tour-department-name");
+    if (instInput) instInput.value = state.institutionName || "Ganadipathy Tulsi's Jain Engineering College";
+    if (deptInput) deptInput.value = state.departmentName || "Department of Information Technology";
+
     const opt1 = document.getElementById("q-round-opt-1");
     const opt2 = document.getElementById("q-round-opt-2");
     const opt3 = document.getElementById("q-round-opt-3");
@@ -417,6 +422,21 @@ const AdminPortal = {
 
     await window.AppStore.saveTournamentState(state);
     window.showCustomAlert("Settings Saved", "Round settings saved successfully!");
+    this.renderTournamentTab();
+  },
+
+  async saveBrandingSettings(event) {
+    event.preventDefault();
+    const instName = document.getElementById("tour-institution-name").value.trim() || "Ganadipathy Tulsi's Jain Engineering College";
+    const deptName = document.getElementById("tour-department-name").value.trim() || "Department of Information Technology";
+
+    const state = window.AppStore.getTournamentState();
+    state.institutionName = instName;
+    state.departmentName = deptName;
+
+    await window.AppStore.saveTournamentState(state);
+    window.AppRouter.updateBranding();
+    window.showCustomAlert("Branding Saved", "Branding settings saved successfully!");
     this.renderTournamentTab();
   },
 

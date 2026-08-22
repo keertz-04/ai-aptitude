@@ -82,7 +82,9 @@ const TournamentStateSchema = new mongoose.Schema({
   roundDurationLimit: { type: Number, default: 10 },
   round1Name: { type: String, default: 'Round 1' },
   round2Name: { type: String, default: 'Round 2' },
-  round3Name: { type: String, default: 'Round 3' }
+  round3Name: { type: String, default: 'Round 3' },
+  institutionName: { type: String, default: "Ganadipathy Tulsi's Jain Engineering College" },
+  departmentName: { type: String, default: "Department of Information Technology" }
 });
 const TournamentState = mongoose.model('TournamentState', TournamentStateSchema);
 

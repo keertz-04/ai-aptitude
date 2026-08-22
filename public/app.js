@@ -1,60 +1,12 @@
-// Global Custom Alert / Confirm Dialog functions
-window.showCustomAlert = function(title, message, callback) {
-  const overlay = document.getElementById("custom-alert-overlay");
-  const titleEl = document.getElementById("custom-alert-title");
-  const msgEl = document.getElementById("custom-alert-message");
-  const okBtn = document.getElementById("custom-alert-btn-ok");
-  const cancelBtn = document.getElementById("custom-alert-btn-cancel");
-  
-  titleEl.innerHTML = title;
-  msgEl.innerHTML = message;
-  
-  cancelBtn.style.display = "none";
-  okBtn.textContent = "OK";
-  okBtn.className = "btn btn-teal";
-  
-  overlay.style.display = "flex";
-  
-  okBtn.onclick = () => {
-    overlay.style.display = "none";
-    if (callback) callback();
-  };
-};
-
-window.showCustomConfirm = function(title, message, onConfirm, onCancel) {
-  const overlay = document.getElementById("custom-alert-overlay");
-  const titleEl = document.getElementById("custom-alert-title");
-  const msgEl = document.getElementById("custom-alert-message");
-  const okBtn = document.getElementById("custom-alert-btn-ok");
-  const cancelBtn = document.getElementById("custom-alert-btn-cancel");
-  
-  titleEl.innerHTML = title;
-  msgEl.innerHTML = message;
-  
-  cancelBtn.style.display = "inline-flex";
-  cancelBtn.className = "btn btn-secondary";
-  okBtn.textContent = "Confirm";
-  okBtn.className = "btn btn-teal";
-  
-  overlay.style.display = "flex";
-  
-  okBtn.onclick = () => {
-    overlay.style.display = "none";
-    if (onConfirm) onConfirm();
-  };
-  
-  cancelBtn.onclick = () => {
-    overlay.style.display = "none";
-    if (onCancel) onCancel();
-  };
-};
+// app.js
+// Bootstraps routing, handles signups/logins, and coordinates UI transitions.
 
 const AppRouter = {
   currentView: "landing",
 
   switchView(viewId) {
     if (window.StudentPortal && window.StudentPortal.isTestActive && viewId !== "test-taking") {
-      window.showCustomAlert("Navigation Blocked", "⚠️ Navigation Blocked: You cannot navigate away from the active test screen until you submit the assessment.");
+      alert("⚠️ Navigation Blocked: You cannot navigate away from the active test screen until you submit the assessment.");
       return;
     }
     this.currentView = viewId;
@@ -68,19 +20,9 @@ const AppRouter = {
       }
     });
 
-    // Toggle visibility of the floating side mascot
-    const sideRobot = document.getElementById("side-robot-helper");
-    if (sideRobot) {
-      if (viewId === "landing" || viewId === "test-taking") {
-        // Hide on landing view and during active testing to prevent distraction
-        sideRobot.style.display = "none";
-      } else {
-        sideRobot.style.display = "flex";
-      }
-    }
-
     // Update global header elements based on session state
     this.updateHeader();
+    this.updateBranding();
 
     // Call view-specific load hooks
     if (viewId === "student-dashboard") {
@@ -90,14 +32,22 @@ const AppRouter = {
     }
   },
 
+  updateBranding() {
+    const state = window.AppStore.getTournamentState();
+    if (!state) return;
+    
+    const instEl = document.getElementById("landing-institution-title");
+    const deptEl = document.getElementById("landing-department-title");
+    if (instEl) instEl.textContent = state.institutionName || "Ganadipathy Tulsi's Jain Engineering College";
+    if (deptEl) deptEl.textContent = state.departmentName || "Department of Information Technology";
+  },
+  
   updateHeader() {
     const user = window.AppStore.getCurrentUser();
     const navPanel = document.getElementById("nav-user-panel");
     const logoutBtn = document.getElementById("btn-header-logout");
-    const guestPanel = document.getElementById("nav-guest-panel");
 
     if (user) {
-      if (guestPanel) guestPanel.style.display = "none";
       navPanel.style.display = "flex";
       logoutBtn.style.display = "inline-flex";
 
@@ -105,7 +55,6 @@ const AppRouter = {
       badge.className = `user-badge ${user.role}-badge`;
       badge.innerHTML = `<span class="badge-dot"></span>${user.username} (${user.role.toUpperCase()})`;
     } else {
-      if (guestPanel) guestPanel.style.display = "flex";
       navPanel.style.display = "none";
       logoutBtn.style.display = "none";
     }
@@ -206,7 +155,7 @@ const AppAuth = {
     } else {
       // Student portal auth (Username & Reg No, no passwords)
       if (!userVal || !regNoVal) {
-        window.showCustomAlert("Authentication Alert", "Please provide both your display name and registration number.");
+        alert("Please provide both your display name and registration number.");
         return;
       }
       const student = await window.AppStore.authenticateStudent(userVal, regNoVal);
@@ -215,14 +164,14 @@ const AppAuth = {
         window.AppStore.setCurrentUser(user);
         window.AppRouter.switchView("student-dashboard");
       } else {
-        window.showCustomAlert("Access Denied", "Failed to access student portal.");
+        alert("Failed to access student portal.");
       }
     }
   },
 
   logout() {
     if (window.StudentPortal && window.StudentPortal.isTestActive) {
-      window.showCustomAlert("Action Blocked", "⚠️ Action Blocked: You cannot log out while the assessment is active.");
+      alert("⚠️ Action Blocked: You cannot log out while the assessment is active.");
       return;
     }
     window.AppStore.setCurrentUser(null);
@@ -236,6 +185,9 @@ window.addEventListener("DOMContentLoaded", async () => {
   
   // Wait for the local data cache to sync from MongoDB
   await window.AppStore.syncFromServer();
+
+  // Load custom branding titles from state
+  window.AppRouter.updateBranding();
 
   const user = window.AppStore.getCurrentUser();
   if (user) {
@@ -251,6 +203,11 @@ window.addEventListener("DOMContentLoaded", async () => {
   // Set event listeners for forms
   document.getElementById("auth-form").addEventListener("submit", (e) => window.AppAuth.handleAuthSubmit(e));
   document.getElementById("question-form").addEventListener("submit", (e) => window.AdminPortal.saveQuestion(e));
+  
+  const brandForm = document.getElementById("branding-settings-form");
+  if (brandForm) {
+    brandForm.addEventListener("submit", (e) => window.AdminPortal.saveBrandingSettings(e));
+  }
 });
 
 // Bind to window

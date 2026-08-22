@@ -14,17 +14,10 @@
     <!-- Application Header -->
     <header class="app-header">
       <div class="logo-container" onclick="AppRouter.switchView('landing')">
-        <div class="logo-icon">LS</div>
-        <div class="logo-text">Learn and Solve Aptitude</div>
+        <div class="logo-icon">A</div>
+        <div class="logo-text">AI Aptitude Portal</div>
       </div>
       
-      <!-- Guest navigation panel (Admin Login) -->
-      <div class="nav-guest-panel" id="nav-guest-panel">
-        <button class="btn btn-secondary btn-sm" onclick="AppAuth.openAuth('admin')">
-          🛡️ Admin Login
-        </button>
-      </div>
-
       <div class="nav-user-panel" id="nav-user-panel" style="display: none;">
         <span id="header-user-badge" class="user-badge">
           <span class="badge-dot"></span>Guest User
@@ -39,162 +32,27 @@
 
     <!-- View: Landing Page -->
     <section class="view-panel active" id="view-landing">
-      <div class="landing-hero-header">
-        <h1 class="hero-title-main">Ganadipathy Tulsi's Jain Engineering College</h1>
-        <h2 class="hero-subtitle-tag-main">Department of Information Technology</h2>
-      </div>
+      <div class="landing-view">
+        <h1 class="hero-title"><span id="landing-institution-title">Ganadipathy Tulsi's Jain Engineering College</span> <br><span class="gradient-title-text" id="landing-department-title">Information Technology</span></h1>
+        <p class="hero-subtitle">
+          Evaluate machine learning metrics, logical algorithms, and semantic parsing speed. Backed by automated performance diagnosis.
+        </p>
 
-      <div class="landing-split-container">
-        
-        <!-- Left Hero Branding column -->
-        <div class="landing-left-col">
-          <div class="platform-badge">
-            <span class="badge-pulse"></span>
-            ⚡ AI POWERED ASSESSMENT PLATFORM
+          <div class="portal-grid" style="display: flex; justify-content: center; max-width: 500px; margin: 0 auto;">
+            <!-- Student Card -->
+            <div class="glass-card portal-card student-card" onclick="AppAuth.openAuth('student')" style="width: 100%;">
+              <div class="portal-icon">🎓</div>
+              <h3>Student Portal</h3>
+              <p>Enter your name and registration details to access the assessment dashboard.</p>
+              <button class="btn btn-primary full-width">Enter Student Portal &rarr;</button>
+            </div>
           </div>
-          
-          <p class="hero-subtitle">
-            Evaluate your aptitude with intelligent assessments designed to measure, analyze and improve.
-          </p>
-        </div>
 
-        <!-- Center Column: Animated Robot -->
-        <div class="landing-center-col">
-          <div class="speech-bubble">
-            Let's Solve! 💜
-          </div>
-          <div class="robot-glow-container">
-            <div class="orbit-ring ring-1"></div>
-            <div class="orbit-ring ring-2"></div>
-            <svg class="cute-robot-svg" viewBox="0 0 200 200" width="180" height="180">
-              <defs>
-                <linearGradient id="bodyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stop-color="#ffffff" />
-                  <stop offset="100%" stop-color="#f3e8ff" />
-                </linearGradient>
-                <linearGradient id="pinkGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stop-color="#ec4899" />
-                  <stop offset="100%" stop-color="#db2777" />
-                </linearGradient>
-                <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stop-color="#fbbf24" />
-                  <stop offset="100%" stop-color="#d97706" />
-                </linearGradient>
-                <linearGradient id="screenGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stop-color="#0f172a" />
-                  <stop offset="100%" stop-color="#020617" />
-                </linearGradient>
-                <filter id="pinkGlow" x="-20%" y="-20%" width="140%" height="140%">
-                  <feGaussianBlur stdDeviation="6" result="blur" />
-                  <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                </filter>
-              </defs>
-              
-              <!-- Robot shadow/jet booster flame -->
-              <path d="M 90 170 Q 100 198 110 170 Z" fill="rgba(236, 72, 153, 0.75)" class="robot-booster-flame" />
-
-              <!-- Legs & Feet (pink/white shoes) -->
-              <rect x="74" y="152" width="22" height="18" rx="7" fill="url(#pinkGrad)" />
-              <rect x="104" y="152" width="22" height="18" rx="7" fill="url(#pinkGrad)" />
-              <circle cx="85" cy="165" r="8" fill="#ffffff" />
-              <circle cx="115" cy="165" r="8" fill="#ffffff" />
-
-              <!-- Torso/Body -->
-              <rect x="68" y="112" width="64" height="46" rx="18" fill="url(#bodyGrad)" stroke="#e2e8f0" stroke-width="2" />
-              <!-- Chest speaker/button (cyan circular ring and gold inner core) -->
-              <circle cx="100" cy="133" r="14" fill="none" stroke="url(#goldGrad)" stroke-width="3" />
-              <circle cx="100" cy="133" r="8" fill="var(--neon-teal)" class="antenna-glow" />
-
-              <!-- Left Arm -->
-              <g transform="translate(48, 114) rotate(-25)">
-                <rect x="0" y="0" width="16" height="30" rx="8" fill="url(#bodyGrad)" stroke="#e2e8f0" stroke-width="1.5" />
-                <circle cx="8" cy="26" r="8" fill="url(#pinkGrad)" />
-              </g>
-              <!-- Right Arm (waving) -->
-              <g transform="translate(132, 102) rotate(45)">
-                <rect x="0" y="0" width="16" height="30" rx="8" fill="url(#bodyGrad)" stroke="#e2e8f0" stroke-width="1.5" />
-                <circle cx="8" cy="26" r="8" fill="url(#pinkGrad)" />
-              </g>
-
-              <!-- Neck -->
-              <rect x="92" y="103" width="16" height="12" rx="4" fill="url(#pinkGrad)" />
-
-              <!-- Head -->
-              <rect x="42" y="32" width="116" height="80" rx="26" fill="url(#bodyGrad)" stroke="#e2e8f0" stroke-width="2" />
-              <!-- Screen/Face -->
-              <rect x="52" y="42" width="96" height="58" rx="16" fill="url(#screenGrad)" />
-              
-              <!-- Cute Cyan Eyes (winking/happy arches like the picture) -->
-              <path d="M 68 70 Q 78 58 88 70" fill="none" stroke="var(--neon-teal)" stroke-width="5" stroke-linecap="round" class="eye-glow" />
-              <path d="M 112 70 Q 122 58 132 70" fill="none" stroke="var(--neon-teal)" stroke-width="5" stroke-linecap="round" class="eye-glow" />
-              <!-- Cute little blush lines -->
-              <ellipse cx="64" cy="82" rx="6" ry="3" fill="rgba(236, 72, 153, 0.5)" />
-              <ellipse cx="136" cy="82" rx="6" ry="3" fill="rgba(236, 72, 153, 0.5)" />
-
-              <!-- Headphones (band and cups) -->
-              <path d="M 45 42 A 62 62 0 0 1 155 42" fill="none" stroke="url(#pinkGrad)" stroke-width="6" stroke-linecap="round" />
-              <rect x="30" y="55" width="16" height="38" rx="8" fill="url(#pinkGrad)" filter="url(#pinkGlow)" />
-              <rect x="36" y="60" width="6" height="28" rx="3" fill="url(#bodyGrad)" />
-              <rect x="154" y="55" width="16" height="38" rx="8" fill="url(#pinkGrad)" filter="url(#pinkGlow)" />
-              <rect x="158" y="60" width="6" height="28" rx="3" fill="url(#bodyGrad)" />
-
-              <!-- Antenna on top -->
-              <rect x="97" y="16" width="6" height="18" rx="3" fill="url(#bodyGrad)" />
-              <circle cx="100" cy="14" r="8" fill="url(#pinkGrad)" class="antenna-glow" />
-            </svg>
+          <!-- Small Admin Link in the bottom right corner -->
+          <div class="admin-corner-link" onclick="AppAuth.openAuth('admin')">
+            🛡️ Admin Login
           </div>
         </div>
-
-        <!-- Right Portal Actions column -->
-        <div class="landing-right-col">
-          <div class="glass-card portal-card student-card" onclick="AppAuth.openAuth('student')">
-            <div class="portal-icon">🎓</div>
-            <h3>Student Portal</h3>
-            <p>Access active examination segments, check performance metrics, and review round qualifications.</p>
-            <button class="btn btn-primary full-width">Enter Student Portal &rarr;</button>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- Bottom Row Features footer bar -->
-      <div class="landing-features-footer">
-        <div class="feature-item">
-          <span class="feat-icon">⚙️</span>
-          <div class="feat-details">
-            <h4>AI Based Tests</h4>
-            <p>Smart evaluations</p>
-          </div>
-        </div>
-        <div class="feature-item">
-          <span class="feat-icon">⚡</span>
-          <div class="feat-details">
-            <h4>Adaptive Difficulty</h4>
-            <p>Adjusts to your level</p>
-          </div>
-        </div>
-        <div class="feature-item">
-          <span class="feat-icon">📊</span>
-          <div class="feat-details">
-            <h4>Performance Analytics</h4>
-            <p>Detailed insights</p>
-          </div>
-        </div>
-        <div class="feature-item">
-          <span class="feat-icon">⏱️</span>
-          <div class="feat-details">
-            <h4>Instant Results</h4>
-            <p>Real-time scoring</p>
-          </div>
-        </div>
-        <div class="feature-item">
-          <span class="feat-icon">🏆</span>
-          <div class="feat-details">
-            <h4>Leaderboard</h4>
-            <p>Compete and rank</p>
-          </div>
-        </div>
-      </div>
       </section>
 
     <!-- View: Auth Forms -->
@@ -226,6 +84,10 @@
 
         <div class="auth-footer" id="auth-toggle-container">
           <p id="auth-toggle-link-text">Need an account? <span class="auth-toggle-link" onclick="AppAuth.toggleAuthMode()">Sign Up here</span></p>
+        </div>
+        
+        <div class="auth-footer" style="margin-top: 16px; font-size: 0.8rem; opacity: 0.6;">
+          <p>💡 Tip: For Admin login, use username <strong>admin</strong> and password <strong>admin</strong>.</p>
         </div>
       </div>
     </section>
@@ -272,24 +134,23 @@
 
         <!-- History & Actions Layout -->
         <div class="student-main-layout">
+          <!-- History -->
+          <div class="glass-card">
+            <h3>Test History Logs</h3>
+            <p class="mb-16" style="color: var(--text-secondary); font-size: 0.9rem;">Click any previous attempt to examine your diagnostic performance roadmap.</p>
+            
+            <div class="past-results-list" id="past-results-list">
+              <!-- Dynamically populated past results -->
+            </div>
+          </div>
+
           <!-- Instructions Card -->
           <div class="glass-card" style="display: flex; flex-direction: column; gap: 16px;">
-            <h3>Instructions</h3>
+            <h3>Evaluation Instructions</h3>
             <ul style="padding-left: 20px; color: var(--text-secondary); font-size: 0.9rem; display: flex; flex-direction: column; gap: 12px;">
               <li>The assessment evaluates 4 core intelligence vectors: Quantitative, Logical, Verbal, and AI Knowledge.</li>
               <li>Pacing metrics are captured. Speed & precision determine your cognitive archetype profile.</li>
               <li>Answers are logged instantly. Do not exit the page during an active timer.</li>
-            </ul>
-          </div>
-
-          <!-- Rules Card -->
-          <div class="glass-card" style="display: flex; flex-direction: column; gap: 16px;">
-            <h3>Rules</h3>
-            <ul style="padding-left: 20px; color: var(--text-secondary); font-size: 0.9rem; display: flex; flex-direction: column; gap: 12px;">
-              <li>🚫 Swapping tabs or leaving the screen is strictly prohibited and submits your test automatically.</li>
-              <li>⚠️ Copying, pasting, cutting, and right-clicking are disabled to maintain test integrity.</li>
-              <li>⌨️ Keyboard shortcuts (like F12, developer tools, search keys) are blocked.</li>
-              <li>⏱️ Watch the timer. The assessment submits automatically when the time is up.</li>
             </ul>
           </div>
         </div>
@@ -360,8 +221,8 @@
                   <div class="score-total-num" id="results-total-num">/10</div>
                 </div>
               </div>
-              <span class="archetype-badge" id="results-archetype-badge">Result Overview</span>
-              <span class="archetype-label">Performance Summary</span>
+              <span class="archetype-badge" id="results-archetype-badge">Systems Architect</span>
+              <span class="archetype-label">Cognitive Profile</span>
             </div>
 
             <!-- Stats Table -->
@@ -389,6 +250,17 @@
           <h3 class="chart-title">Questions Review & Explanations</h3>
           <div class="mistakes-container" id="mistakes-list-wrap">
             <!-- Dynamic list of questions, answers, and explanations gets inserted here -->
+          </div>
+        </div>
+
+        <!-- AI Narrative Report Card -->
+        <div class="glass-card ai-report-panel mb-24">
+          <div class="ai-report-header">
+            <div class="ai-icon-pulse"></div>
+            <h3>Automated AI Evaluation Insights</h3>
+          </div>
+          <div id="ai-narrative-container">
+            <!-- AI narrative summary injected here -->
           </div>
         </div>
 
@@ -552,27 +424,32 @@
             <!-- Round Settings & Timing Form Card -->
             <div class="glass-card mb-24" style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); padding: 20px; border-radius: var(--radius-sm); margin-bottom: 24px;">
               <h4 style="margin-bottom: 8px;">Round Settings & Timing</h4>
-              <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 16px;">Configure assessment timing limit and display names for each tournament round.</p>
-              <form id="round-settings-form" style="display: flex; flex-direction: column; gap: 16px;" onsubmit="AdminPortal.saveRoundSettings(event)">
+              <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 16px;">Configure assessment timing limit for the active round.</p>
+              <form id="round-settings-form" style="display: flex; align-items: flex-end; gap: 16px; flex-wrap: wrap;" onsubmit="AdminPortal.saveRoundSettings(event)">
+                <div class="form-group" style="margin: 0; flex: 1; min-width: 200px;">
+                  <label class="form-label" for="tour-round-duration">Round Duration (Minutes)</label>
+                  <input type="number" id="tour-round-duration" class="form-input" min="1" max="120" required value="10">
+                </div>
+                <button type="submit" class="btn btn-teal">Save Settings</button>
+              </form>
+            </div>
+
+            <!-- Branding & Portal Settings Card -->
+            <div class="glass-card mb-24" style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); padding: 20px; border-radius: var(--radius-sm); margin-bottom: 24px;">
+              <h4 style="margin-bottom: 8px;">Branding & Portal Information</h4>
+              <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 16px;">Customize institution and department titles displayed on the landing page.</p>
+              <form id="branding-settings-form" style="display: flex; flex-direction: column; gap: 16px;" onsubmit="AdminPortal.saveBrandingSettings(event)">
                 <div style="display: flex; gap: 16px; flex-wrap: wrap; width: 100%;">
-                  <div class="form-group" style="margin: 0; flex: 1; min-width: 180px;">
-                    <label class="form-label" for="tour-round-duration">Round Duration (Minutes)</label>
-                    <input type="number" id="tour-round-duration" class="form-input" min="1" max="120" required value="10">
+                  <div class="form-group" style="margin: 0; flex: 1; min-width: 250px;">
+                    <label class="form-label" for="tour-institution-name">Institution Name</label>
+                    <input type="text" id="tour-institution-name" class="form-input" required placeholder="Ganadipathy Tulsi's Jain Engineering College">
                   </div>
-                  <div class="form-group" style="margin: 0; flex: 1; min-width: 180px;">
-                    <label class="form-label" for="tour-round1-name">Round 1 Custom Name</label>
-                    <input type="text" id="tour-round1-name" class="form-input" required placeholder="Round 1">
-                  </div>
-                  <div class="form-group" style="margin: 0; flex: 1; min-width: 180px;">
-                    <label class="form-label" for="tour-round2-name">Round 2 Custom Name</label>
-                    <input type="text" id="tour-round2-name" class="form-input" required placeholder="Round 2">
-                  </div>
-                  <div class="form-group" style="margin: 0; flex: 1; min-width: 180px;">
-                    <label class="form-label" for="tour-round3-name">Round 3 Custom Name</label>
-                    <input type="text" id="tour-round3-name" class="form-input" required placeholder="Round 3">
+                  <div class="form-group" style="margin: 0; flex: 1; min-width: 250px;">
+                    <label class="form-label" for="tour-department-name">Department Name</label>
+                    <input type="text" id="tour-department-name" class="form-input" required placeholder="Department of Information Technology">
                   </div>
                 </div>
-                <button type="submit" class="btn btn-teal" style="align-self: flex-start;">Save Settings</button>
+                <button type="submit" class="btn btn-teal" style="align-self: flex-start;">Save Branding</button>
               </form>
             </div>
 
@@ -651,9 +528,9 @@
           <div class="form-group">
             <label class="form-label" for="q-round">Target tournament round</label>
             <select id="q-round" class="form-input" style="background: var(--bg-secondary);">
-              <option value="1" id="q-round-opt-1">Round 1 (General Aptitude)</option>
-              <option value="2" id="q-round-opt-2">Round 2 (Tech & Logic)</option>
-              <option value="3" id="q-round-opt-3">Round 3 (Systems & AI)</option>
+              <option value="1">Round 1 ()</option>
+              <option value="2">Round 2 (Logical Reasoning)</option>
+              <option value="3">Round 3 ()</option>
             </select>
           </div>
 
@@ -707,68 +584,6 @@
       </form>
 
     </div>
-  </div>
-
-  <!-- Custom Modal Alert/Confirm Overlay -->
-  <div id="custom-alert-overlay" class="custom-alert-overlay" style="display: none;">
-    <div class="glass-card custom-alert-card">
-      <div class="custom-alert-header">
-        <span class="custom-alert-icon">⚠️</span>
-        <h3 id="custom-alert-title">Attention</h3>
-      </div>
-      <div class="custom-alert-body" id="custom-alert-message">
-        Warning message details.
-      </div>
-      <div class="custom-alert-footer">
-        <button id="custom-alert-btn-cancel" class="btn btn-secondary">Cancel</button>
-        <button id="custom-alert-btn-ok" class="btn btn-teal">OK</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Floating Side Robot helper -->
-  <div id="side-robot-helper" class="side-robot-helper" style="display: none;">
-    <svg class="cute-robot-svg-side" viewBox="0 0 200 200" width="80" height="80">
-      <defs>
-        <linearGradient id="bodyGradSide" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stop-color="#ffffff" />
-          <stop offset="100%" stop-color="#f3e8ff" />
-        </linearGradient>
-        <linearGradient id="pinkGradSide" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stop-color="#ec4899" />
-          <stop offset="100%" stop-color="#db2777" />
-        </linearGradient>
-        <linearGradient id="screenGradSide" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stop-color="#0f172a" />
-          <stop offset="100%" stop-color="#020617" />
-        </linearGradient>
-      </defs>
-      <!-- Head -->
-      <rect x="42" y="40" width="116" height="80" rx="26" fill="url(#bodyGradSide)" stroke="#e2e8f0" stroke-width="2" />
-      <!-- Screen/Face -->
-      <rect x="52" y="50" width="96" height="58" rx="16" fill="url(#screenGradSide)" />
-      <!-- Cyan Eyes -->
-      <path d="M 68 76 Q 78 64 88 76" fill="none" stroke="var(--neon-teal)" stroke-width="5" stroke-linecap="round" />
-      <path d="M 112 76 Q 122 64 132 76" fill="none" stroke="var(--neon-teal)" stroke-width="5" stroke-linecap="round" />
-      <!-- Blush -->
-      <ellipse cx="64" cy="88" rx="6" ry="3" fill="rgba(236, 72, 153, 0.5)" />
-      <ellipse cx="136" cy="88" rx="6" ry="3" fill="rgba(236, 72, 153, 0.5)" />
-      <!-- Pink Headphones -->
-      <path d="M 45 50 A 62 62 0 0 1 155 50" fill="none" stroke="url(#pinkGradSide)" stroke-width="6" stroke-linecap="round" />
-      <rect x="30" y="63" width="16" height="38" rx="8" fill="url(#pinkGradSide)" />
-      <rect x="154" y="63" width="16" height="38" rx="8" fill="url(#pinkGradSide)" />
-      <!-- Antenna -->
-      <rect x="97" y="24" width="6" height="18" rx="3" fill="url(#bodyGradSide)" />
-      <circle cx="100" cy="22" r="8" fill="url(#pinkGradSide)" />
-      <!-- Torso/Body (waving) -->
-      <rect x="72" y="120" width="56" height="40" rx="15" fill="url(#bodyGradSide)" stroke="#e2e8f0" stroke-width="2" />
-      <circle cx="100" cy="138" r="10" fill="none" stroke="url(#pinkGradSide)" stroke-width="2.5" />
-      <!-- Waving Arm -->
-      <g transform="translate(128, 114) rotate(-35)">
-        <rect x="0" y="0" width="14" height="26" rx="7" fill="url(#bodyGradSide)" stroke="#e2e8f0" stroke-width="1.5" />
-        <circle cx="7" cy="22" r="6" fill="url(#pinkGradSide)" />
-      </g>
-    </svg>
   </div>
 
   <!-- SCRIPT LOADING -->

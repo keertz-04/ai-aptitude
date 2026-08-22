@@ -82,7 +82,9 @@ const AppStore = {
       winners: [],
       round1Name: "Round 1",
       round2Name: "Round 2",
-      round3Name: "Round 3"
+      round3Name: "Round 3",
+      institutionName: "Ganadipathy Tulsi's Jain Engineering College",
+      departmentName: "Department of Information Technology"
     };
     this._results = [];
     try {
