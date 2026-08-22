@@ -46,18 +46,31 @@ const StudentPortal = {
     
     const violationsChip = document.getElementById("test-violations-count");
     if (violationsChip) {
-      violationsChip.textContent = `Violations: ${StudentPortal.tabViolations}/1`;
+      violationsChip.textContent = `Violations: ${StudentPortal.tabViolations}/2`;
+      violationsChip.style.background = "rgba(244, 63, 94, 0.2)";
+      violationsChip.style.borderColor = "var(--neon-pink)";
     }
 
     StudentPortal.isAlertShowing = true;
-    window.showCustomAlert(
-      "Assessment Terminated",
-      "🚫 Swapping tabs or leaving the assessment screen is strictly prohibited. Your active test has been automatically submitted.",
-      () => {
-        StudentPortal.isAlertShowing = false;
-        StudentPortal.submitTest();
-      }
-    );
+
+    if (StudentPortal.tabViolations > 2) {
+      window.showCustomAlert(
+        "Assessment Terminated",
+        "🚫 Swapping tabs or leaving the assessment screen is strictly prohibited. You have exceeded the maximum of 2 warnings. Your active test has been automatically submitted.",
+        () => {
+          StudentPortal.isAlertShowing = false;
+          StudentPortal.submitTest();
+        }
+      );
+    } else {
+      window.showCustomAlert(
+        "Proctoring Warning ⚠️",
+        `🚫 Warning ${StudentPortal.tabViolations}/2: Swapping tabs or leaving the assessment screen is strictly prohibited. Do not repeat this action, or your test will be automatically submitted.`,
+        () => {
+          StudentPortal.isAlertShowing = false;
+        }
+      );
+    }
   },
 
   preventCheat(e) {
@@ -315,7 +328,7 @@ const StudentPortal = {
     const violationsChip = document.getElementById("test-violations-count");
     if (violationsChip) {
       violationsChip.style.display = "inline-flex";
-      violationsChip.textContent = `Violations: 0/1`;
+      violationsChip.textContent = `Violations: 0/2`;
     }
 
     // Bind event handlers so they can be removed exactly

@@ -247,7 +247,7 @@ const AdminPortal = {
     if (results.length === 0) {
       tableBody.innerHTML = `
         <tr>
-          <td colspan="8" class="empty-state">
+          <td colspan="9" class="empty-state">
             <p>No student evaluation records found.</p>
           </td>
         </tr>
@@ -271,6 +271,15 @@ const AdminPortal = {
         ? `<span style="color: var(--neon-pink); font-weight: bold;">${res.violations} ⚠️</span>`
         : `<span style="color: var(--text-muted); opacity: 0.6;">0</span>`;
 
+      // Calculate cumulative score across all rounds for this specific student
+      const studentAllAttempts = window.AppStore.getResults().filter(r => 
+        (res.regNo && r.regNo && r.regNo.toLowerCase() === res.regNo.toLowerCase()) || 
+        r.studentName.toLowerCase() === res.studentName.toLowerCase()
+      );
+      const overallScore = studentAllAttempts.reduce((s, curr) => s + curr.score, 0);
+      const overallTotal = studentAllAttempts.reduce((s, curr) => s + curr.total, 0);
+      const overallPercent = overallTotal > 0 ? Math.round((overallScore / overallTotal) * 100) : 0;
+
       row.innerHTML = `
         <td><strong>${res.studentName}</strong></td>
         <td><span class="category-tag">${res.department || "IT"}</span></td>
@@ -278,6 +287,7 @@ const AdminPortal = {
         <td>${this.getRoundName(res.round)}</td>
         <td>${res.cognitiveProfile || "Balanced Thinker"}</td>
         <td><span class="score-badge">${res.score}/${res.total} (${Math.round(res.accuracy)}%)</span></td>
+        <td><span class="score-badge" style="background: rgba(99, 102, 241, 0.15); color: var(--neon-indigo); border-color: var(--neon-indigo);">${overallPercent}%</span></td>
         <td>${res.timeTakenSeconds}s</td>
         <td>${violationText}</td>
       `;
