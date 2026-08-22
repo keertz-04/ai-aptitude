@@ -7,7 +7,9 @@ const StudentPortal = {
   answers: [],
 
   getRoundName(roundNum) {
-    const state = window.AppStore.getTournamentState();
+    const user = window.AppStore.getCurrentUser();
+    const dept = (user && user.role === 'student' && user.department) ? user.department : 'IT';
+    const state = window.AppStore.getTournamentState(dept);
     if (!state) return `Round ${roundNum}`;
     if (roundNum === 1) return state.round1Name || "Round 1";
     if (roundNum === 2) return state.round2Name || "Round 2";
@@ -130,11 +132,12 @@ const StudentPortal = {
   },
 
   renderTournamentStatus(username) {
-    const tourState = window.AppStore.getTournamentState();
+    const user = window.AppStore.getCurrentUser();
+    const tourState = window.AppStore.getTournamentState(user.department);
     const results = window.AppStore.getResults();
 
     const activeRound = tourState.activeRound;
-    const isWinner = tourState.winners.find(w => w.username.toLowerCase() === username.toLowerCase());
+    const isWinner = tourState.winners && tourState.winners.find(w => w.username.toLowerCase() === username.toLowerCase());
 
     const statusBanner = document.getElementById("student-dashboard-status-banner") || this.createStatusBannerElement();
     const startTestBtn = document.getElementById("btn-student-start-test");
@@ -166,9 +169,9 @@ const StudentPortal = {
 
     // Check if user is eliminated in previous rounds
     let isEliminated = false;
-    if (activeRound === 2 && !tourState.qualifiedForRound2.some(name => name.toLowerCase() === username.toLowerCase())) {
+    if (activeRound === 2 && !tourState.qualifiedForRound2.some(name => name.toLowerCase() === username.toLowerCase() || name.toLowerCase() === user.regNo.toLowerCase())) {
       isEliminated = true;
-    } else if (activeRound === 3 && !tourState.qualifiedForRound3.some(name => name.toLowerCase() === username.toLowerCase())) {
+    } else if (activeRound === 3 && !tourState.qualifiedForRound3.some(name => name.toLowerCase() === username.toLowerCase() || name.toLowerCase() === user.regNo.toLowerCase())) {
       isEliminated = true;
     }
 
@@ -277,12 +280,21 @@ const StudentPortal = {
   },
 
   // --- Test-Taking Flow ---
-  startTest() {
-    const tourState = window.AppStore.getTournamentState();
+  async startTest() {
+    const user = window.AppStore.getCurrentUser();
+    if (!user) return;
+
+    let questions = [];
+    try {
+      questions = await window.AppStore.fetchStudentQuestions(user.regNo, user.department);
+    } catch (err) {
+      window.showCustomAlert("Access Denied", err.message);
+      return;
+    }
+
+    const tourState = window.AppStore.getTournamentState(user.department);
     const activeRound = tourState.activeRound;
 
-    // Filter questions by active round
-    const questions = window.AppStore.getQuestions().filter(q => q.round === activeRound);
     if (questions.length === 0) {
       window.showCustomAlert("Round Alert", `No questions have been configured for ${this.getRoundName(activeRound)} in the bank. Please contact an admin.`);
       return;
@@ -493,7 +505,7 @@ const StudentPortal = {
 
     const user = window.AppStore.getCurrentUser();
     const studentName = user ? user.username : "Guest Student";
-    const tourState = window.AppStore.getTournamentState();
+    const tourState = window.AppStore.getTournamentState(user.department);
     const activeRound = tourState.activeRound;
 
     // AI Evaluation
@@ -502,6 +514,8 @@ const StudentPortal = {
     // Save in store, snapping the active questions taken
     const resultToSave = {
       studentName,
+      regNo: user ? user.regNo : "",
+      department: user ? user.department : "IT",
       answers: this.answers,
       questions: this.activeQuestions,
       round: activeRound,

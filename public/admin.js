@@ -3,10 +3,12 @@
 
 const AdminPortal = {
   currentTab: "questions",
+  selectedDepartment: "IT",
   editingQuestionId: null,
 
   getRoundName(roundNum) {
-    const state = window.AppStore.getTournamentState();
+    const dept = this.selectedDepartment === "ALL" ? "IT" : this.selectedDepartment;
+    const state = window.AppStore.getTournamentState(dept);
     if (!state) return `Round ${roundNum}`;
     if (roundNum === 1) return state.round1Name || "Round 1";
     if (roundNum === 2) return state.round2Name || "Round 2";
@@ -46,7 +48,15 @@ const AdminPortal = {
     } else if (tabId === "results") {
       this.renderStudentResults();
     } else if (tabId === "tournament") {
-      this.renderTournamentTab();
+      if (this.selectedDepartment === "ALL") {
+        document.getElementById("dept-overview-summary-container").style.display = "block";
+        document.getElementById("tour-department-specific-card").style.display = "none";
+        this.renderAllDepartmentsSummary();
+      } else {
+        document.getElementById("dept-overview-summary-container").style.display = "none";
+        document.getElementById("tour-department-specific-card").style.display = "block";
+        this.renderTournamentTab();
+      }
     } else if (tabId === "settings") {
       const creds = window.AppStore.getAdminCredentials();
       document.getElementById("setting-admin-username").value = creds.username;
@@ -56,7 +66,11 @@ const AdminPortal = {
 
   renderStats() {
     const questions = window.AppStore.getQuestions();
-    const results = window.AppStore.getResults();
+    let results = window.AppStore.getResults();
+
+    if (this.selectedDepartment !== "ALL") {
+      results = results.filter(r => r.department === this.selectedDepartment);
+    }
 
     const totalQuestions = questions.length;
     const totalAttempts = results.length;
@@ -214,12 +228,16 @@ const AdminPortal = {
     const tableBody = document.getElementById("admin-results-tbody");
     tableBody.innerHTML = "";
 
-    const results = window.AppStore.getResults().sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+    let results = window.AppStore.getResults();
+    if (this.selectedDepartment !== "ALL") {
+      results = results.filter(r => r.department === this.selectedDepartment);
+    }
+    results = results.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
     
     if (results.length === 0) {
       tableBody.innerHTML = `
         <tr>
-          <td colspan="6" class="empty-state">
+          <td colspan="8" class="empty-state">
             <p>No student evaluation records found.</p>
           </td>
         </tr>
@@ -245,6 +263,7 @@ const AdminPortal = {
 
       row.innerHTML = `
         <td><strong>${res.studentName}</strong></td>
+        <td><span class="category-tag">${res.department || "IT"}</span></td>
         <td>${dateStr}</td>
         <td>${this.getRoundName(res.round)}</td>
         <td>${res.cognitiveProfile || "Balanced Thinker"}</td>
@@ -270,8 +289,9 @@ const AdminPortal = {
 
   // --- Tournament Management Panel ---
   renderTournamentTab() {
-    const state = window.AppStore.getTournamentState();
-    const results = window.AppStore.getResults();
+    const dept = this.selectedDepartment;
+    const state = window.AppStore.getTournamentState(dept);
+    const results = window.AppStore.getResults().filter(r => r.department === dept);
 
     document.getElementById("tour-active-round-label").textContent = this.getRoundName(state.activeRound);
     
@@ -405,6 +425,7 @@ const AdminPortal = {
 
   async saveRoundSettings(event) {
     event.preventDefault();
+    const dept = this.selectedDepartment;
     const durationLimit = parseInt(document.getElementById("tour-round-duration").value, 10);
     if (isNaN(durationLimit) || durationLimit < 1) {
       window.showCustomAlert("Validation Alert", "Please enter a valid duration (minimum 1 minute).");
@@ -414,108 +435,79 @@ const AdminPortal = {
     const r2Name = document.getElementById("tour-round2-name").value.trim() || "Round 2";
     const r3Name = document.getElementById("tour-round3-name").value.trim() || "Round 3";
 
-    const state = window.AppStore.getTournamentState();
+    const state = window.AppStore.getTournamentState(dept);
     state.roundDurationLimit = durationLimit;
     state.round1Name = r1Name;
     state.round2Name = r2Name;
     state.round3Name = r3Name;
 
     await window.AppStore.saveTournamentState(state);
-    window.showCustomAlert("Settings Saved", "Round settings saved successfully!");
+    window.showCustomAlert("Settings Saved", `Round settings for ${dept} saved successfully!`);
     this.renderTournamentTab();
   },
 
   async saveBrandingSettings(event) {
     event.preventDefault();
+    const dept = this.selectedDepartment;
     const instName = document.getElementById("tour-institution-name").value.trim() || "Ganadipathy Tulsi's Jain Engineering College";
     const deptName = document.getElementById("tour-department-name").value.trim() || "Department of Information Technology";
 
-    const state = window.AppStore.getTournamentState();
+    const state = window.AppStore.getTournamentState(dept);
     state.institutionName = instName;
     state.departmentName = deptName;
 
     await window.AppStore.saveTournamentState(state);
     window.AppRouter.updateBranding();
-    window.showCustomAlert("Branding Saved", "Branding settings saved successfully!");
+    window.showCustomAlert("Branding Saved", `Branding settings for ${dept} saved successfully!`);
     this.renderTournamentTab();
   },
 
-  concludeActiveRound() {
-    const state = window.AppStore.getTournamentState();
-    const results = window.AppStore.getResults();
-    const activeRound = state.activeRound;
+  async concludeActiveRound() {
+    const dept = this.selectedDepartment;
+    try {
+      const res = await fetchApi('/api/tournament/conclude-round', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ department: dept })
+      });
 
-    // Filter attempts for the active round
-    const roundAttempts = results.filter(r => r.round === activeRound);
-    
-    // Unique candidates
-    const uniqueStudentAttempts = {};
-    roundAttempts.forEach(att => {
-      const nameKey = att.studentName.toLowerCase();
-      if (!uniqueStudentAttempts[nameKey] || att.score > uniqueStudentAttempts[nameKey].score) {
-        uniqueStudentAttempts[nameKey] = att;
+      if (!res.ok) {
+        const data = await res.json();
+        window.showCustomAlert("Error Concluding Round", data.error || "Failed to conclude round.");
+        return;
       }
-    });
 
-    const sortedAttempts = Object.values(uniqueStudentAttempts).sort((a, b) => {
-      if (b.score !== a.score) return b.score - a.score;
-      return a.timeTakenSeconds - b.timeTakenSeconds;
-    });
+      const data = await res.json();
+      window.AppStore._tournamentState[dept] = data.state;
 
-    if (sortedAttempts.length === 0) {
-      window.showCustomAlert("Round Conclude Alert", `No student attempts recorded for ${this.getRoundName(activeRound)}. Cannot conclude the round.`);
-      return;
+      if (data.activeRound === 2 || data.activeRound === 3) {
+        window.showCustomAlert(
+          `${this.getRoundName(data.activeRound - 1)} Concluded`,
+          `${this.getRoundName(data.activeRound - 1)} Concluded! ${data.promoted.length} students advanced to ${this.getRoundName(data.activeRound)}:<br><strong>${data.promoted.join(", ")}</strong>`
+        );
+      } else if (data.activeRound === 4) {
+        const winnerNames = data.winners.map(w => `#${w.rank}: ${w.username} (${w.accuracy}%)`).join("<br>");
+        window.showCustomAlert("Tournament Completed", `Tournament Completed! Winners Declared:<br><strong>${winnerNames}</strong>`);
+      }
+
+      this.renderTournamentTab();
+      this.renderStats();
+    } catch (err) {
+      console.error('Failed to conclude round:', err);
+      window.showCustomAlert("Error", "Server error concluding active round.");
     }
-
-    if (activeRound === 1) {
-      const countToQualify = Math.ceil(sortedAttempts.length / 2);
-      const promoted = sortedAttempts.slice(0, countToQualify).map(a => a.studentName);
-      
-      state.qualifiedForRound2 = promoted;
-      state.activeRound = 2;
-      window.AppStore.saveTournamentState(state);
-
-      window.showCustomAlert(`${this.getRoundName(1)} Concluded`, `${this.getRoundName(1)} Concluded! ${promoted.length} students advanced to ${this.getRoundName(2)}:<br><strong>${promoted.join(", ")}</strong>`);
-    } else if (activeRound === 2) {
-      const countToQualify = Math.ceil(sortedAttempts.length / 2);
-      const promoted = sortedAttempts.slice(0, countToQualify).map(a => a.studentName);
-
-      state.qualifiedForRound3 = promoted;
-      state.activeRound = 3;
-      window.AppStore.saveTournamentState(state);
-
-      window.showCustomAlert(`${this.getRoundName(2)} Concluded`, `${this.getRoundName(2)} Concluded! ${promoted.length} students advanced to ${this.getRoundName(3)}:<br><strong>${promoted.join(", ")}</strong>`);
-    } else if (activeRound === 3) {
-      // Crown top 3 winners
-      const winners = sortedAttempts.slice(0, 3).map((a, idx) => ({
-        username: a.studentName,
-        score: a.score,
-        total: a.total,
-        accuracy: a.accuracy,
-        archetype: a.cognitiveProfile,
-        rank: idx + 1
-      }));
-
-      state.winners = winners;
-      window.AppStore.saveTournamentState(state);
-
-      const winnerNames = winners.map(w => `#${w.rank}: ${w.username} (${w.accuracy}%)`).join("<br>");
-      window.showCustomAlert("Tournament Completed", `Tournament Completed! Winners Declared:<br><strong>${winnerNames}</strong>`);
-    }
-
-    this.renderTournamentTab();
-    this.renderStats();
   },
 
   resetTournament() {
+    const dept = this.selectedDepartment;
     window.showCustomConfirm(
-      "Reset Tournament",
-      "Wipe all tournament states, current rounds, qualifications, and student results to restart?",
-      () => {
-        window.AppStore.resetTournament();
-        this.switchTab("questions");
+      "Reset Department Tournament",
+      `Are you sure you want to reset the tournament for <strong>${dept}</strong>? All student results and progress for ${dept} will be deleted. This cannot be undone.`,
+      async () => {
+        await window.AppStore.resetTournament(dept);
+        window.showCustomAlert("Tournament Reset", `Tournament state for ${dept} has been reset successfully.`);
+        this.renderTournamentTab();
         this.renderStats();
-        window.showCustomAlert("Tournament Reset", "Tournament state has been reset successfully. All students can now take Round 1.");
       }
     );
   },
@@ -598,6 +590,81 @@ const AdminPortal = {
 
     window.AppStore.saveAdminCredentials({ username: user, password: pass });
     alert("Administrator credentials updated successfully! These changes will apply next time you log in.");
+  },
+
+  changeSelectedDept(dept) {
+    this.selectedDepartment = dept;
+    
+    // Update active button state in the selector
+    document.querySelectorAll(".dept-select-btn").forEach(btn => {
+      if (btn.dataset.dept === dept) {
+        btn.classList.add("active");
+      } else {
+        btn.classList.remove("active");
+      }
+    });
+
+    // Render the content depending on department selection
+    if (dept === "ALL") {
+      document.getElementById("dept-overview-summary-container").style.display = "block";
+      document.getElementById("tour-department-specific-card").style.display = "none";
+      this.renderAllDepartmentsSummary();
+    } else {
+      document.getElementById("dept-overview-summary-container").style.display = "none";
+      document.getElementById("tour-department-specific-card").style.display = "block";
+      this.renderTournamentTab();
+    }
+    if (this.currentTab === "results") {
+      this.renderStudentResults();
+    }
+    this.renderStats();
+  },
+
+  async renderAllDepartmentsSummary() {
+    try {
+      const res = await fetchApi('/api/admin/department-summary');
+      if (!res.ok) return;
+      const summaries = await res.json();
+
+      const DEPARTMENTS = ['IT', 'AIDS', 'CSBS'];
+      DEPARTMENTS.forEach(dept => {
+        const s = summaries[dept];
+        const lowerDept = dept.toLowerCase();
+        
+        document.getElementById(`summary-${lowerDept}-status`).textContent = `Active: ${s.activeRoundName || ('Round ' + s.activeRound)}`;
+        document.getElementById(`summary-${lowerDept}-total`).textContent = s.totalStudents;
+        document.getElementById(`summary-${lowerDept}-completed`).textContent = s.completedCount;
+        document.getElementById(`summary-${lowerDept}-idle`).textContent = s.idleCount;
+        document.getElementById(`summary-${lowerDept}-qualified`).textContent = s.qualifiedCount;
+
+        const winnersEl = document.getElementById(`summary-${lowerDept}-winners`);
+        winnersEl.innerHTML = "";
+        
+        if (s.winners && s.winners.length > 0) {
+          s.winners.sort((a,b) => a.rank - b.rank).forEach(w => {
+            const medal = w.rank === 1 ? "🥇" : (w.rank === 2 ? "🥈" : "🥉");
+            winnersEl.innerHTML += `<div>${medal} <strong>${w.username}</strong> (${w.score}/${w.total})</div>`;
+          });
+        } else {
+          winnersEl.innerHTML = `<span style="color: var(--text-secondary); font-size: 0.85rem;">Winners not declared yet</span>`;
+        }
+      });
+    } catch (err) {
+      console.error('Failed to render all departments summary:', err);
+    }
+  },
+
+  resetAllTournaments() {
+    window.showCustomConfirm(
+      "RESET ALL DEPARTMENTS",
+      "🚨 WARNING: This will completely reset the tournament state and delete all student attempts across ALL departments (IT, AIDS, and CSBS). This action is highly destructive and cannot be undone. Are you sure you want to proceed?",
+      async () => {
+        await window.AppStore.resetAllTournaments();
+        window.showCustomAlert("Reset Successful", "All departments have been reset successfully.");
+        this.renderTournamentTab();
+        this.renderStats();
+      }
+    );
   },
 
   // --- Helper: Toggle Modals ---

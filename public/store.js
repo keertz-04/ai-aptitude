@@ -14,7 +14,7 @@ const AppStore = {
   _questions: [],
   _results: [],
   _adminCredentials: { username: "admin", password: "admin" },
-  _tournamentState: { activeRound: 1, qualifiedForRound2: [], qualifiedForRound3: [], winners: [] },
+  _tournamentState: {},
 
   // --- Initialize & Server Sync ---
   init() {
@@ -54,12 +54,47 @@ const AppStore = {
   },
 
   // --- Tournament State Management ---
-  getTournamentState() {
-    return this._tournamentState;
+  getTournamentState(dept) {
+    if (!this._tournamentState) {
+      this._tournamentState = {};
+    }
+    
+    // Auto-resolve department
+    let targetDept = dept;
+    if (!targetDept) {
+      const user = this.getCurrentUser();
+      if (user && user.role === 'student' && user.department) {
+        targetDept = user.department;
+      } else {
+        targetDept = 'IT';
+      }
+    }
+    targetDept = targetDept.toUpperCase();
+    
+    if (!this._tournamentState[targetDept]) {
+      this._tournamentState[targetDept] = {
+        department: targetDept,
+        activeRound: 1,
+        qualifiedForRound2: [],
+        qualifiedForRound3: [],
+        winners: [],
+        roundDurationLimit: 10,
+        round1Name: "Round 1",
+        round2Name: "Round 2",
+        round3Name: "Round 3",
+        institutionName: "Ganadipathy Tulsi's Jain Engineering College",
+        departmentName: targetDept === 'IT' ? 'Department of Information Technology' : (targetDept === 'AIDS' ? 'Department of Artificial Intelligence and Data Science' : 'Department of Computer Science and Business Systems')
+      };
+    }
+    return this._tournamentState[targetDept];
   },
 
   async saveTournamentState(state) {
-    this._tournamentState = state;
+    if (!state.department) {
+      state.department = 'IT';
+    }
+    const dept = state.department.toUpperCase();
+    this._tournamentState[dept] = state;
     try {
       const res = await fetchApi('/api/tournament', {
         method: 'POST',
@@ -67,30 +102,43 @@ const AppStore = {
         body: JSON.stringify(state)
       });
       if (res.ok) {
-        this._tournamentState = await res.json();
+        const saved = await res.json();
+        this._tournamentState[dept] = saved;
       }
     } catch (err) {
       console.error('Failed to save tournament state:', err);
     }
   },
 
-  async resetTournament() {
-    this._tournamentState = {
-      activeRound: 1,
-      qualifiedForRound2: [],
-      qualifiedForRound3: [],
-      winners: [],
-      round1Name: "Round 1",
-      round2Name: "Round 2",
-      round3Name: "Round 3",
-      institutionName: "Ganadipathy Tulsi's Jain Engineering College",
-      departmentName: "Department of Information Technology"
-    };
-    this._results = [];
+  async resetTournament(dept) {
+    const targetDept = dept ? dept.toUpperCase() : 'IT';
+    if (this._tournamentState[targetDept]) {
+      this._tournamentState[targetDept].activeRound = 1;
+      this._tournamentState[targetDept].qualifiedForRound2 = [];
+      this._tournamentState[targetDept].qualifiedForRound3 = [];
+      this._tournamentState[targetDept].winners = [];
+    }
     try {
-      await fetchApi('/api/tournament/reset', { method: 'POST' });
+      await fetchApi(`/api/tournament/reset?department=${targetDept}`, { method: 'POST' });
     } catch (err) {
       console.error('Failed to reset tournament database:', err);
+    }
+  },
+
+  async resetAllTournaments() {
+    const DEPARTMENTS = ['IT', 'AIDS', 'CSBS'];
+    for (const dept of DEPARTMENTS) {
+      if (this._tournamentState[dept]) {
+        this._tournamentState[dept].activeRound = 1;
+        this._tournamentState[dept].qualifiedForRound2 = [];
+        this._tournamentState[dept].qualifiedForRound3 = [];
+        this._tournamentState[dept].winners = [];
+      }
+    }
+    try {
+      await fetchApi('/api/tournament/reset-all', { method: 'POST' });
+    } catch (err) {
+      console.error('Failed to reset all tournaments:', err);
     }
   },
 
@@ -234,16 +282,25 @@ const AppStore = {
     return data;
   },
 
-  async authenticateStudent(username, regNo) {
+  async authenticateStudent(username, regNo, department) {
     const res = await fetchApi('/api/auth/student/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, regNo })
+      body: JSON.stringify({ username, regNo, department })
     });
     if (res.ok) {
       return await res.json();
     }
     return null;
+  },
+
+  async fetchStudentQuestions(regNo, department) {
+    const res = await fetchApi(`/api/student/questions?regNo=${encodeURIComponent(regNo)}&department=${encodeURIComponent(department)}`);
+    if (res.ok) {
+      return await res.json();
+    }
+    const errData = await res.json();
+    throw new Error(errData.error || 'Failed to fetch assessment questions.');
   },
 
   // --- Admin Credentials Management ---

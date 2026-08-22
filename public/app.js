@@ -92,7 +92,9 @@ const AppRouter = {
   },
 
   updateBranding() {
-    const state = window.AppStore.getTournamentState();
+    const user = window.AppStore.getCurrentUser();
+    const dept = (user && user.role === 'student' && user.department) ? user.department : 'IT';
+    const state = window.AppStore.getTournamentState(dept);
     if (!state) return;
     
     const instEl = document.getElementById("landing-institution-title");
@@ -154,6 +156,7 @@ const AppAuth = {
     const regNoInput = document.getElementById("auth-regno");
     const passwordContainer = document.getElementById("auth-password-container");
     const passwordInput = document.getElementById("auth-password");
+    const deptContainer = document.getElementById("auth-department-container");
 
     if (this.authRole === "admin") {
       title.textContent = "Admin Portal Secure Login";
@@ -166,6 +169,7 @@ const AppAuth = {
       if (passwordInput) passwordInput.required = true;
       if (regNoContainer) regNoContainer.style.display = "none";
       if (regNoInput) regNoInput.required = false;
+      if (deptContainer) deptContainer.style.display = "none";
       if (usernameLabel) usernameLabel.textContent = "Username";
       if (usernameInput) {
         usernameInput.placeholder = "e.g. admin";
@@ -178,7 +182,7 @@ const AppAuth = {
       desc.textContent = "Enter your display name and registration details to enter.";
       submitBtn.textContent = "Enter Student Dashboard &rarr;";
       
-      // Student requires Reg No but NOT password
+      // Student requires Reg No & Dept but NOT password
       if (passwordContainer) passwordContainer.style.display = "none";
       if (passwordInput) {
         passwordInput.required = false;
@@ -186,6 +190,7 @@ const AppAuth = {
       }
       if (regNoContainer) regNoContainer.style.display = "block";
       if (regNoInput) regNoInput.required = true;
+      if (deptContainer) deptContainer.style.display = "block";
       if (usernameLabel) usernameLabel.textContent = "Student Name / Username";
       if (usernameInput) {
         usernameInput.placeholder = "e.g. John Doe";
@@ -199,6 +204,8 @@ const AppAuth = {
     const userVal = document.getElementById("auth-username").value.trim();
     const regNoVal = document.getElementById("auth-regno") ? document.getElementById("auth-regno").value.trim() : "";
     const passVal = document.getElementById("auth-password").value;
+    const deptEl = document.getElementById("auth-department");
+    const deptVal = deptEl ? deptEl.value : "IT";
 
     if (this.authRole === "admin") {
       if (!userVal || !passVal) {
@@ -220,9 +227,9 @@ const AppAuth = {
         window.showCustomAlert("Authentication Alert", "Please provide both your display name and registration number.");
         return;
       }
-      const student = await window.AppStore.authenticateStudent(userVal, regNoVal);
+      const student = await window.AppStore.authenticateStudent(userVal, regNoVal, deptVal);
       if (student) {
-        const user = { username: student.username, role: "student" };
+        const user = { username: student.username, role: "student", regNo: student.regNo, department: student.department };
         window.AppStore.setCurrentUser(user);
         window.AppRouter.switchView("student-dashboard");
       } else {

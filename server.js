@@ -22,6 +22,7 @@ const InMemoryDb = {
   students: [],
   adminCred: { username: 'admin', password: 'admin' },
   tournamentState: {
+    department: 'IT',
     activeRound: 1,
     qualifiedForRound2: [],
     qualifiedForRound3: [],
@@ -32,6 +33,47 @@ const InMemoryDb = {
     round3Name: 'Round 3',
     institutionName: "Ganadipathy Tulsi's Jain Engineering College",
     departmentName: "Department of Information Technology"
+  },
+  tournamentStates: {
+    IT: {
+      department: 'IT',
+      activeRound: 1,
+      qualifiedForRound2: [],
+      qualifiedForRound3: [],
+      winners: [],
+      roundDurationLimit: 10,
+      round1Name: 'Round 1',
+      round2Name: 'Round 2',
+      round3Name: 'Round 3',
+      institutionName: "Ganadipathy Tulsi's Jain Engineering College",
+      departmentName: "Department of Information Technology"
+    },
+    AIDS: {
+      department: 'AIDS',
+      activeRound: 1,
+      qualifiedForRound2: [],
+      qualifiedForRound3: [],
+      winners: [],
+      roundDurationLimit: 10,
+      round1Name: 'Round 1',
+      round2Name: 'Round 2',
+      round3Name: 'Round 3',
+      institutionName: "Ganadipathy Tulsi's Jain Engineering College",
+      departmentName: "Department of Artificial Intelligence and Data Science"
+    },
+    CSBS: {
+      department: 'CSBS',
+      activeRound: 1,
+      qualifiedForRound2: [],
+      qualifiedForRound3: [],
+      winners: [],
+      roundDurationLimit: 10,
+      round1Name: 'Round 1',
+      round2Name: 'Round 2',
+      round3Name: 'Round 3',
+      institutionName: "Ganadipathy Tulsi's Jain Engineering College",
+      departmentName: "Department of Computer Science and Business Systems"
+    }
   }
 };
 
@@ -76,6 +118,8 @@ const Question = mongoose.model('Question', QuestionSchema);
 
 const ResultSchema = new mongoose.Schema({
   studentName: { type: String, required: true },
+  regNo: { type: String, default: '' },
+  department: { type: String, default: 'IT', uppercase: true },
   timestamp: { type: Date, default: Date.now },
   round: { type: Number, required: true },
   answers: [Number],
@@ -95,7 +139,11 @@ const Result = mongoose.model('Result', ResultSchema);
 
 const StudentSchema = new mongoose.Schema({
   username: { type: String, required: true },
-  regNo: { type: String, required: true, unique: true, lowercase: true }
+  regNo: { type: String, required: true, unique: true, lowercase: true },
+  department: { type: String, default: 'IT', uppercase: true },
+  winner: { type: Boolean, default: false },
+  finalRank: { type: Number },
+  finalScore: { type: Number }
 });
 const Student = mongoose.model('Student', StudentSchema);
 
@@ -106,6 +154,7 @@ const AdminCredSchema = new mongoose.Schema({
 const AdminCred = mongoose.model('AdminCred', AdminCredSchema);
 
 const TournamentStateSchema = new mongoose.Schema({
+  department: { type: String, default: 'IT', uppercase: true, unique: true },
   activeRound: { type: Number, default: 1 },
   qualifiedForRound2: [String],
   qualifiedForRound3: [String],
@@ -224,14 +273,27 @@ app.delete('/api/results', async (req, res) => {
 app.get('/api/tournament', async (req, res) => {
   try {
     if (useInMemoryDb) {
-      return res.json(InMemoryDb.tournamentState);
+      return res.json(InMemoryDb.tournamentStates);
     }
-    let state = await TournamentState.findOne();
-    if (!state) {
-      state = new TournamentState();
-      await state.save();
+    const states = await TournamentState.find();
+    // Build a map of department -> state
+    const stateMap = {};
+    states.forEach(s => {
+      stateMap[s.department] = s;
+    });
+    // Seed any missing department state
+    const DEPARTMENTS = ['IT', 'AIDS', 'CSBS'];
+    for (const dept of DEPARTMENTS) {
+      if (!stateMap[dept]) {
+        const defaultState = new TournamentState({
+          department: dept,
+          departmentName: dept === 'IT' ? 'Department of Information Technology' : (dept === 'AIDS' ? 'Department of Artificial Intelligence and Data Science' : 'Department of Computer Science and Business Systems')
+        });
+        await defaultState.save();
+        stateMap[dept] = defaultState;
+      }
     }
-    res.json(state);
+    res.json(stateMap);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -239,11 +301,18 @@ app.get('/api/tournament', async (req, res) => {
 
 app.post('/api/tournament', async (req, res) => {
   try {
-    if (useInMemoryDb) {
-      Object.assign(InMemoryDb.tournamentState, req.body);
-      return res.json(InMemoryDb.tournamentState);
+    const { department } = req.body;
+    if (!department) {
+      return res.status(400).json({ error: 'Department is required.' });
     }
-    let state = await TournamentState.findOne();
+    const cleanDept = department.toUpperCase();
+
+    if (useInMemoryDb) {
+      InMemoryDb.tournamentStates[cleanDept] = { ...InMemoryDb.tournamentStates[cleanDept], ...req.body };
+      return res.json(InMemoryDb.tournamentStates[cleanDept]);
+    }
+
+    let state = await TournamentState.findOne({ department: cleanDept });
     if (!state) {
       state = new TournamentState(req.body);
     } else {
@@ -258,16 +327,25 @@ app.post('/api/tournament', async (req, res) => {
 
 app.post('/api/tournament/reset', async (req, res) => {
   try {
+    const { department } = req.query;
+    if (!department) {
+      return res.status(400).json({ error: 'Department is required.' });
+    }
+    const cleanDept = department.trim().toUpperCase();
+
     if (useInMemoryDb) {
-      InMemoryDb.results = [];
-      InMemoryDb.tournamentState.activeRound = 1;
-      InMemoryDb.tournamentState.qualifiedForRound2 = [];
-      InMemoryDb.tournamentState.qualifiedForRound3 = [];
-      InMemoryDb.tournamentState.winners = [];
+      InMemoryDb.results = InMemoryDb.results.filter(r => r.department !== cleanDept);
+      if (InMemoryDb.tournamentStates[cleanDept]) {
+        InMemoryDb.tournamentStates[cleanDept].activeRound = 1;
+        InMemoryDb.tournamentStates[cleanDept].qualifiedForRound2 = [];
+        InMemoryDb.tournamentStates[cleanDept].qualifiedForRound3 = [];
+        InMemoryDb.tournamentStates[cleanDept].winners = [];
+      }
       return res.json({ success: true });
     }
-    await Result.deleteMany({});
-    let state = await TournamentState.findOne();
+
+    await Result.deleteMany({ department: cleanDept });
+    let state = await TournamentState.findOne({ department: cleanDept });
     if (state) {
       state.activeRound = 1;
       state.qualifiedForRound2 = [];
@@ -275,6 +353,37 @@ app.post('/api/tournament/reset', async (req, res) => {
       state.winners = [];
       await state.save();
     }
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/tournament/reset-all', async (req, res) => {
+  try {
+    if (useInMemoryDb) {
+      InMemoryDb.results = [];
+      const DEPARTMENTS = ['IT', 'AIDS', 'CSBS'];
+      for (const dept of DEPARTMENTS) {
+        if (InMemoryDb.tournamentStates[dept]) {
+          InMemoryDb.tournamentStates[dept].activeRound = 1;
+          InMemoryDb.tournamentStates[dept].qualifiedForRound2 = [];
+          InMemoryDb.tournamentStates[dept].qualifiedForRound3 = [];
+          InMemoryDb.tournamentStates[dept].winners = [];
+        }
+      }
+      return res.json({ success: true });
+    }
+
+    await Result.deleteMany({});
+    await TournamentState.updateMany({}, {
+      $set: {
+        activeRound: 1,
+        qualifiedForRound2: [],
+        qualifiedForRound3: [],
+        winners: []
+      }
+    });
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -308,8 +417,9 @@ app.post('/api/auth/student/register', async (req, res) => {
 
 app.post('/api/auth/student/login', async (req, res) => {
   try {
-    const { username, regNo } = req.body;
-    console.log(`Login attempt received on server: username="${username}", regNo="${regNo}"`);
+    const { username, regNo, department } = req.body;
+    const cleanDept = (department || 'IT').trim().toUpperCase();
+    console.log(`Login attempt received on server: username="${username}", regNo="${regNo}", department="${cleanDept}"`);
     if (!username || !regNo) {
       return res.status(400).json({ error: 'Username and Registration Number are required.' });
     }
@@ -319,31 +429,40 @@ app.post('/api/auth/student/login', async (req, res) => {
     if (useInMemoryDb) {
       let student = InMemoryDb.students.find(s => s.regNo === normalizedRegNo);
       if (!student) {
-        student = { username: cleanUsername, regNo: normalizedRegNo };
+        student = { username: cleanUsername, regNo: normalizedRegNo, department: cleanDept };
         InMemoryDb.students.push(student);
-        console.log(`Auto-registered new student in-memory: ${cleanUsername} (Reg No: ${normalizedRegNo})`);
+        console.log(`Auto-registered new student in-memory: ${cleanUsername} (Reg No: ${normalizedRegNo}, Dept: ${cleanDept})`);
       } else {
         if (student.username !== cleanUsername) {
           student.username = cleanUsername;
         }
+        student.department = cleanDept;
       }
-      return res.json({ username: student.username, regNo: student.regNo });
+      return res.json({ username: student.username, regNo: student.regNo, department: student.department });
     }
 
     let student = await Student.findOne({ regNo: normalizedRegNo });
     if (!student) {
       // Auto-create/register student under this registration number and username
-      student = new Student({ username: cleanUsername, regNo: normalizedRegNo });
+      student = new Student({ username: cleanUsername, regNo: normalizedRegNo, department: cleanDept });
       await student.save();
-      console.log(`Auto-registered new student: ${cleanUsername} (Reg No: ${normalizedRegNo})`);
+      console.log(`Auto-registered new student: ${cleanUsername} (Reg No: ${normalizedRegNo}, Dept: ${cleanDept})`);
     } else {
-      // Update username if they logged in with a different name
+      // Update username or department if different
+      let changed = false;
       if (student.username !== cleanUsername) {
         student.username = cleanUsername;
+        changed = true;
+      }
+      if (student.department !== cleanDept) {
+        student.department = cleanDept;
+        changed = true;
+      }
+      if (changed) {
         await student.save();
       }
     }
-    res.json({ username: student.username, regNo: student.regNo });
+    res.json({ username: student.username, regNo: student.regNo, department: student.department });
   } catch (err) {
     console.error('Login error caught on server:', err);
     res.status(500).json({ error: err.message });
@@ -386,6 +505,313 @@ app.post('/api/auth/admin/credentials', async (req, res) => {
     res.json({ success: true });
   } catch (err) {
     res.status(400).json({ error: err.message });
+  }
+});
+
+// Secure questions fetch for students
+app.get('/api/student/questions', async (req, res) => {
+  try {
+    const { regNo, department } = req.query;
+    if (!regNo || !department) {
+      return res.status(400).json({ error: 'Student registration number and department are required.' });
+    }
+    const cleanRegNo = regNo.trim().toLowerCase();
+    const cleanDept = department.trim().toUpperCase();
+
+    // 1. Validate student
+    let student;
+    if (useInMemoryDb) {
+      student = InMemoryDb.students.find(s => s.regNo === cleanRegNo && s.department === cleanDept);
+    } else {
+      student = await Student.findOne({ regNo: cleanRegNo, department: cleanDept });
+    }
+    if (!student) {
+      return res.status(403).json({ error: 'Access Denied: Student is not registered in this department.' });
+    }
+
+    // 2. Resolve active round
+    let state;
+    if (useInMemoryDb) {
+      state = InMemoryDb.tournamentStates[cleanDept];
+    } else {
+      state = await TournamentState.findOne({ department: cleanDept });
+    }
+    if (!state) {
+      return res.status(404).json({ error: 'Tournament state not found for this department.' });
+    }
+
+    const activeRound = state.activeRound;
+
+    // 3. Check qualification for round 2 or 3
+    if (activeRound === 2) {
+      const isQualified = state.qualifiedForRound2.some(r => r.toLowerCase() === cleanRegNo || r.toLowerCase() === student.username.toLowerCase());
+      if (!isQualified) {
+        return res.status(403).json({ error: `Access Denied: You did not qualify for ${state.round2Name || 'Round 2'}.` });
+      }
+    } else if (activeRound === 3) {
+      const isQualified = state.qualifiedForRound3.some(r => r.toLowerCase() === cleanRegNo || r.toLowerCase() === student.username.toLowerCase());
+      if (!isQualified) {
+        return res.status(403).json({ error: `Access Denied: You did not qualify for ${state.round3Name || 'Round 3'}.` });
+      }
+    }
+
+    // 4. Return only this round's questions
+    let questions;
+    if (useInMemoryDb) {
+      questions = InMemoryDb.questions.filter(q => q.round === activeRound);
+    } else {
+      questions = await Question.find({ round: activeRound });
+    }
+
+    res.json(questions);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Conclude round server-side endpoint
+app.post('/api/tournament/conclude-round', async (req, res) => {
+  try {
+    const { department } = req.body;
+    if (!department) {
+      return res.status(400).json({ error: 'Department is required.' });
+    }
+    const cleanDept = department.trim().toUpperCase();
+
+    if (useInMemoryDb) {
+      const state = InMemoryDb.tournamentStates[cleanDept];
+      if (!state) {
+        return res.status(404).json({ error: 'Tournament state not found.' });
+      }
+      if (state.winners && state.winners.length > 0) {
+        return res.status(400).json({ error: 'Tournament already completed.' });
+      }
+
+      const activeRound = state.activeRound;
+      const results = InMemoryDb.results.filter(r => r.department === cleanDept && r.round === activeRound);
+
+      const uniqueStudentAttempts = {};
+      results.forEach(att => {
+        const key = att.regNo ? att.regNo.toLowerCase() : att.studentName.toLowerCase();
+        if (!uniqueStudentAttempts[key] || att.score > uniqueStudentAttempts[key].score) {
+          uniqueStudentAttempts[key] = att;
+        }
+      });
+
+      const sortedAttempts = Object.values(uniqueStudentAttempts).sort((a, b) => {
+        if (b.score !== a.score) return b.score - a.score;
+        return a.timeTakenSeconds - b.timeTakenSeconds;
+      });
+
+      if (sortedAttempts.length === 0) {
+        return res.status(400).json({ error: `No student attempts recorded for ${cleanDept} in Round ${activeRound}.` });
+      }
+
+      if (activeRound === 1) {
+        const countToQualify = Math.ceil(sortedAttempts.length / 2);
+        const promoted = sortedAttempts.slice(0, countToQualify).map(a => a.regNo || a.studentName);
+        state.qualifiedForRound2 = promoted;
+        state.activeRound = 2;
+        return res.json({ success: true, activeRound: 2, promoted, state });
+      } else if (activeRound === 2) {
+        const countToQualify = Math.ceil(sortedAttempts.length / 2);
+        const promoted = sortedAttempts.slice(0, countToQualify).map(a => a.regNo || a.studentName);
+        state.qualifiedForRound3 = promoted;
+        state.activeRound = 3;
+        return res.json({ success: true, activeRound: 3, promoted, state });
+      } else if (activeRound === 3) {
+        const winners = sortedAttempts.slice(0, 3).map((a, idx) => ({
+          username: a.studentName,
+          regNo: a.regNo || "",
+          score: a.score,
+          total: a.total,
+          accuracy: a.accuracy,
+          archetype: a.cognitiveProfile,
+          rank: idx + 1,
+          department: cleanDept
+        }));
+        state.winners = winners;
+        winners.forEach(w => {
+          const student = InMemoryDb.students.find(s => s.regNo === w.regNo.toLowerCase() && s.department === cleanDept);
+          if (student) {
+            student.winner = true;
+            student.finalRank = w.rank;
+            student.finalScore = (w.score / w.total) * 100;
+          }
+        });
+        return res.json({ success: true, activeRound: 4, winners, state });
+      }
+    }
+
+    let state = await TournamentState.findOne({ department: cleanDept });
+    if (!state) {
+      state = new TournamentState({ department: cleanDept });
+    }
+
+    if (state.winners && state.winners.length > 0) {
+      return res.status(400).json({ error: 'Tournament for this department has already concluded.' });
+    }
+
+    const activeRound = state.activeRound;
+    const results = await Result.find({ department: cleanDept, round: activeRound });
+
+    const uniqueStudentAttempts = {};
+    results.forEach(att => {
+      const key = att.regNo ? att.regNo.toLowerCase() : att.studentName.toLowerCase();
+      if (!uniqueStudentAttempts[key] || att.score > uniqueStudentAttempts[key].score) {
+        uniqueStudentAttempts[key] = att;
+      }
+    });
+
+    const sortedAttempts = Object.values(uniqueStudentAttempts).sort((a, b) => {
+      if (b.score !== a.score) return b.score - a.score;
+      return a.timeTakenSeconds - b.timeTakenSeconds;
+    });
+
+    if (sortedAttempts.length === 0) {
+      return res.status(400).json({ error: `No student attempts recorded for ${cleanDept} in Round ${activeRound}. Cannot conclude the round.` });
+    }
+
+    if (activeRound === 1) {
+      const countToQualify = Math.ceil(sortedAttempts.length / 2);
+      const promoted = sortedAttempts.slice(0, countToQualify).map(a => a.regNo || a.studentName);
+      
+      state.qualifiedForRound2 = promoted;
+      state.activeRound = 2;
+      await state.save();
+
+      res.json({ success: true, activeRound: 2, promoted, state });
+    } else if (activeRound === 2) {
+      const countToQualify = Math.ceil(sortedAttempts.length / 2);
+      const promoted = sortedAttempts.slice(0, countToQualify).map(a => a.regNo || a.studentName);
+
+      state.qualifiedForRound3 = promoted;
+      state.activeRound = 3;
+      await state.save();
+
+      res.json({ success: true, activeRound: 3, promoted, state });
+    } else if (activeRound === 3) {
+      // Crown top 3 winners using precise tie handling
+      // 1. Higher final round score (att.score)
+      // 2. If equal, higher previous-round (round 2) score
+      // 3. If still equal, earlier final submission time
+      const attemptsWithR2 = [];
+      for (const att of sortedAttempts) {
+        let r2Score = 0;
+        if (att.regNo) {
+          const r2Res = await Result.findOne({ regNo: att.regNo, department: cleanDept, round: 2 }).sort({ score: -1 });
+          if (r2Res) r2Score = r2Res.score;
+        }
+        attemptsWithR2.push({ att, r2Score });
+      }
+
+      attemptsWithR2.sort((x, y) => {
+        const a = x.att;
+        const b = y.att;
+        if (b.score !== a.score) return b.score - a.score;
+        if (y.r2Score !== x.r2Score) return y.r2Score - x.r2Score;
+        return new Date(a.timestamp) - new Date(b.timestamp);
+      });
+
+      const finalSorted = attemptsWithR2.map(item => item.att);
+      const winners = finalSorted.slice(0, 3).map((a, idx) => ({
+        username: a.studentName,
+        regNo: a.regNo || "",
+        score: a.score,
+        total: a.total,
+        accuracy: a.accuracy,
+        archetype: a.cognitiveProfile,
+        rank: idx + 1,
+        department: cleanDept
+      }));
+
+      state.winners = winners;
+      await state.save();
+
+      // Reset all students in this department's winner statuses first
+      await Student.updateMany({ department: cleanDept }, { $set: { winner: false }, $unset: { finalRank: 1, finalScore: 1 } });
+
+      // Save top 3 winners with winner: true
+      for (const w of winners) {
+        if (w.regNo) {
+          await Student.updateOne(
+            { regNo: w.regNo.toLowerCase(), department: cleanDept },
+            { $set: { winner: true, finalRank: w.rank, finalScore: (w.score / w.total) * 100 } }
+          );
+        }
+      }
+
+      res.json({ success: true, activeRound: 4, winners, state });
+    }
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Admin stats summary by department
+app.get('/api/admin/department-summary', async (req, res) => {
+  try {
+    const DEPARTMENTS = ['IT', 'AIDS', 'CSBS'];
+    const summaries = {};
+
+    if (useInMemoryDb) {
+      for (const dept of DEPARTMENTS) {
+        const state = InMemoryDb.tournamentStates[dept];
+        const totalStudents = InMemoryDb.students.filter(s => s.department === dept).length;
+        const completedCount = InMemoryDb.results.filter(r => r.department === dept && r.round === state.activeRound).length;
+        let qualifiedCount = 0;
+        if (state.activeRound === 1) {
+          qualifiedCount = totalStudents;
+        } else if (state.activeRound === 2) {
+          qualifiedCount = state.qualifiedForRound2.length;
+        } else if (state.activeRound === 3) {
+          qualifiedCount = state.qualifiedForRound3.length;
+        }
+        summaries[dept] = {
+          activeRound: state.activeRound,
+          activeRoundName: state.activeRound === 1 ? state.round1Name : (state.activeRound === 2 ? state.round2Name : state.round3Name),
+          totalStudents,
+          completedCount,
+          idleCount: Math.max(0, qualifiedCount - completedCount),
+          qualifiedCount,
+          winners: state.winners || []
+        };
+      }
+      return res.json(summaries);
+    }
+
+    for (const dept of DEPARTMENTS) {
+      let state = await TournamentState.findOne({ department: dept });
+      if (!state) {
+        state = new TournamentState({ department: dept });
+        await state.save();
+      }
+      const activeRound = state.activeRound;
+      const totalStudents = await Student.countDocuments({ department: dept });
+      const completedCount = await Result.countDocuments({ department: dept, round: activeRound });
+
+      let qualifiedCount = 0;
+      if (activeRound === 1) {
+        qualifiedCount = totalStudents;
+      } else if (activeRound === 2) {
+        qualifiedCount = state.qualifiedForRound2.length;
+      } else if (activeRound === 3) {
+        qualifiedCount = state.qualifiedForRound3.length;
+      }
+
+      summaries[dept] = {
+        activeRound,
+        activeRoundName: activeRound === 1 ? state.round1Name : (activeRound === 2 ? state.round2Name : state.round3Name),
+        totalStudents,
+        completedCount,
+        idleCount: Math.max(0, qualifiedCount - completedCount),
+        qualifiedCount,
+        winners: state.winners || []
+      };
+    }
+    res.json(summaries);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 
@@ -530,10 +956,16 @@ const DEFAULT_QUESTIONS = [
 ];
 
 async function seedDatabase() {
+  const DEPARTMENTS = ['IT', 'AIDS', 'CSBS'];
+
   if (useInMemoryDb) {
     InMemoryDb.questions = DEFAULT_QUESTIONS.map((q, idx) => ({ _id: `q_${idx + 1}`, ...q }));
-    InMemoryDb.students = [{ username: 'Default Student', regNo: 'reg12345' }];
-    console.log('Seeded in-memory fallback database with default questions.');
+    InMemoryDb.students = [
+      { username: 'Default Student', regNo: 'reg12345', department: 'IT' },
+      { username: 'AIDS Student', regNo: 'reg54321', department: 'AIDS' },
+      { username: 'CSBS Student', regNo: 'reg67890', department: 'CSBS' }
+    ];
+    console.log('Seeded in-memory fallback database with default questions and students for IT, AIDS, and CSBS.');
     return;
   }
   try {
@@ -545,12 +977,17 @@ async function seedDatabase() {
       console.log('Seeded default administrator credentials: admin/admin.');
     }
 
-    // 2. Seed Tournament state
-    const tourCount = await TournamentState.countDocuments();
-    if (tourCount === 0) {
-      const defaultState = new TournamentState();
-      await defaultState.save();
-      console.log('Seeded initial tournament settings (Round 1 active).');
+    // 2. Seed Tournament states
+    for (const dept of DEPARTMENTS) {
+      const existingState = await TournamentState.findOne({ department: dept });
+      if (!existingState) {
+        const defaultState = new TournamentState({
+          department: dept,
+          departmentName: dept === 'IT' ? 'Department of Information Technology' : (dept === 'AIDS' ? 'Department of Artificial Intelligence and Data Science' : 'Department of Computer Science and Business Systems')
+        });
+        await defaultState.save();
+        console.log(`Seeded initial tournament settings for department ${dept} (Round 1 active).`);
+      }
     }
 
     // 3. Seed Default questions
@@ -561,11 +998,18 @@ async function seedDatabase() {
     }
 
     // 4. Seed Default Student credentials
-    const studentCount = await Student.countDocuments();
-    if (studentCount === 0) {
-      const defaultStudent = new Student({ username: 'Default Student', regNo: 'reg12345' });
-      await defaultStudent.save();
-      console.log('Seeded default student credentials: Default Student / reg12345.');
+    const defaultStudents = [
+      { username: 'Default Student', regNo: 'reg12345', department: 'IT' },
+      { username: 'AIDS Student', regNo: 'reg54321', department: 'AIDS' },
+      { username: 'CSBS Student', regNo: 'reg67890', department: 'CSBS' }
+    ];
+    for (const s of defaultStudents) {
+      const existing = await Student.findOne({ regNo: s.regNo });
+      if (!existing) {
+        const newStudent = new Student(s);
+        await newStudent.save();
+        console.log(`Seeded default student credentials: ${s.username} / ${s.regNo} (${s.department}).`);
+      }
     }
   } catch (err) {
     console.error('Seeding database failed:', err);
