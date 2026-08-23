@@ -1210,24 +1210,24 @@ header.app-header {
 
 /* Centered Student Portal card pulsing glow & lift animation */
 .student-card {
-  border: 1px solid rgba(99, 102, 241, 0.25) !important;
-  box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.7), 0 0 20px rgba(99, 102, 241, 0.15) !important;
+  border: 1px solid rgba(85, 169, 238, 0.25) !important;
+  box-shadow: 0 10px 35px rgba(13, 64, 89, 0.05), 0 0 20px rgba(85, 169, 238, 0.15) !important;
   animation: pulseGlow 3s infinite alternate ease-in-out;
   transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.4s ease !important;
 }
 .student-card:hover {
   transform: translateY(-8px) scale(1.02) !important;
-  box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.8), 0 0 30px rgba(99, 102, 241, 0.35) !important;
-  border-color: rgba(99, 102, 241, 0.6) !important;
+  box-shadow: 0 15px 40px rgba(13, 64, 89, 0.08), 0 0 30px rgba(85, 169, 238, 0.3) !important;
+  border-color: rgba(85, 169, 238, 0.5) !important;
 }
 @keyframes pulseGlow {
   0% {
-    box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.7), 0 0 15px rgba(99, 102, 241, 0.1);
-    border-color: rgba(99, 102, 241, 0.2);
+    box-shadow: 0 10px 35px rgba(13, 64, 89, 0.05), 0 0 15px rgba(85, 169, 238, 0.1);
+    border-color: rgba(85, 169, 238, 0.2);
   }
   100% {
-    box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.7), 0 0 25px rgba(99, 102, 241, 0.25);
-    border-color: rgba(99, 102, 241, 0.45);
+    box-shadow: 0 10px 35px rgba(13, 64, 89, 0.05), 0 0 25px rgba(85, 169, 238, 0.25);
+    border-color: rgba(85, 169, 238, 0.45);
   }
 }
 
@@ -1462,19 +1462,15 @@ header.app-header {
   margin-bottom: 12px;
   font-family: var(--font-display);
   letter-spacing: -0.5px;
-  text-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
 .hero-subtitle-tag-main {
   font-size: 1.65rem;
   font-weight: 850;
-  background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
   margin-bottom: 0px;
   font-family: var(--font-display);
-  text-shadow: 0 0 20px rgba(236, 72, 153, 0.3);
   display: inline-block;
+  color: var(--text-primary);
 }
 
 @media (max-width: 768px) {
@@ -1755,17 +1751,17 @@ header.app-header {
   width: 100%;
   max-width: 380px;
   cursor: pointer;
-  background: rgba(15, 23, 42, 0.65);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
   border-radius: var(--radius-md);
   padding: 28px;
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 10px 35px rgba(13, 64, 89, 0.05), 0 2px 8px rgba(13, 64, 89, 0.02);
   transition: var(--transition-smooth);
 }
 
 .landing-right-col .portal-card:hover {
   transform: translateY(-6px);
-  box-shadow: var(--shadow-glow);
+  box-shadow: 0 15px 40px rgba(13, 64, 89, 0.08), 0 0 20px rgba(85, 169, 238, 0.2);
   border-color: var(--glass-border-focus);
 }
 
