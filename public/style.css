@@ -1636,9 +1636,9 @@ header.app-header {
   transform: translateX(-50%) rotate(45deg);
   width: 10px;
   height: 10px;
-  background: rgba(15, 23, 42, 0.95);
-  border-right: 1px solid rgba(168, 85, 247, 0.35);
-  border-bottom: 1px solid rgba(168, 85, 247, 0.35);
+  background: #0D4059;
+  border-right: 1px solid #15536F;
+  border-bottom: 1px solid #15536F;
 }
 
 @keyframes floatSpeech {
@@ -1665,21 +1665,21 @@ header.app-header {
 .ring-1 {
   width: 220px;
   height: 220px;
-  border: 2px solid rgba(20, 184, 166, 0.35);
+  border: 2px solid rgba(85, 169, 238, 0.4);
   border-top-color: transparent;
   border-bottom-color: transparent;
   animation: rotateClockwise 12s linear infinite;
-  box-shadow: 0 0 25px rgba(20, 184, 166, 0.25);
+  box-shadow: 0 0 25px rgba(85, 169, 238, 0.25);
 }
 
 .ring-2 {
   width: 175px;
   height: 175px;
-  border: 1.5px solid rgba(236, 72, 153, 0.35);
+  border: 1.5px solid rgba(236, 72, 153, 0.4);
   border-left-color: transparent;
   border-right-color: transparent;
   animation: rotateCounter 8s linear infinite;
-  box-shadow: 0 0 20px rgba(236, 72, 153, 0.2);
+  box-shadow: 0 0 20px rgba(236, 72, 153, 0.25);
 }
 
 @keyframes rotateClockwise {
