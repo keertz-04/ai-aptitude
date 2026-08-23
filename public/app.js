@@ -105,7 +105,7 @@ const AppRouter = {
       const state = window.AppStore.getTournamentState(dept);
       if (state) {
         if (instEl) instEl.textContent = state.institutionName || "Ganadipathy Tulsi's Jain Engineering College";
-        if (deptEl) deptEl.textContent = state.departmentName || "Department of Information Technology";
+        if (deptEl) deptEl.innerHTML = `<span style="color: #0D4059; font-weight: 800;">${state.departmentName || "Department of Information Technology"}</span>`;
       }
     } else {
       // Default branding for guests / landing screen
@@ -113,7 +113,9 @@ const AppRouter = {
       if (state) {
         if (instEl) instEl.textContent = state.institutionName || "Ganadipathy Tulsi's Jain Engineering College";
       }
-      if (deptEl) deptEl.textContent = "Departments of IT, AIDS & CSBS";
+      if (deptEl) {
+        deptEl.innerHTML = `<span style="color: #D69A32;">Department of</span> <span style="color: #0D4059; font-weight: 800;">IT</span><span style="color: #D69A32;">,</span> <span style="color: #D69A32; font-weight: 800;">AIDS</span> <span style="color: #D69A32;">&</span> <span style="color: #55A9EE; font-weight: 800;">CSBS</span>`;
+      }
     }
   },
 
