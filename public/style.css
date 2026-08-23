@@ -1761,8 +1761,8 @@ header.app-header {
   width: 100%;
   max-width: 380px;
   cursor: pointer;
-  background: linear-gradient(135deg, #FFFFFF 50%, #EAF5F8 82%, #F7E8C7 100%) !important;
-  border: 1px solid #B9DCE8 !important;
+  background: linear-gradient(135deg, #E2F1F5 0%, #F5EAD4 100%) !important;
+  border: 1.5px solid #B9DCE8 !important;
   border-top: 4px solid #0879B5 !important;
   border-radius: 24px !important;
   padding: 28px;
