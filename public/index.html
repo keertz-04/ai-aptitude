@@ -51,15 +51,35 @@
         <h3 class="hero-subtitle-tag-main" id="landing-department-title">Departments of IT, AIDS & CSBS</h3>
       </div>
 
+      <!-- Subtle Decorative Circuit Pattern -->
+      <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; pointer-events: none; z-index: 0; opacity: 0.05;">
+        <svg viewBox="0 0 1000 1000" width="100%" height="100%" fill="none" stroke="#15536F" stroke-width="1.5">
+          <path d="M100 100 h200 l50 50 v100 m100 0 h150 l30-30 v-80" />
+          <circle cx="100" cy="100" r="4" fill="#15536F" />
+          <circle cx="350" cy="250" r="4" fill="#15536F" />
+          <circle cx="630" cy="140" r="4" fill="#15536F" />
+          
+          <path d="M900 200 h-120 l-40 40 v150 h-80" />
+          <circle cx="900" cy="200" r="4" fill="#15536F" />
+          <circle cx="660" cy="390" r="4" fill="#15536F" />
+
+          <path d="M150 800 h180 l40 -40 v-120" />
+          <circle cx="150" cy="800" r="4" fill="#15536F" />
+          
+          <path d="M850 850 h-150 l-50 -50 v-100 h-100" />
+          <circle cx="850" cy="850" r="4" fill="#15536F" />
+        </svg>
+      </div>
+
       <div class="landing-split-container">
         
         <!-- Left Hero Branding column -->
         <div class="landing-left-col" style="align-items: center; justify-content: center; width: 100%; position: relative;">
           <!-- Glowing background contrast bubble to pop the logo out -->
-          <div style="position: absolute; width: 330px; height: 330px; background: radial-gradient(circle, rgba(251, 191, 36, 0.18) 0%, rgba(168, 85, 247, 0.1) 50%, transparent 80%); filter: blur(30px); pointer-events: none; z-index: 0;"></div>
+          <div style="position: absolute; width: 330px; height: 330px; background: radial-gradient(circle, rgba(214, 154, 50, 0.18) 0%, rgba(21, 83, 111, 0.1) 50%, transparent 80%); filter: blur(30px); pointer-events: none; z-index: 0;"></div>
           
-          <div class="logo-wrapper" style="position: relative; z-index: 1; padding: 6px; background: #0c0f17; border: 2px solid rgba(255, 255, 255, 0.15); border-radius: 50%; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65), 0 0 35px rgba(251, 191, 36, 0.15); display: flex; align-items: center; justify-content: center;">
-            <img src="dept_logo.jpg" alt="Departments Emblem Logo" style="width: 240px; height: 240px; border-radius: 50%; object-fit: cover; border: 3px solid rgba(255, 255, 255, 0.2); box-shadow: 0 0 35px rgba(251, 191, 36, 0.25);">
+          <div class="logo-wrapper" style="position: relative; z-index: 1; padding: 6px; background: #0A2330; border: 2px solid rgba(214, 154, 50, 0.3); border-radius: 50%; box-shadow: 0 20px 50px rgba(13, 64, 89, 0.25), 0 0 35px rgba(214, 154, 50, 0.15); display: flex; align-items: center; justify-content: center;">
+            <img src="dept_logo.jpg" alt="Departments Emblem Logo" style="width: 240px; height: 240px; border-radius: 50%; object-fit: cover; border: 3px solid rgba(255, 255, 255, 0.15); box-shadow: 0 0 35px rgba(214, 154, 50, 0.25);">
           </div>
         </div>
 
@@ -75,11 +95,11 @@
               <defs>
                 <linearGradient id="bodyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
                   <stop offset="0%" stop-color="#ffffff" />
-                  <stop offset="100%" stop-color="#f3e8ff" />
+                  <stop offset="100%" stop-color="#e2e8f0" />
                 </linearGradient>
                 <linearGradient id="pinkGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stop-color="#ec4899" />
-                  <stop offset="100%" stop-color="#db2777" />
+                  <stop offset="0%" stop-color="#15536F" />
+                  <stop offset="100%" stop-color="#0D4059" />
                 </linearGradient>
                 <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
                   <stop offset="0%" stop-color="#fbbf24" />
@@ -95,10 +115,10 @@
                 </filter>
               </defs>
               
-              <!-- Robot shadow/jet booster flame -->
-              <path d="M 90 170 Q 100 198 110 170 Z" fill="rgba(236, 72, 153, 0.75)" class="robot-booster-flame" />
+              <!-- Robot shadow/jet booster flame (gold) -->
+              <path d="M 90 170 Q 100 198 110 170 Z" fill="rgba(214, 154, 50, 0.75)" class="robot-booster-flame" />
 
-              <!-- Legs & Feet (pink/white shoes) -->
+              <!-- Legs & Feet (teal/white shoes) -->
               <rect x="74" y="152" width="22" height="18" rx="7" fill="url(#pinkGrad)" />
               <rect x="104" y="152" width="22" height="18" rx="7" fill="url(#pinkGrad)" />
               <circle cx="85" cy="165" r="8" fill="#ffffff" />
@@ -130,11 +150,11 @@
               <rect x="52" y="42" width="96" height="58" rx="16" fill="url(#screenGrad)" />
               
               <!-- Cute Cyan Eyes (winking/happy arches like the picture) -->
-              <path d="M 68 70 Q 78 58 88 70" fill="none" stroke="var(--neon-teal)" stroke-width="5" stroke-linecap="round" class="eye-glow" />
-              <path d="M 112 70 Q 122 58 132 70" fill="none" stroke="var(--neon-teal)" stroke-width="5" stroke-linecap="round" class="eye-glow" />
-              <!-- Cute little blush lines -->
-              <ellipse cx="64" cy="82" rx="6" ry="3" fill="rgba(236, 72, 153, 0.5)" />
-              <ellipse cx="136" cy="82" rx="6" ry="3" fill="rgba(236, 72, 153, 0.5)" />
+              <path d="M 68 70 Q 78 58 88 70" fill="none" stroke="var(--neon-purple)" stroke-width="5" stroke-linecap="round" class="eye-glow" />
+              <path d="M 112 70 Q 122 58 132 70" fill="none" stroke="var(--neon-purple)" stroke-width="5" stroke-linecap="round" class="eye-glow" />
+              <!-- Cute little blush lines (sky blue) -->
+              <ellipse cx="64" cy="82" rx="6" ry="3" fill="rgba(85, 169, 238, 0.4)" />
+              <ellipse cx="136" cy="82" rx="6" ry="3" fill="rgba(85, 169, 238, 0.4)" />
 
               <!-- Headphones (band and cups) -->
               <path d="M 45 42 A 62 62 0 0 1 155 42" fill="none" stroke="url(#pinkGrad)" stroke-width="6" stroke-linecap="round" />
