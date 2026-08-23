@@ -4,8 +4,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap');
 
 :root {
-  --bg-primary: #F7F5EF;
-  --bg-secondary: #EBE8DF;
+  --bg-primary: #F8FAF8;
+  --bg-secondary: #E7F4F8;
   --glass-bg: rgba(255, 255, 255, 0.95);
   --glass-border: rgba(21, 83, 111, 0.12);
   --glass-border-focus: rgba(21, 83, 111, 0.35);
@@ -17,7 +17,7 @@
   --grad-primary: linear-gradient(135deg, #15536F 0%, #0D4059 100%);
   --grad-secondary: linear-gradient(135deg, #55A9EE 0%, #15536F 100%);
   --grad-accent: linear-gradient(135deg, #D69A32 0%, #b27a20 100%);
-  --grad-dark: linear-gradient(180deg, #F7F5EF 0%, #EBE8DF 100%);
+  --grad-dark: linear-gradient(135deg, #F8FAF8 0%, #E7F4F8 50%, #F7E7BF 100%);
   --grad-card-glow: radial-gradient(circle at top left, rgba(21, 83, 111, 0.05), transparent 70%);
 
   /* Neon/Accent Colors */
@@ -46,9 +46,8 @@ body {
   font-family: var(--font-sans);
   background-color: var(--bg-primary);
   background-image: 
-    radial-gradient(at 0% 30%, rgba(85, 169, 238, 0.16) 0px, transparent 60%),
-    radial-gradient(at 100% 70%, rgba(214, 154, 50, 0.16) 0px, transparent 60%),
-    radial-gradient(at 100% 10%, rgba(85, 169, 238, 0.12) 0px, transparent 50%),
+    radial-gradient(at 0% 30%, rgba(231, 244, 248, 0.15) 0px, transparent 65%),
+    radial-gradient(at 100% 70%, rgba(247, 231, 191, 0.15) 0px, transparent 65%),
     var(--grad-dark);
   background-attachment: fixed;
   color: var(--text-primary);

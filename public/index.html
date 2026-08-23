@@ -9,6 +9,43 @@
 </head>
 <body>
 
+  <!-- Subtle tech circuit decorations around edges -->
+  <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: -1; overflow: hidden; opacity: 0.15;">
+    <!-- Top-Left Cyan/Blue Circuit -->
+    <svg style="position: absolute; top: -10px; left: -10px; width: 300px; height: 300px;" viewBox="0 0 200 200" fill="none" stroke="#167A8F" stroke-width="1.5">
+      <path d="M 0 50 h 60 l 30 30 v 50 l 20 20 h 40" />
+      <circle cx="60" cy="50" r="3" fill="#167A8F" />
+      <circle cx="90" cy="80" r="3" fill="#167A8F" />
+      <circle cx="150" cy="150" r="3" fill="#167A8F" />
+      <path d="M 50 0 v 30 l -20 20 h -30" />
+      <circle cx="30" cy="50" r="2" fill="#167A8F" />
+    </svg>
+    
+    <!-- Top-Right Gold Circuit -->
+    <svg style="position: absolute; top: -10px; right: -10px; width: 300px; height: 300px;" viewBox="0 0 200 200" fill="none" stroke="#D69A32" stroke-width="1.5">
+      <path d="M 200 60 h -50 l -30 30 v 40 l -20 20 h -50" />
+      <circle cx="150" cy="60" r="3" fill="#D69A32" />
+      <circle cx="120" cy="90" r="3" fill="#D69A32" />
+      <circle cx="50" cy="150" r="3" fill="#D69A32" />
+    </svg>
+
+    <!-- Bottom-Left Gold Circuit -->
+    <svg style="position: absolute; bottom: -10px; left: -10px; width: 300px; height: 300px;" viewBox="0 0 200 200" fill="none" stroke="#D69A32" stroke-width="1.5">
+      <path d="M 0 150 h 50 l 30 -30 v -40 l 20 -20 h 50" />
+      <circle cx="50" cy="150" r="3" fill="#D69A32" />
+      <circle cx="80" cy="120" r="3" fill="#D69A32" />
+      <circle cx="150" cy="60" r="3" fill="#D69A32" />
+    </svg>
+
+    <!-- Bottom-Right Cyan/Blue Circuit -->
+    <svg style="position: absolute; bottom: -10px; right: -10px; width: 300px; height: 300px;" viewBox="0 0 200 200" fill="none" stroke="#167A8F" stroke-width="1.5">
+      <path d="M 200 140 h -60 l -30 -30 v -50 l -20 -20 h -40" />
+      <circle cx="140" cy="140" r="3" fill="#167A8F" />
+      <circle cx="110" cy="110" r="3" fill="#167A8F" />
+      <circle cx="50" cy="40" r="3" fill="#167A8F" />
+    </svg>
+  </div>
+
   <div class="app-container">
     
     <!-- Application Header -->
@@ -49,7 +86,7 @@
       
       <!-- Centered Hero Header -->
       <div class="landing-hero-header">
-        <h1 class="hero-title-main" style="font-size: 3.8rem; font-weight: 900; background: linear-gradient(135deg, #55A9EE 0%, #0D4059 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 8px; font-family: var(--font-display); letter-spacing: 2px; text-shadow: 0 0 25px rgba(85, 169, 238, 0.3); text-transform: uppercase;">TRIQUETRA</h1>
+        <h1 class="hero-title-main" style="font-size: 2.5rem; font-weight: 900; color: #0B465F; margin-bottom: 8px; font-family: var(--font-display); letter-spacing: 4px; text-shadow: 0 0 15px rgba(85, 169, 238, 0.45); text-transform: uppercase;">TRIQUETRA</h1>
         <h2 class="hero-title-main" id="landing-institution-title" style="margin-bottom: 16px; color: #0D4059; font-size: 2.8rem; font-weight: 800;">Ganadipathy Tulsi's Jain Engineering College</h2>
         
         <div style="display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 8px;">
@@ -57,10 +94,10 @@
             <span style="width: 6px; height: 6px; background: #D69A32; border-radius: 50%; position: absolute; right: 0; top: -2px;"></span>
           </span>
           <h3 class="hero-subtitle-tag-main" id="landing-department-title" style="margin-bottom: 0; font-size: 1.5rem; font-weight: 600; text-shadow: none;">
-            <span style="color: #D69A32;">Department of</span>
-            <span style="color: #0D4059; font-weight: 800;">IT</span><span style="color: #D69A32;">,</span>
-            <span style="color: #D69A32; font-weight: 800;">AIDS</span> <span style="color: #D69A32;">&</span>
-            <span style="color: #55A9EE; font-weight: 800;">CSBS</span>
+            <span style="color: #0B465F;">Department of</span>
+            <span style="color: #D69A32; font-weight: 800;">IT</span><span style="color: #0B465F;">,</span>
+            <span style="color: #167A8F; font-weight: 800;">AIDS</span> <span style="color: #0B465F;">&</span>
+            <span style="color: #2688D8; font-weight: 800;">CSBS</span>
           </h3>
           <span style="width: 50px; height: 2px; background: linear-gradient(90deg, #D69A32, transparent); position: relative; display: inline-block;">
             <span style="width: 6px; height: 6px; background: #D69A32; border-radius: 50%; position: absolute; left: 0; top: -2px;"></span>
@@ -93,10 +130,10 @@
         <!-- Left Hero Branding column -->
         <div class="landing-left-col" style="align-items: center; justify-content: center; width: 100%; position: relative;">
           <!-- Glowing background contrast bubble to pop the logo out -->
-          <div style="position: absolute; width: 330px; height: 330px; background: radial-gradient(circle, rgba(85, 169, 238, 0.25) 0%, rgba(21, 83, 111, 0.12) 50%, transparent 80%); filter: blur(30px); pointer-events: none; z-index: 0;"></div>
+          <div style="position: absolute; width: 260px; height: 260px; background: radial-gradient(circle, rgba(85, 169, 238, 0.25) 0%, rgba(21, 83, 111, 0.12) 50%, transparent 80%); filter: blur(30px); pointer-events: none; z-index: 0;"></div>
           
           <div class="logo-wrapper" style="position: relative; z-index: 1; padding: 0; background: transparent; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-            <img src="dept_logo.jpg" alt="Departments Emblem Logo" style="width: 250px; height: 250px; border-radius: 50%; object-fit: cover; border: 4px solid #ffffff; box-shadow: 0 10px 40px rgba(13, 64, 89, 0.12), 0 0 35px rgba(85, 169, 238, 0.35);">
+            <img src="dept_logo.jpg" alt="Departments Emblem Logo" style="width: 200px; height: 200px; border-radius: 50%; object-fit: cover; border: 4px solid #ffffff; box-shadow: 0 10px 30px rgba(13, 64, 89, 0.1), 0 0 25px rgba(85, 169, 238, 0.3);">
           </div>
         </div>
 
@@ -167,11 +204,11 @@
               <rect x="52" y="42" width="96" height="58" rx="16" fill="url(#screenGrad)" />
               
               <!-- Cute Cyan Eyes (winking/happy arches like the picture) -->
-              <path d="M 68 70 Q 78 58 88 70" fill="none" stroke="var(--neon-purple)" stroke-width="5" stroke-linecap="round" class="eye-glow" />
-              <path d="M 112 70 Q 122 58 132 70" fill="none" stroke="var(--neon-purple)" stroke-width="5" stroke-linecap="round" class="eye-glow" />
-              <!-- Cute little blush lines (sky blue) -->
-              <ellipse cx="64" cy="82" rx="6" ry="3" fill="rgba(85, 169, 238, 0.4)" />
-              <ellipse cx="136" cy="82" rx="6" ry="3" fill="rgba(85, 169, 238, 0.4)" />
+              <path d="M 68 70 Q 78 58 88 70" fill="none" stroke="#00f2fe" stroke-width="5" stroke-linecap="round" class="eye-glow" />
+              <path d="M 112 70 Q 122 58 132 70" fill="none" stroke="#00f2fe" stroke-width="5" stroke-linecap="round" class="eye-glow" />
+              <!-- Cute little blush lines (pink) -->
+              <ellipse cx="64" cy="82" rx="6" ry="3" fill="rgba(236, 72, 153, 0.5)" />
+              <ellipse cx="136" cy="82" rx="6" ry="3" fill="rgba(236, 72, 153, 0.5)" />
 
               <!-- Headphones (band and cups) -->
               <path d="M 45 42 A 62 62 0 0 1 155 42" fill="none" stroke="url(#pinkGrad)" stroke-width="6" stroke-linecap="round" />
