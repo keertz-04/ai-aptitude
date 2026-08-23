@@ -53,6 +53,28 @@ const AppStore = {
     }
   },
 
+  async fetchResults() {
+    try {
+      const rRes = await fetchApi('/api/results');
+      if (rRes.ok) {
+        this._results = await rRes.json();
+      }
+    } catch (err) {
+      console.error('Failed to fetch results from server:', err);
+    }
+  },
+
+  async fetchTournamentState() {
+    try {
+      const tourRes = await fetchApi('/api/tournament');
+      if (tourRes.ok) {
+        this._tournamentState = await tourRes.json();
+      }
+    } catch (err) {
+      console.error('Failed to fetch tournament state from server:', err);
+    }
+  },
+
   // --- Tournament State Management ---
   getTournamentState(dept) {
     if (!this._tournamentState) {

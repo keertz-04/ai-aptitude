@@ -58,6 +58,10 @@ const AppRouter = {
       return;
     }
     this.currentView = viewId;
+    sessionStorage.setItem("currentView", viewId);
+    if (viewId !== "results") {
+      sessionStorage.removeItem("activeResultId");
+    }
 
     // Toggle active view panel
     document.querySelectorAll(".view-panel").forEach(panel => {
@@ -243,6 +247,8 @@ const AppAuth = {
       window.showCustomAlert("Action Blocked", "⚠️ Action Blocked: You cannot log out while the assessment is active.");
       return;
     }
+    sessionStorage.removeItem("currentView");
+    sessionStorage.removeItem("activeResultId");
     window.AppStore.setCurrentUser(null);
     window.AppRouter.switchView("landing");
   }
@@ -260,10 +266,18 @@ window.addEventListener("DOMContentLoaded", async () => {
 
   const user = window.AppStore.getCurrentUser();
   if (user) {
+    const savedView = sessionStorage.getItem("currentView");
+    const savedResultId = sessionStorage.getItem("activeResultId");
+
     if (user.role === "admin") {
       window.AppRouter.switchView("admin-dashboard");
     } else {
-      window.AppRouter.switchView("student-dashboard");
+      if (savedView === "results" && savedResultId) {
+        // Asynchronously restore results review details screen
+        window.StudentPortal.showResults(savedResultId);
+      } else {
+        window.AppRouter.switchView("student-dashboard");
+      }
     }
   } else {
     window.AppRouter.switchView("landing");

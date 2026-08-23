@@ -21,7 +21,7 @@ const AdminPortal = {
     this.switchTab(this.currentTab);
   },
 
-  switchTab(tabId) {
+  async switchTab(tabId) {
     this.currentTab = tabId;
     
     // Toggle active tab buttons
@@ -56,17 +56,21 @@ const AdminPortal = {
     if (tabId === "questions") {
       this.renderQuestionsList();
     } else if (tabId === "results") {
+      await window.AppStore.fetchResults();
       this.renderStudentResults();
+      this.renderStats();
     } else if (tabId === "tournament") {
+      await window.AppStore.fetchTournamentState();
       if (this.selectedDepartment === "ALL") {
         document.getElementById("dept-overview-summary-container").style.display = "block";
         document.getElementById("tour-department-specific-card").style.display = "none";
-        this.renderAllDepartmentsSummary();
+        await this.renderAllDepartmentsSummary();
       } else {
         document.getElementById("dept-overview-summary-container").style.display = "none";
         document.getElementById("tour-department-specific-card").style.display = "block";
         this.renderTournamentTab();
       }
+      this.renderStats();
     } else if (tabId === "settings") {
       const creds = window.AppStore.getAdminCredentials();
       document.getElementById("setting-admin-username").value = creds.username;
@@ -612,7 +616,7 @@ const AdminPortal = {
     alert("Administrator credentials updated successfully! These changes will apply next time you log in.");
   },
 
-  changeSelectedDept(dept) {
+  async changeSelectedDept(dept) {
     this.selectedDepartment = dept;
     
     // Update active button state in the selector
@@ -624,11 +628,17 @@ const AdminPortal = {
       }
     });
 
+    // Fetch latest results and states from server in parallel
+    await Promise.all([
+      window.AppStore.fetchResults(),
+      window.AppStore.fetchTournamentState()
+    ]);
+
     // Render the content depending on department selection
     if (dept === "ALL") {
       document.getElementById("dept-overview-summary-container").style.display = "block";
       document.getElementById("tour-department-specific-card").style.display = "none";
-      this.renderAllDepartmentsSummary();
+      await this.renderAllDepartmentsSummary();
     } else {
       document.getElementById("dept-overview-summary-container").style.display = "none";
       document.getElementById("tour-department-specific-card").style.display = "block";

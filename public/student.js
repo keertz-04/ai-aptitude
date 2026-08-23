@@ -539,15 +539,22 @@ const StudentPortal = {
     const savedResult = await window.AppStore.saveResult(resultToSave);
 
     // Redirect to results view
-    this.showResults(savedResult._id || savedResult.id);
+    await this.showResults(savedResult._id || savedResult.id);
   },
 
   // --- Results Reporting & Visualization ---
-  showResults(resultId) {
+  async showResults(resultId) {
     if (!resultId) {
       alert("Test results not found.");
       return;
     }
+    
+    // Fetch latest tournament state from the server so explanations lock/unlock is real-time
+    await window.AppStore.fetchTournamentState();
+    
+    // Store activeResultId in sessionStorage so refresh doesn't leave the page
+    sessionStorage.setItem("activeResultId", resultId);
+
     const results = window.AppStore.getResults();
     const res = results.find(r => r._id === resultId || r.id === resultId);
     if (!res) {
