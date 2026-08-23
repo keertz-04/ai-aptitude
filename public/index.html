@@ -423,6 +423,7 @@
           <div class="admin-tabs">
             <button class="tab-btn active" data-tab="questions" onclick="AdminPortal.switchTab('questions')">Questions Bank</button>
             <button class="tab-btn" data-tab="results" onclick="AdminPortal.switchTab('results')">Student Attempts</button>
+            <button class="tab-btn" data-tab="students" onclick="AdminPortal.switchTab('students')">Registered Students</button>
             <button class="tab-btn" data-tab="tournament" onclick="AdminPortal.switchTab('tournament')">Tournament Control</button>
             <button class="tab-btn" data-tab="settings" onclick="AdminPortal.switchTab('settings')">Settings</button>
           </div>
@@ -548,6 +549,37 @@
                 </thead>
                 <tbody id="admin-results-tbody">
                   <!-- Student results filled dynamically -->
+                </tbody>
+              </table>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- SECTION: Registered Students Panel -->
+        <div class="admin-content-section" id="admin-sec-students">
+          <div class="glass-card">
+            
+            <div class="flex-between mb-24">
+              <h3>Registered Students</h3>
+              <div style="font-size: 0.9rem; color: var(--text-secondary);">
+                Total registered participants in active directory.
+              </div>
+            </div>
+
+            <!-- Students list table -->
+            <div class="table-responsive">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>Student Name</th>
+                    <th>Registration Number</th>
+                    <th>Department</th>
+                    <th>Tournament Qualification Status</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-students-tbody">
+                  <!-- Registered students filled dynamically -->
                 </tbody>
               </table>
             </div>

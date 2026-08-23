@@ -45,7 +45,7 @@ const AdminPortal = {
     // Show/hide department selector globally based on active tab
     const selectorCard = document.getElementById("admin-global-dept-selector-card");
     if (selectorCard) {
-      if (tabId === "results" || tabId === "tournament") {
+      if (tabId === "results" || tabId === "tournament" || tabId === "students") {
         selectorCard.style.display = "flex";
       } else {
         selectorCard.style.display = "none";
@@ -58,6 +58,10 @@ const AdminPortal = {
     } else if (tabId === "results") {
       await window.AppStore.fetchResults();
       this.renderStudentResults();
+      this.renderStats();
+    } else if (tabId === "students") {
+      await window.AppStore.fetchStudents();
+      this.renderRegisteredStudents();
       this.renderStats();
     } else if (tabId === "tournament") {
       await window.AppStore.fetchTournamentState();
@@ -294,6 +298,50 @@ const AdminPortal = {
         <td><span class="score-badge" style="background: rgba(99, 102, 241, 0.15); color: var(--neon-indigo); border-color: var(--neon-indigo);">${overallPercent}%</span></td>
         <td>${res.timeTakenSeconds}s</td>
         <td>${violationText}</td>
+      `;
+      tableBody.appendChild(row);
+    });
+  },
+
+  renderRegisteredStudents() {
+    const tableBody = document.getElementById("admin-students-tbody");
+    if (!tableBody) return;
+    tableBody.innerHTML = "";
+
+    let students = window.AppStore.getStudents();
+    if (this.selectedDepartment !== "ALL") {
+      students = students.filter(s => s.department === this.selectedDepartment);
+    }
+    students = students.sort((a, b) => a.username.localeCompare(b.username));
+
+    if (students.length === 0) {
+      tableBody.innerHTML = `
+        <tr>
+          <td colspan="4" class="empty-state">
+            <p>No registered students found.</p>
+          </td>
+        </tr>
+      `;
+      return;
+    }
+
+    students.forEach(s => {
+      const row = document.createElement("tr");
+      
+      let statusStyle = "";
+      if (s.status.includes("Winner") || s.status.includes("🥇") || s.status.includes("🥈") || s.status.includes("🥉")) {
+        statusStyle = "background: rgba(20, 184, 166, 0.15); color: var(--neon-teal); border: 1px solid var(--neon-teal);";
+      } else if (s.status.includes("Eliminated")) {
+        statusStyle = "background: rgba(244, 63, 94, 0.1); color: var(--neon-pink); border: 1px solid rgba(244, 63, 94, 0.2);";
+      } else {
+        statusStyle = "background: rgba(99, 102, 241, 0.15); color: var(--neon-indigo); border: 1px solid rgba(99, 102, 241, 0.2);";
+      }
+
+      row.innerHTML = `
+        <td><strong>${s.username}</strong></td>
+        <td><code>${s.regNo.toUpperCase()}</code></td>
+        <td><span class="category-tag">${s.department}</span></td>
+        <td><span class="score-badge" style="${statusStyle}">${s.status}</span></td>
       `;
       tableBody.appendChild(row);
     });
@@ -628,10 +676,11 @@ const AdminPortal = {
       }
     });
 
-    // Fetch latest results and states from server in parallel
+    // Fetch latest results, states, and students from server in parallel
     await Promise.all([
       window.AppStore.fetchResults(),
-      window.AppStore.fetchTournamentState()
+      window.AppStore.fetchTournamentState(),
+      window.AppStore.fetchStudents()
     ]);
 
     // Render the content depending on department selection
@@ -646,6 +695,8 @@ const AdminPortal = {
     }
     if (this.currentTab === "results") {
       this.renderStudentResults();
+    } else if (this.currentTab === "students") {
+      this.renderRegisteredStudents();
     }
     this.renderStats();
   },

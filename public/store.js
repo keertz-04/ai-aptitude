@@ -13,6 +13,7 @@ function fetchApi(path, options) {
 const AppStore = {
   _questions: [],
   _results: [],
+  _students: [],
   _adminCredentials: { username: "admin", password: "admin" },
   _tournamentState: {},
 
@@ -73,6 +74,21 @@ const AppStore = {
     } catch (err) {
       console.error('Failed to fetch tournament state from server:', err);
     }
+  },
+
+  async fetchStudents() {
+    try {
+      const sRes = await fetchApi('/api/admin/students');
+      if (sRes.ok) {
+        this._students = await sRes.json();
+      }
+    } catch (err) {
+      console.error('Failed to fetch registered students list:', err);
+    }
+  },
+
+  getStudents() {
+    return this._students;
   },
 
   // --- Tournament State Management ---

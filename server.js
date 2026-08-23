@@ -241,6 +241,79 @@ app.get('/api/results', async (req, res) => {
   }
 });
 
+// Admin Registered Students API
+app.get('/api/admin/students', async (req, res) => {
+  try {
+    let students = [];
+    let states = [];
+    if (useInMemoryDb) {
+      students = InMemoryDb.students || [];
+      const DEPARTMENTS = ['IT', 'AIDS', 'CSBS'];
+      states = DEPARTMENTS.map(dept => {
+        const s = (InMemoryDb.tournamentStates && InMemoryDb.tournamentStates[dept]) || {};
+        return {
+          department: dept,
+          activeRound: s.activeRound || 1,
+          qualifiedForRound2: s.qualifiedForRound2 || [],
+          qualifiedForRound3: s.qualifiedForRound3 || [],
+          winners: s.winners || []
+        };
+      });
+    } else {
+      students = await Student.find();
+      states = await TournamentState.find();
+    }
+
+    const studentsWithStatus = students.map(student => {
+      const sDept = (student.department || 'IT').toUpperCase();
+      const sReg = (student.regNo || '').toLowerCase();
+      const state = states.find(st => st.department === sDept);
+      
+      let status = "Active - Round 1";
+      if (student.winner) {
+        const medal = student.finalRank === 1 ? "🥇" : (student.finalRank === 2 ? "🥈" : "🥉");
+        status = `${medal} ${student.finalRank === 1 ? '1st' : (student.finalRank === 2 ? '2nd' : '3rd')} Place Winner`;
+      } else if (state) {
+        const isCompleted = state.winners && state.winners.length > 0;
+        if (isCompleted) {
+          status = "Eliminated / Did not place";
+        } else if (state.activeRound === 3) {
+          const q3 = (state.qualifiedForRound3 || []).map(r => r.toLowerCase());
+          if (q3.includes(sReg)) {
+            status = "Active - " + (state.round3Name || "Round 3");
+          } else {
+            status = "Eliminated in " + (state.round2Name || "Round 2");
+          }
+        } else if (state.activeRound === 2) {
+          const q2 = (state.qualifiedForRound2 || []).map(r => r.toLowerCase());
+          if (q2.includes(sReg)) {
+            status = "Active - " + (state.round2Name || "Round 2");
+          } else {
+            status = "Eliminated in " + (state.round1Name || "Round 1");
+          }
+        } else {
+          status = "Active - " + (state.round1Name || "Round 1");
+        }
+      }
+
+      return {
+        _id: student._id,
+        username: student.username,
+        regNo: student.regNo,
+        department: sDept,
+        winner: student.winner,
+        finalRank: student.finalRank,
+        finalScore: student.finalScore,
+        status: status
+      };
+    });
+
+    res.json(studentsWithStatus);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 app.post('/api/results', async (req, res) => {
   try {
     if (useInMemoryDb) {
