@@ -25,25 +25,25 @@ const AppStore = {
   async syncFromServer() {
     try {
       // 1. Fetch Admin credentials
-      const adminRes = await fetchApi('/api/auth/admin/credentials');
+      const adminRes = await fetchApi(`/api/auth/admin/credentials?t=${Date.now()}`);
       if (adminRes.ok) {
         this._adminCredentials = await adminRes.json();
       }
 
       // 2. Fetch Tournament state
-      const tourRes = await fetchApi('/api/tournament');
+      const tourRes = await fetchApi(`/api/tournament?t=${Date.now()}`);
       if (tourRes.ok) {
         this._tournamentState = await tourRes.json();
       }
 
       // 3. Fetch Questions bank
-      const qRes = await fetchApi('/api/questions');
+      const qRes = await fetchApi(`/api/questions?t=${Date.now()}`);
       if (qRes.ok) {
         this._questions = await qRes.json();
       }
 
       // 4. Fetch Results attempts logs
-      const rRes = await fetchApi('/api/results');
+      const rRes = await fetchApi(`/api/results?t=${Date.now()}`);
       if (rRes.ok) {
         this._results = await rRes.json();
       }
@@ -56,7 +56,7 @@ const AppStore = {
 
   async fetchResults() {
     try {
-      const rRes = await fetchApi('/api/results');
+      const rRes = await fetchApi(`/api/results?t=${Date.now()}`);
       if (rRes.ok) {
         this._results = await rRes.json();
       }
@@ -67,7 +67,7 @@ const AppStore = {
 
   async fetchTournamentState() {
     try {
-      const tourRes = await fetchApi('/api/tournament');
+      const tourRes = await fetchApi(`/api/tournament?t=${Date.now()}`);
       if (tourRes.ok) {
         this._tournamentState = await tourRes.json();
       }
@@ -78,7 +78,7 @@ const AppStore = {
 
   async fetchStudents() {
     try {
-      const sRes = await fetchApi('/api/admin/students');
+      const sRes = await fetchApi(`/api/admin/students?t=${Date.now()}`);
       if (sRes.ok) {
         this._students = await sRes.json();
       }
@@ -344,7 +344,7 @@ const AppStore = {
   },
 
   async fetchStudentQuestions(regNo, department) {
-    const res = await fetchApi(`/api/student/questions?regNo=${encodeURIComponent(regNo)}&department=${encodeURIComponent(department)}`);
+    const res = await fetchApi(`/api/student/questions?regNo=${encodeURIComponent(regNo)}&department=${encodeURIComponent(department)}&t=${Date.now()}`);
     if (res.ok) {
       return await res.json();
     }
