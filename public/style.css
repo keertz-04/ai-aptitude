@@ -1631,9 +1631,9 @@ header.app-header {
   transform: translateX(-50%) rotate(45deg);
   width: 10px;
   height: 10px;
-  background: #0D4059;
-  border-right: 1px solid #15536F;
-  border-bottom: 1px solid #15536F;
+  background: #0B5873;
+  border-right: 1.5px solid #0879B5;
+  border-bottom: 1.5px solid #0879B5;
 }
 
 @keyframes floatSpeech {
@@ -1675,6 +1675,16 @@ header.app-header {
   border-right-color: transparent;
   animation: rotateCounter 8s linear infinite;
   box-shadow: 0 0 20px rgba(236, 72, 153, 0.25);
+}
+
+.ring-3 {
+  width: 135px;
+  height: 135px;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-top-color: transparent;
+  border-bottom-color: transparent;
+  animation: rotateClockwise 6s linear infinite;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.45);
 }
 
 @keyframes rotateClockwise {

@@ -5,20 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AI Aptitude Portal - Assessment & Evaluation Dashboard</title>
   <meta name="description" content="Evaluate system-level reasoning, logical sequences, and ML dynamics with our AI-driven automated appraisal dashboard.">
-  <link rel="stylesheet" href="style.css?v=1.0.2">
+  <link rel="stylesheet" href="style.css?v=1.0.3">
 </head>
 <body>
 
   <!-- Subtle tech circuit decorations around edges -->
-  <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: -1; overflow: hidden; opacity: 0.15;">
+  <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: -1; overflow: hidden; opacity: 0.12;">
     <!-- Top-Left Cyan/Blue Circuit -->
-    <svg style="position: absolute; top: -10px; left: -10px; width: 300px; height: 300px;" viewBox="0 0 200 200" fill="none" stroke="#167A8F" stroke-width="1.5">
+    <svg style="position: absolute; top: -10px; left: -10px; width: 300px; height: 300px;" viewBox="0 0 200 200" fill="none" stroke="#0879B5" stroke-width="1.5">
       <path d="M 0 50 h 60 l 30 30 v 50 l 20 20 h 40" />
-      <circle cx="60" cy="50" r="3" fill="#167A8F" />
-      <circle cx="90" cy="80" r="3" fill="#167A8F" />
-      <circle cx="150" cy="150" r="3" fill="#167A8F" />
+      <circle cx="60" cy="50" r="3" fill="#0879B5" />
+      <circle cx="90" cy="80" r="3" fill="#0879B5" />
+      <circle cx="150" cy="150" r="3" fill="#0879B5" />
       <path d="M 50 0 v 30 l -20 20 h -30" />
-      <circle cx="30" cy="50" r="2" fill="#167A8F" />
+      <circle cx="30" cy="50" r="2" fill="#0879B5" />
     </svg>
     
     <!-- Top-Right Gold Circuit -->
@@ -29,20 +29,20 @@
       <circle cx="50" cy="150" r="3" fill="#D69A32" />
     </svg>
 
-    <!-- Bottom-Left Gold Circuit -->
-    <svg style="position: absolute; bottom: -10px; left: -10px; width: 300px; height: 300px;" viewBox="0 0 200 200" fill="none" stroke="#D69A32" stroke-width="1.5">
+    <!-- Bottom-Left Cyan/Blue Circuit -->
+    <svg style="position: absolute; bottom: -10px; left: -10px; width: 300px; height: 300px;" viewBox="0 0 200 200" fill="none" stroke="#0879B5" stroke-width="1.5">
       <path d="M 0 150 h 50 l 30 -30 v -40 l 20 -20 h 50" />
-      <circle cx="50" cy="150" r="3" fill="#D69A32" />
-      <circle cx="80" cy="120" r="3" fill="#D69A32" />
-      <circle cx="150" cy="60" r="3" fill="#D69A32" />
+      <circle cx="50" cy="150" r="3" fill="#0879B5" />
+      <circle cx="80" cy="120" r="3" fill="#0879B5" />
+      <circle cx="150" cy="60" r="3" fill="#0879B5" />
     </svg>
 
-    <!-- Bottom-Right Cyan/Blue Circuit -->
-    <svg style="position: absolute; bottom: -10px; right: -10px; width: 300px; height: 300px;" viewBox="0 0 200 200" fill="none" stroke="#167A8F" stroke-width="1.5">
+    <!-- Bottom-Right Gold Circuit -->
+    <svg style="position: absolute; bottom: -10px; right: -10px; width: 300px; height: 300px;" viewBox="0 0 200 200" fill="none" stroke="#D69A32" stroke-width="1.5">
       <path d="M 200 140 h -60 l -30 -30 v -50 l -20 -20 h -40" />
-      <circle cx="140" cy="140" r="3" fill="#167A8F" />
-      <circle cx="110" cy="110" r="3" fill="#167A8F" />
-      <circle cx="50" cy="40" r="3" fill="#167A8F" />
+      <circle cx="140" cy="140" r="3" fill="#D69A32" />
+      <circle cx="110" cy="110" r="3" fill="#D69A32" />
+      <circle cx="50" cy="40" r="3" fill="#D69A32" />
     </svg>
   </div>
 
@@ -53,15 +53,15 @@
       <div class="logo-container" onclick="AppRouter.switchView('landing')">
         <div class="logo-icon">LS</div>
         <div class="logo-text">
-          <span style="color: #0D4059;">Learn and Solve</span>
+          <span style="color: #0B435A;">Learn and Solve</span>
           <span style="color: #D69A32;">Aptitude</span>
         </div>
       </div>
       
       <!-- Guest navigation panel (Admin Login) -->
       <div class="nav-guest-panel" id="nav-guest-panel">
-        <button class="btn btn-secondary btn-sm" style="border-radius: 8px; border: 1.5px solid #0D4059; background: #ffffff; color: #0D4059; display: flex; align-items: center; gap: 8px; font-weight: 600;" onclick="AppAuth.openAuth('admin')">
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: #0D4059;">
+        <button class="btn btn-secondary btn-sm" style="border-radius: 8px; border: 1.5px solid #0B435A; background: #ffffff; color: #0B435A; display: flex; align-items: center; gap: 8px; font-weight: 600;" onclick="AppAuth.openAuth('admin')">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: #0B435A;">
             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
             <circle cx="12" cy="7" r="4"/>
           </svg>
@@ -85,22 +85,27 @@
     <section class="view-panel active" id="view-landing">
       
       <!-- Centered Hero Header -->
-      <div class="landing-hero-header">
-        <h1 class="hero-title-main" style="font-size: 2.5rem; font-weight: 900; color: #0B465F; margin-bottom: 8px; font-family: var(--font-display); letter-spacing: 4px; text-shadow: 0 0 15px rgba(85, 169, 238, 0.45); text-transform: uppercase;">TRIQUETRA</h1>
-        <h2 class="hero-title-main" id="landing-institution-title" style="margin-bottom: 16px; color: #0D4059; font-size: 2.8rem; font-weight: 800;">Ganadipathy Tulsi's Jain Engineering College</h2>
+      <div class="landing-hero-header" style="margin-top: 32px;">
+        <div style="display: flex; align-items: center; justify-content: center; gap: 20px; width: 100%; margin-bottom: 8px;">
+          <span style="flex-grow: 1; max-width: 120px; height: 2px; background: linear-gradient(90deg, transparent, #0879B5); position: relative;">
+            <span style="width: 6px; height: 6px; background: #0879B5; border-radius: 50%; position: absolute; right: 0; top: -2px;"></span>
+          </span>
+          <h1 class="hero-title-main" style="font-size: 3.2rem; font-weight: 900; color: #0879B5; margin-bottom: 0; font-family: var(--font-display); letter-spacing: 4px; text-shadow: 0 0 15px rgba(67, 188, 235, 0.45); text-transform: uppercase;">TRIQUETRA</h1>
+          <span style="flex-grow: 1; max-width: 120px; height: 2px; background: linear-gradient(90deg, #0879B5, transparent); position: relative;">
+            <span style="width: 6px; height: 6px; background: #0879B5; border-radius: 50%; position: absolute; left: 0; top: -2px;"></span>
+          </span>
+        </div>
+        <h2 class="hero-title-main" id="landing-institution-title" style="margin-bottom: 12px; color: #0B435A; font-size: 2.8rem; font-weight: 800;">Ganadipathy Tulsi's Jain Engineering College</h2>
         
         <div style="display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 8px;">
-          <span style="width: 50px; height: 2px; background: linear-gradient(90deg, transparent, #D69A32); position: relative; display: inline-block;">
-            <span style="width: 6px; height: 6px; background: #D69A32; border-radius: 50%; position: absolute; right: 0; top: -2px;"></span>
+          <span style="width: 80px; height: 1px; background: linear-gradient(90deg, transparent, #D69A32); position: relative; display: inline-block;">
+            <span style="color: #D69A32; position: absolute; right: 0; top: -9px; font-size: 0.9rem;">✦</span>
           </span>
-          <h3 class="hero-subtitle-tag-main" id="landing-department-title" style="margin-bottom: 0; font-size: 1.5rem; font-weight: 600; text-shadow: none;">
-            <span style="color: #0B465F;">Department of</span>
-            <span style="color: #D69A32; font-weight: 800;">IT</span><span style="color: #0B465F;">,</span>
-            <span style="color: #167A8F; font-weight: 800;">AIDS</span> <span style="color: #0B465F;">&</span>
-            <span style="color: #2688D8; font-weight: 800;">CSBS</span>
+          <h3 class="hero-subtitle-tag-main" id="landing-department-title" style="margin-bottom: 0; font-size: 1.5rem; font-weight: 800; color: #0B5873; text-shadow: none;">
+            Department of IT, AIDS & CSBS
           </h3>
-          <span style="width: 50px; height: 2px; background: linear-gradient(90deg, #D69A32, transparent); position: relative; display: inline-block;">
-            <span style="width: 6px; height: 6px; background: #D69A32; border-radius: 50%; position: absolute; left: 0; top: -2px;"></span>
+          <span style="width: 80px; height: 1px; background: linear-gradient(90deg, #D69A32, transparent); position: relative; display: inline-block;">
+            <span style="color: #D69A32; position: absolute; left: 0; top: -9px; font-size: 0.9rem;">✦</span>
           </span>
         </div>
       </div>
@@ -139,12 +144,13 @@
 
         <!-- Center Column: Animated Robot -->
         <div class="landing-center-col">
-          <div class="speech-bubble" style="background: #0D4059; border: 1.5px solid #15536F; color: #ffffff; box-shadow: 0 4px 12px rgba(13, 64, 89, 0.15); font-weight: 700;">
-            Let's Solve! 🧡
+          <div class="speech-bubble" style="background: #0B5873; border: 1.5px solid #0879B5; color: #ffffff; box-shadow: 0 4px 12px rgba(11, 88, 115, 0.15); font-weight: 700;">
+            Let's Solve! 💛
           </div>
           <div class="robot-glow-container">
             <div class="orbit-ring ring-1"></div>
             <div class="orbit-ring ring-2"></div>
+            <div class="orbit-ring ring-3"></div>
             <svg class="cute-robot-svg" viewBox="0 0 200 200" width="180" height="180">
               <defs>
                 <linearGradient id="bodyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -1030,10 +1036,10 @@
   </div>
 
   <!-- SCRIPT LOADING -->
-  <script src="store.js?v=1.0.2"></script>
-  <script src="ai_evaluator.js?v=1.0.2"></script>
-  <script src="student.js?v=1.0.2"></script>
-  <script src="admin.js?v=1.0.2"></script>
-  <script src="app.js?v=1.0.2"></script>
+  <script src="store.js?v=1.0.3"></script>
+  <script src="ai_evaluator.js?v=1.0.3"></script>
+  <script src="student.js?v=1.0.3"></script>
+  <script src="admin.js?v=1.0.3"></script>
+  <script src="app.js?v=1.0.3"></script>
 </body>
 </html>
