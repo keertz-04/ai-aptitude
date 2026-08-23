@@ -97,14 +97,24 @@ const AppRouter = {
 
   updateBranding() {
     const user = window.AppStore.getCurrentUser();
-    const dept = (user && user.role === 'student' && user.department) ? user.department : 'IT';
-    const state = window.AppStore.getTournamentState(dept);
-    if (!state) return;
-    
     const instEl = document.getElementById("landing-institution-title");
     const deptEl = document.getElementById("landing-department-title");
-    if (instEl) instEl.textContent = state.institutionName || "Ganadipathy Tulsi's Jain Engineering College";
-    if (deptEl) deptEl.textContent = state.departmentName || "Department of Information Technology";
+
+    if (user && user.role === 'student') {
+      const dept = user.department;
+      const state = window.AppStore.getTournamentState(dept);
+      if (state) {
+        if (instEl) instEl.textContent = state.institutionName || "Ganadipathy Tulsi's Jain Engineering College";
+        if (deptEl) deptEl.textContent = state.departmentName || "Department of Information Technology";
+      }
+    } else {
+      // Default branding for guests / landing screen
+      const state = window.AppStore.getTournamentState('IT');
+      if (state) {
+        if (instEl) instEl.textContent = state.institutionName || "Ganadipathy Tulsi's Jain Engineering College";
+      }
+      if (deptEl) deptEl.textContent = "Departments of IT, AIDS & CSBS";
+    }
   },
 
   updateHeader() {
