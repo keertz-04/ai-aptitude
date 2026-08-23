@@ -359,6 +359,29 @@ const AdminPortal = {
     );
   },
 
+  clearStudentsDirectory() {
+    const dept = this.selectedDepartment;
+    const targetText = dept === "ALL" 
+      ? "ALL departments (IT, AIDS, and CSBS)" 
+      : `the ${dept} department`;
+
+    window.showCustomConfirm(
+      "Wipe Registered Students",
+      `🚨 WARNING: Are you sure you want to delete all registered student profiles for ${targetText}? This will clear their credentials and profile entries. This action cannot be undone.`,
+      async () => {
+        const success = await window.AppStore.resetStudents(dept);
+        if (success) {
+          await window.AppStore.fetchStudents();
+          this.renderRegisteredStudents();
+          this.renderStats();
+          window.showCustomAlert("Success", `Registered student directory for ${targetText} cleared successfully.`);
+        } else {
+          window.showCustomAlert("Error", "Failed to clear student directory.");
+        }
+      }
+    );
+  },
+
   // --- Tournament Management Panel ---
   renderTournamentTab() {
     const dept = this.selectedDepartment;

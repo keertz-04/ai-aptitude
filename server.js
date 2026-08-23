@@ -463,6 +463,32 @@ app.post('/api/tournament/reset-all', async (req, res) => {
   }
 });
 
+// Reset Registered Students API
+app.post('/api/students/reset', async (req, res) => {
+  try {
+    const { department } = req.query;
+    if (useInMemoryDb) {
+      if (department && department.toUpperCase() !== "ALL") {
+        const cleanDept = department.trim().toUpperCase();
+        InMemoryDb.students = InMemoryDb.students.filter(s => s.department !== cleanDept);
+      } else {
+        InMemoryDb.students = [];
+      }
+      return res.json({ success: true });
+    }
+
+    if (department && department.toUpperCase() !== "ALL") {
+      const cleanDept = department.trim().toUpperCase();
+      await Student.deleteMany({ department: cleanDept });
+    } else {
+      await Student.deleteMany({});
+    }
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Student Authentication API
 app.post('/api/auth/student/register', async (req, res) => {
   try {

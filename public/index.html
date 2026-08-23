@@ -560,11 +560,11 @@
         <div class="admin-content-section" id="admin-sec-students">
           <div class="glass-card">
             
-            <div class="flex-between mb-24">
+            <div class="flex-between mb-24" style="flex-wrap: wrap; gap: 16px;">
               <h3>Registered Students</h3>
-              <div style="font-size: 0.9rem; color: var(--text-secondary);">
-                Total registered participants in active directory.
-              </div>
+              <button class="btn btn-danger btn-sm" onclick="AdminPortal.clearStudentsDirectory()">
+                Clear Student Directory ⚠️
+              </button>
             </div>
 
             <!-- Students list table -->

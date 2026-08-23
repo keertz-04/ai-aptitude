@@ -180,6 +180,17 @@ const AppStore = {
     }
   },
 
+  async resetStudents(dept) {
+    const targetDept = dept ? dept.toUpperCase() : 'IT';
+    try {
+      const res = await fetchApi(`/api/students/reset?department=${targetDept}`, { method: 'POST' });
+      return res.ok;
+    } catch (err) {
+      console.error('Failed to reset registered students:', err);
+      return false;
+    }
+  },
+
   // --- Questions CRUD ---
   getQuestions() {
     return this._questions;
