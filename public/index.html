@@ -20,8 +20,12 @@
       
       <!-- Guest navigation panel (Admin Login) -->
       <div class="nav-guest-panel" id="nav-guest-panel">
-        <button class="btn btn-secondary btn-sm" onclick="AppAuth.openAuth('admin')">
-          🛡️ Admin Login
+        <button class="btn btn-secondary btn-sm" style="border-radius: var(--radius-md); display: flex; align-items: center; gap: 8px; font-weight: 500;" onclick="AppAuth.openAuth('admin')">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #60a5fa;">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+          Admin Login
         </button>
       </div>
 
@@ -39,18 +43,21 @@
 
     <!-- View: Landing Page -->
     <section class="view-panel active" id="view-landing">
+      
+      <!-- Centered Hero Header -->
+      <div class="landing-hero-header">
+        <h1 class="hero-title-main" id="landing-institution-title">Ganadipathy Tulsi's Jain Engineering College</h1>
+        <h2 class="hero-subtitle-tag-main" id="landing-department-title">Department of Information Technology</h2>
+      </div>
+
       <div class="landing-split-container">
         
         <!-- Left Hero Branding column -->
         <div class="landing-left-col">
-          <h1 class="hero-title" id="landing-institution-title">Ganadipathy Tulsi's Jain Engineering College</h1>
-          
           <div class="platform-badge" style="margin-bottom: 20px;">
             <span class="badge-pulse"></span>
             ⚡ AI POWERED ASSESSMENT PLATFORM
           </div>
-          
-          <h2 class="hero-subtitle-tag" id="landing-department-title">Department of Information Technology</h2>
           
           <p class="hero-subtitle">
             Evaluate your aptitude with intelligent assessments designed to measure, analyze and improve.
@@ -147,10 +154,15 @@
         <!-- Right Portal Actions column -->
         <div class="landing-right-col">
           <div class="glass-card portal-card student-card" onclick="AppAuth.openAuth('student')">
-            <div class="portal-icon">🎓</div>
+            <div class="portal-icon" style="background: rgba(99, 102, 241, 0.15); border: 1px solid rgba(99, 102, 241, 0.2);">
+              <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--neon-indigo);">
+                <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+                <path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"/>
+              </svg>
+            </div>
             <h3>Student Portal</h3>
             <p>Access active examination segments, check performance metrics, and review round qualifications.</p>
-            <button class="btn btn-primary full-width">Enter Student Portal &rarr;</button>
+            <button class="btn btn-primary full-width" style="justify-content: center; gap: 8px;">Enter Student Portal &rarr;</button>
           </div>
         </div>
 
