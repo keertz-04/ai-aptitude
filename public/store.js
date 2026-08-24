@@ -331,11 +331,11 @@ const AppStore = {
     return data;
   },
 
-  async authenticateStudent(username, regNo, department) {
+  async authenticateStudent(username, regNo, department, year) {
     const res = await fetchApi('/api/auth/student/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, regNo, department })
+      body: JSON.stringify({ username, regNo, department, year })
     });
     if (res.ok) {
       return await res.json();

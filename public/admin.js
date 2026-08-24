@@ -255,7 +255,7 @@ const AdminPortal = {
     if (results.length === 0) {
       tableBody.innerHTML = `
         <tr>
-          <td colspan="9" class="empty-state">
+          <td colspan="10" class="empty-state">
             <p>No student evaluation records found.</p>
           </td>
         </tr>
@@ -291,6 +291,7 @@ const AdminPortal = {
       row.innerHTML = `
         <td><strong>${res.studentName}</strong></td>
         <td><span class="category-tag">${res.department || "IT"}</span></td>
+        <td>${res.year || "2nd Year"}</td>
         <td>${dateStr}</td>
         <td>${this.getRoundName(res.round)}</td>
         <td>${res.cognitiveProfile || "Balanced Thinker"}</td>
@@ -317,7 +318,7 @@ const AdminPortal = {
     if (students.length === 0) {
       tableBody.innerHTML = `
         <tr>
-          <td colspan="4" class="empty-state">
+          <td colspan="5" class="empty-state">
             <p>No registered students found.</p>
           </td>
         </tr>
@@ -341,6 +342,7 @@ const AdminPortal = {
         <td><strong>${s.username}</strong></td>
         <td><code>${s.regNo.toUpperCase()}</code></td>
         <td><span class="category-tag">${s.department}</span></td>
+        <td>${s.year || "2nd Year"}</td>
         <td><span class="score-badge" style="${statusStyle}">${s.status}</span></td>
       `;
       tableBody.appendChild(row);

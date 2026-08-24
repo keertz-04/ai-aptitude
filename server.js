@@ -120,6 +120,7 @@ const ResultSchema = new mongoose.Schema({
   studentName: { type: String, required: true },
   regNo: { type: String, default: '' },
   department: { type: String, default: 'IT', uppercase: true },
+  year: { type: String, default: '2nd Year' },
   timestamp: { type: Date, default: Date.now },
   round: { type: Number, required: true },
   answers: [Number],
@@ -141,6 +142,7 @@ const StudentSchema = new mongoose.Schema({
   username: { type: String, required: true },
   regNo: { type: String, required: true, unique: true, lowercase: true },
   department: { type: String, default: 'IT', uppercase: true },
+  year: { type: String, default: '2nd Year' },
   winner: { type: Boolean, default: false },
   finalRank: { type: Number },
   finalScore: { type: Number }
@@ -516,9 +518,10 @@ app.post('/api/auth/student/register', async (req, res) => {
 
 app.post('/api/auth/student/login', async (req, res) => {
   try {
-    const { username, regNo, department } = req.body;
+    const { username, regNo, department, year } = req.body;
     const cleanDept = (department || 'IT').trim().toUpperCase();
-    console.log(`Login attempt received on server: username="${username}", regNo="${regNo}", department="${cleanDept}"`);
+    const cleanYear = (year || '2nd Year').trim();
+    console.log(`Login attempt received on server: username="${username}", regNo="${regNo}", department="${cleanDept}", year="${cleanYear}"`);
     if (!username || !regNo) {
       return res.status(400).json({ error: 'Username and Registration Number are required.' });
     }
@@ -528,26 +531,27 @@ app.post('/api/auth/student/login', async (req, res) => {
     if (useInMemoryDb) {
       let student = InMemoryDb.students.find(s => s.regNo === normalizedRegNo);
       if (!student) {
-        student = { username: cleanUsername, regNo: normalizedRegNo, department: cleanDept };
+        student = { username: cleanUsername, regNo: normalizedRegNo, department: cleanDept, year: cleanYear };
         InMemoryDb.students.push(student);
-        console.log(`Auto-registered new student in-memory: ${cleanUsername} (Reg No: ${normalizedRegNo}, Dept: ${cleanDept})`);
+        console.log(`Auto-registered new student in-memory: ${cleanUsername} (Reg No: ${normalizedRegNo}, Dept: ${cleanDept}, Year: ${cleanYear})`);
       } else {
         if (student.username !== cleanUsername) {
           student.username = cleanUsername;
         }
         student.department = cleanDept;
+        student.year = cleanYear;
       }
-      return res.json({ username: student.username, regNo: student.regNo, department: student.department });
+      return res.json({ username: student.username, regNo: student.regNo, department: student.department, year: student.year });
     }
 
     let student = await Student.findOne({ regNo: normalizedRegNo });
     if (!student) {
       // Auto-create/register student under this registration number and username
-      student = new Student({ username: cleanUsername, regNo: normalizedRegNo, department: cleanDept });
+      student = new Student({ username: cleanUsername, regNo: normalizedRegNo, department: cleanDept, year: cleanYear });
       await student.save();
-      console.log(`Auto-registered new student: ${cleanUsername} (Reg No: ${normalizedRegNo}, Dept: ${cleanDept})`);
+      console.log(`Auto-registered new student: ${cleanUsername} (Reg No: ${normalizedRegNo}, Dept: ${cleanDept}, Year: ${cleanYear})`);
     } else {
-      // Update username or department if different
+      // Update username, department or year if different
       let changed = false;
       if (student.username !== cleanUsername) {
         student.username = cleanUsername;
@@ -557,11 +561,15 @@ app.post('/api/auth/student/login', async (req, res) => {
         student.department = cleanDept;
         changed = true;
       }
+      if (student.year !== cleanYear) {
+        student.year = cleanYear;
+        changed = true;
+      }
       if (changed) {
         await student.save();
       }
     }
-    res.json({ username: student.username, regNo: student.regNo, department: student.department });
+    res.json({ username: student.username, regNo: student.regNo, department: student.department, year: student.year });
   } catch (err) {
     console.error('Login error caught on server:', err);
     res.status(500).json({ error: err.message });

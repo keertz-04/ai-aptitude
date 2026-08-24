@@ -529,6 +529,7 @@ const StudentPortal = {
       studentName,
       regNo: user ? user.regNo : "",
       department: user ? user.department : "IT",
+      year: user ? user.year : "2nd Year",
       answers: this.answers,
       questions: this.activeQuestions,
       round: activeRound,

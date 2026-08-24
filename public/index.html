@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AI Technical Quiz Portal - Assessment & Evaluation Dashboard</title>
   <meta name="description" content="Evaluate system-level reasoning, logical sequences, and ML dynamics with our AI-driven automated appraisal dashboard.">
-  <link rel="stylesheet" href="style.css?v=1.1.11">
+  <link rel="stylesheet" href="style.css?v=1.1.12">
 </head>
 <body>
 
@@ -280,6 +280,14 @@
               <option value="IT">IT (Information Technology)</option>
               <option value="AIDS">AIDS (Artificial Intelligence & Data Science)</option>
               <option value="CSBS">CSBS (Computer Science & Business Systems)</option>
+            </select>
+          </div>
+          <div class="form-group" id="auth-year-container" style="display: none;">
+            <label class="form-label" for="auth-year">Year</label>
+            <select id="auth-year" class="form-input" style="background: var(--bg-secondary); color: var(--text-primary); border: 1px solid rgba(255, 255, 255, 0.1);">
+              <option value="2nd Year">2nd Year</option>
+              <option value="3rd Year">3rd Year</option>
+              <option value="4th Year">4th Year</option>
             </select>
           </div>
           <div class="form-group" id="auth-password-container">
@@ -599,6 +607,7 @@
                   <tr>
                     <th>Student Name</th>
                     <th>Department</th>
+                    <th>Year</th>
                     <th>Date Taken</th>
                     <th>Round</th>
                     <th>Cognitive Profile Archetype</th>
@@ -636,6 +645,7 @@
                     <th>Student Name</th>
                     <th>Registration Number</th>
                     <th>Department</th>
+                    <th>Year</th>
                     <th>Tournament Qualification Status</th>
                   </tr>
                 </thead>
@@ -972,10 +982,10 @@
   </div>
 
   <!-- SCRIPT LOADING -->
-  <script src="store.js?v=1.1.11"></script>
-  <script src="ai_evaluator.js?v=1.1.11"></script>
-  <script src="student.js?v=1.1.11"></script>
-  <script src="admin.js?v=1.1.11"></script>
-  <script src="app.js?v=1.1.11"></script>
+  <script src="store.js?v=1.1.12"></script>
+  <script src="ai_evaluator.js?v=1.1.12"></script>
+  <script src="student.js?v=1.1.12"></script>
+  <script src="admin.js?v=1.1.12"></script>
+  <script src="app.js?v=1.1.12"></script>
 </body>
 </html>
