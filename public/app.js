@@ -108,7 +108,10 @@ const AppRouter = {
         let deptColor = "#D69A32";
         if (dept === "AIDS") deptColor = "#167A8F";
         else if (dept === "CSBS") deptColor = "#2688D8";
-        if (deptEl) deptEl.innerHTML = `<span style="color: #0B465F;">Department of</span> <span style="color: ${deptColor}; font-weight: 800;">${dept}</span>`;
+        if (deptEl) {
+          const displayDept = dept === "AIDS" ? "AI&DS" : dept;
+          deptEl.innerHTML = `<span style="color: #0B5873;">Department of ${displayDept}</span>`;
+        }
       }
     } else {
       // Default branding for guests / landing screen
@@ -117,7 +120,8 @@ const AppRouter = {
         if (instEl) instEl.textContent = state.institutionName || "Ganadipathy Tulsi's Jain Engineering College";
       }
       if (deptEl) {
-        deptEl.innerHTML = `<span style="color: #0B465F;">Department of</span> <span style="color: #D69A32; font-weight: 800;">IT</span><span style="color: #0B465F;">,</span> <span style="color: #167A8F; font-weight: 800;">AIDS</span> <span style="color: #0B465F;">&</span> <span style="color: #2688D8; font-weight: 800;">CSBS</span>`;
+        deptEl.innerHTML = `Department of IT, AI&DS & CSBS`;
+        deptEl.style.color = "#0B5873";
       }
     }
   },
