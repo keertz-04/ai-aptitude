@@ -136,10 +136,10 @@ const AdminPortal = {
     questions.forEach((q, idx) => {
       const row = document.createElement("tr");
       
-      const catClass = `cat-${q.category.toLowerCase().replace(/[^a-z0-9]/g, "-")}`;
+      const catClass = `cat-${q.category.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
       const qRound = q.round || 1;
       const qType = q.questionType || "mcq";
-      const qTypeLabel = qType === "image_connection" ? "Image Connection" : "MCQ";
+      const qTypeLabel = qType === "image_connection" ? "Connections" : "MCQ";
 
       let questionSnippet = q.question.length > 50 ? q.question.substring(0, 47) + "..." : q.question;
       if (qType === "image_connection") {
@@ -154,11 +154,18 @@ const AdminPortal = {
         correctDisplay = q.options && q.options[q.correct] !== undefined ? q.options[q.correct] : `Index ${q.correct}`;
       }
 
+      // Styles for high-contrast badges in light theme
+      const roundBadgeStyle = "background: rgba(21, 83, 111, 0.08); color: #15536f; border: 1px solid rgba(21, 83, 111, 0.2); padding: 3px 8px; border-radius: 4px; font-weight: 600; font-size: 0.78rem;";
+      
+      const typeBadgeStyle = qType === "image_connection"
+        ? "background: rgba(13, 148, 136, 0.08); color: #0f766e; border: 1px solid rgba(13, 148, 136, 0.2); padding: 3px 8px; border-radius: 4px; font-weight: 600; font-size: 0.78rem;"
+        : "background: rgba(79, 70, 229, 0.08); color: #4338ca; border: 1px solid rgba(79, 70, 229, 0.2); padding: 3px 8px; border-radius: 4px; font-weight: 600; font-size: 0.78rem;";
+
       row.innerHTML = `
         <td><strong>#${idx + 1}</strong></td>
         <td><span class="cat-badge ${catClass}">${q.category}</span></td>
-        <td><span class="score-badge" style="background:rgba(255,255,255,0.05); color:white; border-color:rgba(255,255,255,0.1)">${this.getRoundName(qRound)}</span></td>
-        <td><span class="category-tag" style="background: rgba(99, 102, 241, 0.15); color: var(--neon-indigo); border: 1px solid rgba(99, 102, 241, 0.2);">${qTypeLabel}</span></td>
+        <td><span style="${roundBadgeStyle}">${this.getRoundName(qRound)}</span></td>
+        <td><span style="${typeBadgeStyle}">${qTypeLabel}</span></td>
         <td title="${q.question}">${questionSnippet}</td>
         <td title="Correct Answer: ${correctDisplay}">${correctDisplay}</td>
         <td>
