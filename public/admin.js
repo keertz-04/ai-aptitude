@@ -163,7 +163,6 @@ const AdminPortal = {
 
       row.innerHTML = `
         <td><strong>#${idx + 1}</strong></td>
-        <td><span class="cat-badge ${catClass}">${q.category}</span></td>
         <td><span style="${roundBadgeStyle}">${this.getRoundName(qRound)}</span></td>
         <td><span style="${typeBadgeStyle}">${qTypeLabel}</span></td>
         <td title="${q.question}">${questionSnippet}</td>
