@@ -792,7 +792,7 @@ const StudentPortal = {
 
       qCard.innerHTML = `
         <div class="mistake-card-header">
-          <div class="mistake-q-num">Question ${idx + 1} <span class="category-tag">${q.category}</span></div>
+          <div class="mistake-q-num">Question ${idx + 1}</div>
           ${badgeHtml}
         </div>
         <div class="mistake-q-text">${q.question}</div>

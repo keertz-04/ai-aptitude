@@ -451,7 +451,6 @@ const AdminPortal = {
         <td>${res.year || "2nd Year"}</td>
         <td>${dateStr}</td>
         <td>${this.getRoundName(res.round)}</td>
-        <td>${res.cognitiveProfile || "Balanced Thinker"}</td>
         <td><span class="score-badge">${res.score}/${res.total} (${Math.round(res.accuracy)}%)</span></td>
         <td><span class="score-badge" style="background: rgba(99, 102, 241, 0.15); color: var(--neon-indigo); border-color: var(--neon-indigo);">${overallPercent}%</span></td>
         <td>${res.timeTakenSeconds}s</td>

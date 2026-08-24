@@ -1333,8 +1333,8 @@ header.app-header {
   align-items: center;
   gap: 12px;
   padding: 12px 16px;
-  background: rgba(15, 23, 42, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.04);
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
   border-radius: var(--radius-sm);
   font-size: 0.88rem;
   color: var(--text-secondary);
@@ -1348,36 +1348,45 @@ header.app-header {
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.08);
+  background: #e2e8f0;
   font-weight: 600;
   font-size: 0.8rem;
   color: var(--text-primary);
 }
+.review-selected-option {
+  border-color: #bfdbfe;
+  background: #eff6ff;
+  color: #1e3a8a;
+}
+.review-selected-option .option-marker {
+  background: #1d4ed8;
+  color: #ffffff;
+}
 .review-correct-option {
-  border-color: rgba(20, 184, 166, 0.45);
-  background: rgba(20, 184, 166, 0.06);
-  color: #2dd4bf;
+  border-color: #99f6e4;
+  background: #f0fdfa;
+  color: #115e59;
 }
 .review-correct-option .option-marker {
-  background: var(--neon-teal);
-  color: #0f172a;
+  background: #0f766e;
+  color: #ffffff;
 }
 .review-incorrect-selection {
-  border-color: rgba(244, 63, 94, 0.45);
-  background: rgba(244, 63, 94, 0.06);
-  color: #fb7185;
+  border-color: #fecdd3;
+  background: #fff1f2;
+  color: #9f1239;
 }
 .review-incorrect-selection .option-marker {
-  background: var(--neon-pink);
+  background: #be123c;
   color: #ffffff;
 }
 .mistake-explanation {
-  background: rgba(99, 102, 241, 0.05);
-  border: 1px solid rgba(99, 102, 241, 0.12);
+  background: #f5f3ff;
+  border: 1px solid #ddd6fe;
   padding: 14px 18px;
   border-radius: var(--radius-sm);
   font-size: 0.88rem;
-  color: #cbd5e1;
+  color: #374151;
   line-height: 1.5;
   text-align: left;
   margin-top: 12px;
