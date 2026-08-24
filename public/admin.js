@@ -155,11 +155,11 @@ const AdminPortal = {
       }
 
       // Styles for high-contrast badges in light theme
-      const roundBadgeStyle = "background: rgba(21, 83, 111, 0.08); color: #15536f; border: 1px solid rgba(21, 83, 111, 0.2); padding: 3px 8px; border-radius: 4px; font-weight: 600; font-size: 0.78rem;";
+      const roundBadgeStyle = "background: #f1f5f9; color: #334155; border: 1px solid #cbd5e1; padding: 3px 8px; border-radius: 4px; font-weight: 600; font-size: 0.78rem;";
       
       const typeBadgeStyle = qType === "image_connection"
-        ? "background: rgba(13, 148, 136, 0.08); color: #0f766e; border: 1px solid rgba(13, 148, 136, 0.2); padding: 3px 8px; border-radius: 4px; font-weight: 600; font-size: 0.78rem;"
-        : "background: rgba(79, 70, 229, 0.08); color: #4338ca; border: 1px solid rgba(79, 70, 229, 0.2); padding: 3px 8px; border-radius: 4px; font-weight: 600; font-size: 0.78rem;";
+        ? "background: #ccfbf1; color: #115e59; border: 1px solid #99f6e4; padding: 3px 8px; border-radius: 4px; font-weight: 600; font-size: 0.78rem;"
+        : "background: #e0e7ff; color: #3730a3; border: 1px solid #c7d2fe; padding: 3px 8px; border-radius: 4px; font-weight: 600; font-size: 0.78rem;";
 
       row.innerHTML = `
         <td><strong>#${idx + 1}</strong></td>

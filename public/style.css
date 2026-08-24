@@ -983,10 +983,10 @@ header.app-header {
   font-size: 0.78rem;
   font-weight: 600;
 }
-.cat-badge.cat-logical { background: rgba(109, 40, 217, 0.1); color: #5b21b6; border: 1px solid rgba(109, 40, 217, 0.25); }
-.cat-badge.cat-quantitative { background: rgba(217, 119, 6, 0.1); color: #92400e; border: 1px solid rgba(217, 119, 6, 0.25); }
-.cat-badge.cat-verbal { background: rgba(37, 99, 235, 0.1); color: #1e40af; border: 1px solid rgba(37, 99, 235, 0.25); }
-.cat-badge.cat-ai-tech { background: rgba(5, 150, 105, 0.1); color: #065f46; border: 1px solid rgba(5, 150, 105, 0.25); }
+.cat-badge.cat-logical { background: #f3e8ff; color: #6b21a8; border: 1px solid #c084fc; }
+.cat-badge.cat-quantitative { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
+.cat-badge.cat-verbal { background: #dbeafe; color: #1e40af; border: 1px solid #93c5fd; }
+.cat-badge.cat-ai-tech { background: #d1fae5; color: #065f46; border: 1px solid #6ee7b7; }
 
 .action-btns-cell {
   display: flex;
