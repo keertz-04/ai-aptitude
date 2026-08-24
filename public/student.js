@@ -395,6 +395,10 @@ const StudentPortal = {
     this.renderQuestion();
   },
 
+  saveTypedAnswer(val) {
+    this.answers[this.currentIndex] = val;
+  },
+
   renderQuestion() {
     const question = this.activeQuestions[this.currentIndex];
     
@@ -409,25 +413,55 @@ const StudentPortal = {
     // Question title
     document.getElementById("test-question-text").textContent = question.question;
 
-    // Options list
     const optionsContainer = document.getElementById("test-options-container");
-    optionsContainer.innerHTML = "";
+    const connectionsContainer = document.getElementById("test-connections-container");
 
-    question.options.forEach((opt, idx) => {
-      const optionBtn = document.createElement("button");
-      optionBtn.className = "option-btn";
-      if (this.answers[this.currentIndex] === idx) {
-        optionBtn.classList.add("selected");
+    if (question.questionType === "image_connection") {
+      // Show connections, hide MCQ
+      optionsContainer.style.display = "none";
+      connectionsContainer.style.display = "flex";
+
+      // Render images
+      const imagesWrap = document.getElementById("test-conn-images");
+      imagesWrap.innerHTML = "";
+      if (question.images && question.images.length > 0) {
+        question.images.forEach(img => {
+          if (img) {
+            const imgEl = document.createElement("img");
+            imgEl.src = img;
+            imgEl.style.cssText = "max-width: 200px; max-height: 200px; border-radius: var(--radius-sm); border: 1.5px solid rgba(255,255,255,0.1); object-fit: contain; background: #000;";
+            imagesWrap.appendChild(imgEl);
+          }
+        });
       }
-      optionBtn.onclick = () => this.selectOption(idx);
 
-      const marker = String.fromCharCode(65 + idx); // A, B, C, D
-      optionBtn.innerHTML = `
-        <div class="option-marker">${marker}</div>
-        <div class="option-text">${opt}</div>
-      `;
-      optionsContainer.appendChild(optionBtn);
-    });
+      // Populate input field
+      const inputEl = document.getElementById("test-conn-input");
+      if (inputEl) {
+        inputEl.value = this.answers[this.currentIndex] || "";
+      }
+    } else {
+      // Show MCQ, hide connections
+      optionsContainer.style.display = "grid";
+      connectionsContainer.style.display = "none";
+
+      optionsContainer.innerHTML = "";
+      question.options.forEach((opt, idx) => {
+        const optionBtn = document.createElement("button");
+        optionBtn.className = "option-btn";
+        if (this.answers[this.currentIndex] === idx) {
+          optionBtn.classList.add("selected");
+        }
+        optionBtn.onclick = () => this.selectOption(idx);
+
+        const marker = String.fromCharCode(65 + idx); // A, B, C, D
+        optionBtn.innerHTML = `
+          <div class="option-marker">${marker}</div>
+          <div class="option-text">${opt}</div>
+        `;
+        optionsContainer.appendChild(optionBtn);
+      });
+    }
 
     // Control buttons state
     const prevBtn = document.getElementById("btn-test-prev");
@@ -636,11 +670,15 @@ const StudentPortal = {
         }
       }
     }
-
     questions.forEach((q, idx) => {
-      const studentAnsIdx = answers[idx];
-      const correctAnsIdx = q.correct;
-      const isCorrect = studentAnsIdx === correctAnsIdx;
+      const studentAns = answers[idx];
+      let isCorrect = false;
+
+      if (q.questionType === "image_connection") {
+        isCorrect = String(studentAns || "").trim().toLowerCase() === String(q.correctAnswerString || "").trim().toLowerCase();
+      } else {
+        isCorrect = studentAns !== null && studentAns !== undefined && studentAns === q.correct;
+      }
 
       const qCard = document.createElement("div");
       if (isRoundConcluded) {
@@ -649,42 +687,88 @@ const StudentPortal = {
         qCard.className = `mistake-card q-neutral`;
       }
 
-      // Format options
-      let optionsHtml = "";
-      q.options.forEach((opt, oIdx) => {
-        let optClass = "review-option";
-        let optLabel = "";
-
-        if (isRoundConcluded) {
-          if (oIdx === correctAnsIdx) {
-            optClass += " review-correct-option";
-            optLabel = " (Correct Answer)";
-          }
-          if (oIdx === studentAnsIdx) {
-            optClass += " review-selected-option";
-            if (!isCorrect) {
-              optClass += " review-incorrect-selection";
-              optLabel = " (Your Selection - Incorrect)";
-            } else {
-              optLabel = " (Your Selection - Correct)";
-            }
-          }
-        } else {
-          // Hide correct/incorrect answers, only highlight what they selected
-          if (oIdx === studentAnsIdx) {
-            optClass += " review-selected-option";
-            optLabel = " (Your Selection)";
-          }
+      // Format body depending on questionType
+      let innerBodyHtml = "";
+      if (q.questionType === "image_connection") {
+        let imagesHtml = "";
+        if (q.images && q.images.length > 0) {
+          imagesHtml = `
+            <div style="display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap;">
+              ${q.images.filter(x => !!x).map(img => `<img src="${img}" style="max-height: 80px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1); background: #000;">`).join("")}
+            </div>
+          `;
         }
 
-        const marker = String.fromCharCode(65 + oIdx); // A, B, C, D
-        optionsHtml += `
-          <div class="${optClass}">
-            <span class="option-marker">${marker}</span>
-            <span class="option-text">${opt}${optLabel}</span>
+        let answersHtml = "";
+        if (isRoundConcluded) {
+          answersHtml = `
+            <div class="review-option ${isCorrect ? 'review-correct-option' : 'review-incorrect-selection'}" style="padding: 10px; border-radius: 6px;">
+              <strong>Your answer:</strong> ${studentAns || "(Blank)"} ${isCorrect ? "✓" : "✗"}
+            </div>
+            <div class="review-option review-correct-option" style="padding: 10px; border-radius: 6px; margin-top: 6px;">
+              <strong>Correct connection:</strong> ${q.correctAnswerString}
+            </div>
+          `;
+        } else {
+          answersHtml = `
+            <div class="review-option review-selected-option" style="padding: 10px; border-radius: 6px;">
+              <strong>Your answer:</strong> ${studentAns || "(Blank)"}
+            </div>
+          `;
+        }
+
+        innerBodyHtml = `
+          ${imagesHtml}
+          <div class="review-options-list">
+            ${answersHtml}
           </div>
         `;
-      });
+      } else {
+        // MCQ options format
+        let optionsHtml = "";
+        const correctAnsIdx = q.correct;
+        const studentAnsIdx = studentAns;
+
+        (q.options || []).forEach((opt, oIdx) => {
+          let optClass = "review-option";
+          let optLabel = "";
+
+          if (isRoundConcluded) {
+            if (oIdx === correctAnsIdx) {
+              optClass += " review-correct-option";
+              optLabel = " (Correct Answer)";
+            }
+            if (oIdx === studentAnsIdx) {
+              optClass += " review-selected-option";
+              if (!isCorrect) {
+                optClass += " review-incorrect-selection";
+                optLabel = " (Your Selection - Incorrect)";
+              } else {
+                optLabel = " (Your Selection - Correct)";
+              }
+            }
+          } else {
+            if (oIdx === studentAnsIdx) {
+              optClass += " review-selected-option";
+              optLabel = " (Your Selection)";
+            }
+          }
+
+          const marker = String.fromCharCode(65 + oIdx); // A, B, C, D
+          optionsHtml += `
+            <div class="${optClass}">
+              <span class="option-marker">${marker}</span>
+              <span class="option-text">${opt}${optLabel}</span>
+            </div>
+          `;
+        });
+
+        innerBodyHtml = `
+          <div class="review-options-list">
+            ${optionsHtml}
+          </div>
+        `;
+      }
 
       let badgeHtml = "";
       if (isRoundConcluded) {
@@ -712,10 +796,8 @@ const StudentPortal = {
           ${badgeHtml}
         </div>
         <div class="mistake-q-text">${q.question}</div>
-        <div class="review-options-list">
-          ${optionsHtml}
-        </div>
-        <div class="mistake-explanation">
+        ${innerBodyHtml}
+        <div class="mistake-explanation" style="margin-top: 12px; padding-top: 12px; border-top: 1px dashed rgba(255,255,255,0.05);">
           ${explanationHtml}
         </div>
       `;

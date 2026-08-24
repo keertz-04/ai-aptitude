@@ -112,12 +112,21 @@ const AdminPortal = {
     const tableBody = document.getElementById("admin-questions-tbody");
     tableBody.innerHTML = "";
 
-    const questions = window.AppStore.getQuestions();
+    const filterVal = document.getElementById("admin-q-round-filter") ? document.getElementById("admin-q-round-filter").value : "all";
+
+    let questions = window.AppStore.getQuestions();
+    
+    // Apply filter
+    if (filterVal !== "all") {
+      const targetRound = parseInt(filterVal, 10);
+      questions = questions.filter(q => q.round === targetRound);
+    }
+
     if (questions.length === 0) {
       tableBody.innerHTML = `
         <tr>
-          <td colspan="6" class="empty-state">
-            <p>No questions found in bank. Add a question or reset to default questions.</p>
+          <td colspan="7" class="empty-state">
+            <p>No questions found in bank matching filter. Add a question or reset to default questions.</p>
           </td>
         </tr>
       `;
@@ -128,16 +137,30 @@ const AdminPortal = {
       const row = document.createElement("tr");
       
       const catClass = `cat-${q.category.toLowerCase().replace(/[^a-z0-9]/g, "-")}`;
-      const questionSnippet = q.question.length > 50 ? q.question.substring(0, 47) + "..." : q.question;
-      const correctOption = q.options[q.correct] || "Invalid index";
       const qRound = q.round || 1;
+      const qType = q.questionType || "mcq";
+      const qTypeLabel = qType === "image_connection" ? "Image Connection" : "MCQ";
+
+      let questionSnippet = q.question.length > 50 ? q.question.substring(0, 47) + "..." : q.question;
+      if (qType === "image_connection") {
+        const imageCount = q.images ? q.images.filter(img => !!img).length : 0;
+        questionSnippet = `🖼 ${imageCount} Images — ${questionSnippet}`;
+      }
+
+      let correctDisplay = "";
+      if (qType === "image_connection") {
+        correctDisplay = q.correctAnswerString || "";
+      } else {
+        correctDisplay = q.options && q.options[q.correct] !== undefined ? q.options[q.correct] : `Index ${q.correct}`;
+      }
 
       row.innerHTML = `
         <td><strong>#${idx + 1}</strong></td>
         <td><span class="cat-badge ${catClass}">${q.category}</span></td>
         <td><span class="score-badge" style="background:rgba(255,255,255,0.05); color:white; border-color:rgba(255,255,255,0.1)">${this.getRoundName(qRound)}</span></td>
+        <td><span class="category-tag" style="background: rgba(99, 102, 241, 0.15); color: var(--neon-indigo); border: 1px solid rgba(99, 102, 241, 0.2);">${qTypeLabel}</span></td>
         <td title="${q.question}">${questionSnippet}</td>
-        <td title="Correct Option: ${correctOption}">${correctOption}</td>
+        <td title="Correct Answer: ${correctDisplay}">${correctDisplay}</td>
         <td>
           <div class="action-btns-cell">
             <button class="btn btn-secondary btn-sm" onclick="AdminPortal.openEditQuestionModal('${q._id || q.id}')">Edit</button>
@@ -174,10 +197,88 @@ const AdminPortal = {
   },
 
   // --- Question Modal Actions ---
+  uploadedImages: [null, null, null],
+
+  toggleQuestionTypeFields() {
+    const roundVal = document.getElementById("q-round").value;
+    const mcqDiv = document.getElementById("q-mcq-fields");
+    const connDiv = document.getElementById("q-connections-fields");
+
+    const opt0 = document.getElementById("q-opt0");
+    const opt1 = document.getElementById("q-opt1");
+    const opt2 = document.getElementById("q-opt2");
+    const opt3 = document.getElementById("q-opt3");
+    const correctText = document.getElementById("q-correct-text");
+
+    if (roundVal === "2") {
+      // Tech Connections
+      mcqDiv.style.display = "none";
+      connDiv.style.display = "block";
+      
+      opt0.removeAttribute("required");
+      opt1.removeAttribute("required");
+      opt2.removeAttribute("required");
+      opt3.removeAttribute("required");
+      correctText.setAttribute("required", "true");
+    } else {
+      // MCQ
+      mcqDiv.style.display = "block";
+      connDiv.style.display = "none";
+      
+      opt0.setAttribute("required", "true");
+      opt1.setAttribute("required", "true");
+      opt2.setAttribute("required", "true");
+      opt3.setAttribute("required", "true");
+      correctText.removeAttribute("required");
+    }
+  },
+
+  previewImageFile(imgIndex) {
+    const fileInput = document.getElementById(`q-img${imgIndex}-file`);
+    const previewDiv = document.getElementById(`q-img${imgIndex}-preview`);
+    const imgEl = document.getElementById(`q-img${imgIndex}-img`);
+    const removeBtn = document.getElementById(`q-img${imgIndex}-remove`);
+
+    if (fileInput && fileInput.files && fileInput.files[0]) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const base64 = e.target.result;
+        imgEl.src = base64;
+        previewDiv.style.display = "block";
+        removeBtn.style.display = "block";
+        this.uploadedImages[imgIndex - 1] = base64;
+      };
+      reader.readAsDataURL(fileInput.files[0]);
+    }
+  },
+
+  removeImageFile(imgIndex) {
+    const fileInput = document.getElementById(`q-img${imgIndex}-file`);
+    const previewDiv = document.getElementById(`q-img${imgIndex}-preview`);
+    const imgEl = document.getElementById(`q-img${imgIndex}-img`);
+    const removeBtn = document.getElementById(`q-img${imgIndex}-remove`);
+
+    if (fileInput) fileInput.value = "";
+    if (imgEl) imgEl.src = "";
+    if (previewDiv) previewDiv.style.display = "none";
+    if (removeBtn) removeBtn.style.display = "none";
+    this.uploadedImages[imgIndex - 1] = null;
+  },
+
   openAddQuestionModal() {
     this.editingQuestionId = null;
     document.getElementById("modal-q-title").textContent = "Add New Question";
     document.getElementById("question-form").reset();
+    
+    this.uploadedImages = [null, null, null];
+    for (let i = 1; i <= 3; i++) {
+      this.removeImageFile(i);
+    }
+
+    // Set default target round to 1
+    document.getElementById("q-round").value = "1";
+    this.toggleQuestionTypeFields();
+
     this.toggleModal("question-modal", true);
   },
 
@@ -193,11 +294,36 @@ const AdminPortal = {
     document.getElementById("q-category").value = q.category;
     document.getElementById("q-round").value = q.round || 1;
     document.getElementById("q-text").value = q.question;
-    document.getElementById("q-opt0").value = q.options[0] || "";
-    document.getElementById("q-opt1").value = q.options[1] || "";
-    document.getElementById("q-opt2").value = q.options[2] || "";
-    document.getElementById("q-opt3").value = q.options[3] || "";
-    document.getElementById("q-correct").value = q.correct;
+    
+    this.uploadedImages = [null, null, null];
+    for (let i = 1; i <= 3; i++) {
+      this.removeImageFile(i);
+    }
+
+    if (q.questionType === "image_connection") {
+      document.getElementById("q-correct-text").value = q.correctAnswerString || "";
+      if (q.images && q.images.length > 0) {
+        q.images.forEach((imgSrc, idx) => {
+          if (imgSrc) {
+            this.uploadedImages[idx] = imgSrc;
+            const previewDiv = document.getElementById(`q-img${idx + 1}-preview`);
+            const imgEl = document.getElementById(`q-img${idx + 1}-img`);
+            const removeBtn = document.getElementById(`q-img${idx + 1}-remove`);
+            if (imgEl) imgEl.src = imgSrc;
+            if (previewDiv) previewDiv.style.display = "block";
+            if (removeBtn) removeBtn.style.display = "block";
+          }
+        });
+      }
+    } else {
+      document.getElementById("q-opt0").value = q.options && q.options[0] ? q.options[0] : "";
+      document.getElementById("q-opt1").value = q.options && q.options[1] ? q.options[1] : "";
+      document.getElementById("q-opt2").value = q.options && q.options[2] ? q.options[2] : "";
+      document.getElementById("q-opt3").value = q.options && q.options[3] ? q.options[3] : "";
+      document.getElementById("q-correct").value = q.correct !== undefined ? q.correct : 0;
+    }
+
+    this.toggleQuestionTypeFields();
     document.getElementById("q-explanation").value = q.explanation || "";
 
     this.toggleModal("question-modal", true);
@@ -209,15 +335,10 @@ const AdminPortal = {
     const category = document.getElementById("q-category").value;
     const round = parseInt(document.getElementById("q-round").value, 10);
     const questionText = document.getElementById("q-text").value.trim();
-    const opt0 = document.getElementById("q-opt0").value.trim();
-    const opt1 = document.getElementById("q-opt1").value.trim();
-    const opt2 = document.getElementById("q-opt2").value.trim();
-    const opt3 = document.getElementById("q-opt3").value.trim();
-    const correctIndex = parseInt(document.getElementById("q-correct").value, 10);
     const explanation = document.getElementById("q-explanation").value.trim();
 
-    if (!questionText || !opt0 || !opt1 || !opt2 || !opt3) {
-      window.showCustomAlert("Validation Alert", "All fields including all 4 options are required.");
+    if (!questionText) {
+      window.showCustomAlert("Validation Alert", "Question description is required.");
       return;
     }
 
@@ -225,10 +346,40 @@ const AdminPortal = {
       category,
       round,
       question: questionText,
-      options: [opt0, opt1, opt2, opt3],
-      correct: correctIndex,
       explanation
     };
+
+    if (round === 2) {
+      questionData.questionType = "image_connection";
+      const correctAns = document.getElementById("q-correct-text").value.trim();
+      if (!correctAns) {
+        window.showCustomAlert("Validation Alert", "Correct answer string is required for Round 2.");
+        return;
+      }
+      questionData.correctAnswerString = correctAns;
+      
+      // Filter out nulls
+      const imgs = this.uploadedImages.filter(x => x !== null);
+      if (imgs.length < 2) {
+        window.showCustomAlert("Validation Alert", "Minimum 2 images are required for Tech Connections.");
+        return;
+      }
+      questionData.images = this.uploadedImages; // preserves indices or order
+    } else {
+      questionData.questionType = "mcq";
+      const opt0 = document.getElementById("q-opt0").value.trim();
+      const opt1 = document.getElementById("q-opt1").value.trim();
+      const opt2 = document.getElementById("q-opt2").value.trim();
+      const opt3 = document.getElementById("q-opt3").value.trim();
+      const correctIndex = parseInt(document.getElementById("q-correct").value, 10);
+
+      if (!opt0 || !opt1 || !opt2 || !opt3) {
+        window.showCustomAlert("Validation Alert", "All 4 MCQ options are required.");
+        return;
+      }
+      questionData.options = [opt0, opt1, opt2, opt3];
+      questionData.correct = correctIndex;
+    }
 
     if (this.editingQuestionId) {
       window.AppStore.updateQuestion(this.editingQuestionId, questionData);
@@ -392,17 +543,33 @@ const AdminPortal = {
 
     document.getElementById("tour-active-round-label").textContent = this.getRoundName(state.activeRound);
     
-    const durationInput = document.getElementById("tour-round-duration");
-    if (durationInput) {
-      durationInput.value = state.roundDurationLimit || 10;
-    }
-
     const r1Input = document.getElementById("tour-round1-name");
     const r2Input = document.getElementById("tour-round2-name");
     const r3Input = document.getElementById("tour-round3-name");
-    if (r1Input) r1Input.value = state.round1Name || "Round 1";
-    if (r2Input) r2Input.value = state.round2Name || "Round 2";
-    if (r3Input) r3Input.value = state.round3Name || "Round 3";
+    if (r1Input) r1Input.value = state.round1Name || "General Tech Quiz";
+    if (r2Input) r2Input.value = state.round2Name || "Tech Connections";
+    if (r3Input) r3Input.value = state.round3Name || "Core Tech";
+
+    const r1Dur = document.getElementById("tour-round1-duration");
+    const r2Dur = document.getElementById("tour-round2-duration");
+    const r3Dur = document.getElementById("tour-round3-duration");
+    if (r1Dur) r1Dur.value = state.round1Duration || 10;
+    if (r2Dur) r2Dur.value = state.round2Duration || 15;
+    if (r3Dur) r3Dur.value = state.round3Duration || 10;
+
+    const r1C = document.getElementById("tour-round1-correct");
+    const r1N = document.getElementById("tour-round1-negative");
+    const r2C = document.getElementById("tour-round2-correct");
+    const r2N = document.getElementById("tour-round2-negative");
+    const r3C = document.getElementById("tour-round3-correct");
+    const r3N = document.getElementById("tour-round3-negative");
+
+    if (r1C) r1C.value = state.round1CorrectMarks !== undefined ? state.round1CorrectMarks : 1;
+    if (r1N) r1N.value = 0;
+    if (r2C) r2C.value = state.round2CorrectMarks !== undefined ? state.round2CorrectMarks : 2;
+    if (r2N) r2N.value = state.round2NegativeMarks !== undefined ? state.round2NegativeMarks : 1;
+    if (r3C) r3C.value = state.round3CorrectMarks !== undefined ? state.round3CorrectMarks : 2;
+    if (r3N) r3N.value = state.round3NegativeMarks !== undefined ? state.round3NegativeMarks : 1;
 
     const instInput = document.getElementById("tour-institution-name");
     const deptInput = document.getElementById("tour-department-name");
@@ -523,20 +690,42 @@ const AdminPortal = {
   async saveRoundSettings(event) {
     event.preventDefault();
     const dept = this.selectedDepartment;
-    const durationLimit = parseInt(document.getElementById("tour-round-duration").value, 10);
-    if (isNaN(durationLimit) || durationLimit < 1) {
-      window.showCustomAlert("Validation Alert", "Please enter a valid duration (minimum 1 minute).");
-      return;
-    }
-    const r1Name = document.getElementById("tour-round1-name").value.trim() || "Round 1";
-    const r2Name = document.getElementById("tour-round2-name").value.trim() || "Round 2";
-    const r3Name = document.getElementById("tour-round3-name").value.trim() || "Round 3";
+    
+    const r1Name = document.getElementById("tour-round1-name").value.trim() || "General Tech Quiz";
+    const r2Name = document.getElementById("tour-round2-name").value.trim() || "Tech Connections";
+    const r3Name = document.getElementById("tour-round3-name").value.trim() || "Core Tech";
+
+    const r1Duration = parseInt(document.getElementById("tour-round1-duration").value, 10) || 10;
+    const r2Duration = parseInt(document.getElementById("tour-round2-duration").value, 10) || 15;
+    const r3Duration = parseInt(document.getElementById("tour-round3-duration").value, 10) || 10;
+
+    const r1CorrectMarks = parseInt(document.getElementById("tour-round1-correct").value, 10) || 1;
+    const r2CorrectMarks = parseInt(document.getElementById("tour-round2-correct").value, 10) || 2;
+    const r2NegativeMarks = parseInt(document.getElementById("tour-round2-negative").value, 10) || 1;
+    const r3CorrectMarks = parseInt(document.getElementById("tour-round3-correct").value, 10) || 2;
+    const r3NegativeMarks = parseInt(document.getElementById("tour-round3-negative").value, 10) || 1;
 
     const state = window.AppStore.getTournamentState(dept);
-    state.roundDurationLimit = durationLimit;
+    
     state.round1Name = r1Name;
     state.round2Name = r2Name;
     state.round3Name = r3Name;
+    
+    state.round1Duration = r1Duration;
+    state.round2Duration = r2Duration;
+    state.round3Duration = r3Duration;
+    
+    // Fallback for general duration limit (active round duration)
+    if (state.activeRound === 1) state.roundDurationLimit = r1Duration;
+    else if (state.activeRound === 2) state.roundDurationLimit = r2Duration;
+    else if (state.activeRound === 3) state.roundDurationLimit = r3Duration;
+
+    state.round1CorrectMarks = r1CorrectMarks;
+    state.round1NegativeMarks = 0; // always 0
+    state.round2CorrectMarks = r2CorrectMarks;
+    state.round2NegativeMarks = r2NegativeMarks;
+    state.round3CorrectMarks = r3CorrectMarks;
+    state.round3NegativeMarks = r3NegativeMarks;
 
     await window.AppStore.saveTournamentState(state);
     window.showCustomAlert("Settings Saved", `Round settings for ${dept} saved successfully!`);

@@ -10,7 +10,15 @@ const AIEvaluator = {
     // 1. Calculate score & category breakdown
     questions.forEach((q, index) => {
       const studentAns = studentAnswers[index];
-      const isCorrect = studentAns !== undefined && studentAns === q.correct;
+      let isCorrect = false;
+
+      if (q.questionType === "image_connection") {
+        const cleanStudentAns = studentAns ? String(studentAns).trim().toLowerCase() : "";
+        const cleanCorrectAns = q.correctAnswerString ? String(q.correctAnswerString).trim().toLowerCase() : "";
+        isCorrect = cleanStudentAns !== "" && (cleanStudentAns === cleanCorrectAns);
+      } else {
+        isCorrect = studentAns !== undefined && studentAns !== null && studentAns !== "" && Number(studentAns) === q.correct;
+      }
       
       if (isCorrect) {
         score++;

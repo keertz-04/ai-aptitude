@@ -31,6 +31,15 @@ const InMemoryDb = {
     round1Name: 'Round 1',
     round2Name: 'Round 2',
     round3Name: 'Round 3',
+    round1Duration: 10,
+    round2Duration: 15,
+    round3Duration: 10,
+    round1CorrectMarks: 1,
+    round1NegativeMarks: 0,
+    round2CorrectMarks: 2,
+    round2NegativeMarks: 1,
+    round3CorrectMarks: 2,
+    round3NegativeMarks: 1,
     institutionName: "Ganadipathy Tulsi's Jain Engineering College",
     departmentName: "Department of Information Technology"
   },
@@ -45,6 +54,15 @@ const InMemoryDb = {
       round1Name: 'Round 1',
       round2Name: 'Round 2',
       round3Name: 'Round 3',
+      round1Duration: 10,
+      round2Duration: 15,
+      round3Duration: 10,
+      round1CorrectMarks: 1,
+      round1NegativeMarks: 0,
+      round2CorrectMarks: 2,
+      round2NegativeMarks: 1,
+      round3CorrectMarks: 2,
+      round3NegativeMarks: 1,
       institutionName: "Ganadipathy Tulsi's Jain Engineering College",
       departmentName: "Department of Information Technology"
     },
@@ -58,6 +76,15 @@ const InMemoryDb = {
       round1Name: 'Round 1',
       round2Name: 'Round 2',
       round3Name: 'Round 3',
+      round1Duration: 10,
+      round2Duration: 15,
+      round3Duration: 10,
+      round1CorrectMarks: 1,
+      round1NegativeMarks: 0,
+      round2CorrectMarks: 2,
+      round2NegativeMarks: 1,
+      round3CorrectMarks: 2,
+      round3NegativeMarks: 1,
       institutionName: "Ganadipathy Tulsi's Jain Engineering College",
       departmentName: "Department of Artificial Intelligence and Data Science"
     },
@@ -71,6 +98,15 @@ const InMemoryDb = {
       round1Name: 'Round 1',
       round2Name: 'Round 2',
       round3Name: 'Round 3',
+      round1Duration: 10,
+      round2Duration: 15,
+      round3Duration: 10,
+      round1CorrectMarks: 1,
+      round1NegativeMarks: 0,
+      round2CorrectMarks: 2,
+      round2NegativeMarks: 1,
+      round3CorrectMarks: 2,
+      round3NegativeMarks: 1,
       institutionName: "Ganadipathy Tulsi's Jain Engineering College",
       departmentName: "Department of Computer Science and Business Systems"
     }
@@ -109,9 +145,12 @@ mongoose.connect(MONGODB_URI, {
 const QuestionSchema = new mongoose.Schema({
   category: { type: String, required: true },
   round: { type: Number, default: 1 },
+  questionType: { type: String, default: 'mcq' }, // 'mcq' or 'image_connection'
   question: { type: String, required: true },
-  options: [{ type: String, required: true }],
-  correct: { type: Number, required: true },
+  options: [{ type: String }],
+  images: [{ type: String }],
+  correct: { type: Number },
+  correctAnswerString: { type: String, default: '' },
   explanation: { type: String, default: '' }
 });
 const Question = mongoose.model('Question', QuestionSchema);
@@ -123,7 +162,7 @@ const ResultSchema = new mongoose.Schema({
   year: { type: String, default: '2nd Year' },
   timestamp: { type: Date, default: Date.now },
   round: { type: Number, required: true },
-  answers: [Number],
+  answers: [mongoose.Schema.Types.Mixed],
   questions: { type: mongoose.Schema.Types.Mixed },
   score: { type: Number, required: true },
   total: { type: Number, required: true },
@@ -165,6 +204,15 @@ const TournamentStateSchema = new mongoose.Schema({
   round1Name: { type: String, default: 'Round 1' },
   round2Name: { type: String, default: 'Round 2' },
   round3Name: { type: String, default: 'Round 3' },
+  round1Duration: { type: Number, default: 10 },
+  round2Duration: { type: Number, default: 15 },
+  round3Duration: { type: Number, default: 10 },
+  round1CorrectMarks: { type: Number, default: 1 },
+  round1NegativeMarks: { type: Number, default: 0 },
+  round2CorrectMarks: { type: Number, default: 2 },
+  round2NegativeMarks: { type: Number, default: 1 },
+  round3CorrectMarks: { type: Number, default: 2 },
+  round3NegativeMarks: { type: Number, default: 1 },
   institutionName: { type: String, default: "Ganadipathy Tulsi's Jain Engineering College" },
   departmentName: { type: String, default: "Department of Information Technology" }
 });
@@ -316,17 +364,179 @@ app.get('/api/admin/students', async (req, res) => {
   }
 });
 
+async function gradeResult(resBody) {
+  const { studentName, regNo, department, round, answers, timeTakenSeconds, violations } = resBody;
+  const cleanRegNo = regNo ? regNo.trim().toLowerCase() : "";
+  const cleanDept = (department || "IT").trim().toUpperCase();
+  const cleanRound = Number(round || 1);
+
+  // 1. Resolve Tournament settings (marks & durations)
+  let state;
+  if (useInMemoryDb) {
+    state = InMemoryDb.tournamentStates[cleanDept];
+  } else {
+    state = await TournamentState.findOne({ department: cleanDept });
+  }
+  if (!state) {
+    throw new Error("Tournament state not found for this department.");
+  }
+
+  // Get marks settings for this round
+  let correctMarks = 1;
+  let negativeMarks = 0;
+  let durationLimitMinutes = 10;
+
+  if (cleanRound === 1) {
+    correctMarks = state.round1CorrectMarks !== undefined ? state.round1CorrectMarks : 1;
+    negativeMarks = 0; // Round 1 has NO negative marking
+    durationLimitMinutes = state.round1Duration || 10;
+  } else if (cleanRound === 2) {
+    correctMarks = state.round2CorrectMarks !== undefined ? state.round2CorrectMarks : 2;
+    negativeMarks = state.round2NegativeMarks !== undefined ? state.round2NegativeMarks : 1;
+    durationLimitMinutes = state.round2Duration || 15;
+  } else if (cleanRound === 3) {
+    correctMarks = state.round3CorrectMarks !== undefined ? state.round3CorrectMarks : 2;
+    negativeMarks = state.round3NegativeMarks !== undefined ? state.round3NegativeMarks : 1;
+    durationLimitMinutes = state.round3Duration || 10;
+  }
+
+  // Enforce time limit check (capping time to roundDuration limit)
+  const actualTime = Math.min(Number(timeTakenSeconds || 0), durationLimitMinutes * 60);
+
+  // 2. Fetch the true questions for this round from database
+  let questions;
+  if (useInMemoryDb) {
+    questions = InMemoryDb.questions.filter(q => q.round === cleanRound);
+  } else {
+    questions = await Question.find({ round: cleanRound });
+  }
+
+  let calculatedScore = 0;
+  const categoryStats = {};
+
+  questions.forEach((q, idx) => {
+    const studentAns = answers && answers[idx] !== undefined && answers[idx] !== null ? answers[idx] : "";
+    let isCorrect = false;
+    let isAnswered = false;
+
+    if (q.questionType === "image_connection") {
+      // Round 2 connection logic (case-insensitive string match, ignoring trailing/leading spaces)
+      const cleanStudentAns = String(studentAns).trim().toLowerCase();
+      const cleanCorrectAns = String(q.correctAnswerString || "").trim().toLowerCase();
+      isAnswered = cleanStudentAns !== "";
+      isCorrect = isAnswered && (cleanStudentAns === cleanCorrectAns);
+    } else {
+      // MCQ logic (number index comparison)
+      isAnswered = studentAns !== "";
+      const ansNum = Number(studentAns);
+      isCorrect = isAnswered && !isNaN(ansNum) && ansNum === q.correct;
+    }
+
+    if (isCorrect) {
+      calculatedScore += correctMarks;
+    } else if (isAnswered) {
+      calculatedScore -= negativeMarks; // apply negative mark deduction
+    }
+
+    // Category breakdown
+    if (!categoryStats[q.category]) {
+      categoryStats[q.category] = { correct: 0, total: 0 };
+    }
+    categoryStats[q.category].total++;
+    if (isCorrect) {
+      categoryStats[q.category].correct++;
+    }
+  });
+
+  const total = questions.length;
+  const accuracy = total > 0 ? (questions.filter((q, idx) => {
+    const studentAns = answers && answers[idx] !== undefined && answers[idx] !== null ? answers[idx] : "";
+    if (q.questionType === "image_connection") {
+      return String(studentAns).trim().toLowerCase() === String(q.correctAnswerString || "").trim().toLowerCase();
+    } else {
+      return studentAns !== "" && Number(studentAns) === q.correct;
+    }
+  }).length / total) * 100 : 0;
+
+  const avgTimePerQuestion = total > 0 ? actualTime / total : 0;
+
+  // Archetype logic matching AIEvaluator
+  let cognitiveProfile = "Balanced Thinker";
+  let highestCategory = "";
+  let highestScoreRatio = -1;
+
+  Object.keys(categoryStats).forEach(cat => {
+    const stats = categoryStats[cat];
+    const ratio = stats.correct / stats.total;
+    if (ratio > highestScoreRatio) {
+      highestScoreRatio = ratio;
+      highestCategory = cat;
+    }
+  });
+
+  if (accuracy >= 90) {
+    cognitiveProfile = "Synthesized Systems Architect";
+  } else if (highestCategory === "Quantitative" && highestScoreRatio >= 0.7) {
+    cognitiveProfile = "Algorithmic Precision Strategist";
+  } else if (highestCategory === "Logical" && highestScoreRatio >= 0.7) {
+    cognitiveProfile = "Heuristic Deductive Logician";
+  } else if (highestCategory === "Verbal" && highestScoreRatio >= 0.7) {
+    cognitiveProfile = "Semantic Network Analyst";
+  } else if (highestCategory === "AI & Tech" && highestScoreRatio >= 0.7) {
+    cognitiveProfile = "Emergent Systems Architect";
+  } else if (avgTimePerQuestion < 8 && accuracy >= 60) {
+    cognitiveProfile = "High-Velocity Pattern Matcher";
+  } else if (accuracy < 50) {
+    cognitiveProfile = "Developing Systems Analyst";
+  }
+
+  // Generate simple insights
+  const strengths = [`Demonstrated competence across active assessment components in Round ${cleanRound}.`];
+  const weaknesses = [];
+  const roadmap = [];
+
+  if (accuracy >= 80) {
+    strengths.push("High accuracy response rate showing strong conceptual stability.");
+  } else if (accuracy < 50) {
+    weaknesses.push("Relatively low response accuracy under timed pressure.");
+    roadmap.push("Practice untimed cognitive exercises to improve accuracy before speed.");
+  }
+
+  const result = {
+    studentName,
+    regNo: cleanRegNo,
+    department: cleanDept,
+    round: cleanRound,
+    answers,
+    questions,
+    score: calculatedScore,
+    total: total * correctMarks, // total potential marks
+    accuracy,
+    timeTakenSeconds: actualTime,
+    avgTimePerQuestion,
+    cognitiveProfile,
+    categoryStats,
+    insights: { strengths, weaknesses, roadmap },
+    narrativeReport: `Student ${studentName} successfully finished Round ${cleanRound} in ${actualTime} seconds. The system-level evaluator diagnosed their cognitive profile as ${cognitiveProfile} based on scoring metrics, response velocity, and anti-cheat compliance.`,
+    violations: Number(violations || 0)
+  };
+
+  return result;
+}
+
 app.post('/api/results', async (req, res) => {
   try {
+    const gradedResult = await gradeResult(req.body);
     if (useInMemoryDb) {
-      const newResult = { _id: 'mem_' + Date.now(), timestamp: new Date(), ...req.body };
+      const newResult = { _id: 'mem_' + Date.now(), timestamp: new Date(), ...gradedResult };
       InMemoryDb.results.push(newResult);
       return res.json(newResult);
     }
-    const newResult = new Result(req.body);
+    const newResult = new Result(gradedResult);
     await newResult.save();
     res.json(newResult);
   } catch (err) {
+    console.error('Error grading test submission on backend:', err);
     res.status(400).json({ error: err.message });
   }
 });

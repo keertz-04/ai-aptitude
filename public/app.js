@@ -311,6 +311,11 @@ window.addEventListener("DOMContentLoaded", async () => {
   document.getElementById("auth-form").addEventListener("submit", (e) => window.AppAuth.handleAuthSubmit(e));
   document.getElementById("question-form").addEventListener("submit", (e) => window.AdminPortal.saveQuestion(e));
   
+  const qRoundSelect = document.getElementById("q-round");
+  if (qRoundSelect) {
+    qRoundSelect.addEventListener("change", () => window.AdminPortal.toggleQuestionTypeFields());
+  }
+  
   const brandForm = document.getElementById("branding-settings-form");
   if (brandForm) {
     brandForm.addEventListener("submit", (e) => window.AdminPortal.saveBrandingSettings(e));
