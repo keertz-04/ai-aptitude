@@ -911,22 +911,14 @@
       <form id="question-form">
         <div class="modal-body">
           
-          <div class="form-group">
-            <label class="form-label" for="q-category">Technical Quiz category</label>
-            <select id="q-category" class="form-input" style="background: var(--bg-secondary);">
-              <option value="Quantitative">Quantitative</option>
-              <option value="Logical">Logical</option>
-              <option value="Verbal">Verbal</option>
-              <option value="AI & Tech">AI & Tech</option>
-            </select>
-          </div>
+          <input type="hidden" id="q-category" value="General">
 
           <div class="form-group">
             <label class="form-label" for="q-round">Target tournament round</label>
             <select id="q-round" class="form-input" style="background: var(--bg-secondary);">
-              <option value="1" id="q-round-opt-1">Round 1 (General Technical)</option>
-              <option value="2" id="q-round-opt-2">Round 2 (Tech & Logic)</option>
-              <option value="3" id="q-round-opt-3">Round 3 (Systems & AI)</option>
+              <option value="1" id="q-round-opt-1">Round 1 (General Tech Quiz)</option>
+              <option value="2" id="q-round-opt-2">Round 2 (Tech Connections)</option>
+              <option value="3" id="q-round-opt-3">Round 3 (Core Tech)</option>
             </select>
           </div>
 

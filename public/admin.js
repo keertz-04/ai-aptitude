@@ -579,9 +579,9 @@ const AdminPortal = {
     const opt1 = document.getElementById("q-round-opt-1");
     const opt2 = document.getElementById("q-round-opt-2");
     const opt3 = document.getElementById("q-round-opt-3");
-    if (opt1) opt1.textContent = `${this.getRoundName(1)} (General Aptitude)`;
-    if (opt2) opt2.textContent = `${this.getRoundName(2)} (Tech & Logic)`;
-    if (opt3) opt3.textContent = `${this.getRoundName(3)} (Systems & AI)`;
+    if (opt1) opt1.textContent = `Round 1 (General Tech Quiz)`;
+    if (opt2) opt2.textContent = `Round 2 (Tech Connections)`;
+    if (opt3) opt3.textContent = `Round 3 (Core Tech)`;
     
     const panelWrap = document.getElementById("tour-controls-wrap");
     panelWrap.innerHTML = "";
