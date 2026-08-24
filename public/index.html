@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AI Technical Quiz Portal - Assessment & Evaluation Dashboard</title>
   <meta name="description" content="Evaluate system-level reasoning, logical sequences, and ML dynamics with our AI-driven automated appraisal dashboard.">
-  <link rel="stylesheet" href="style.css?v=1.1.4">
+  <link rel="stylesheet" href="style.css?v=1.1.5">
 </head>
 <body>
 
@@ -131,19 +131,8 @@
       </div>
 
       <div class="landing-split-container">
-        
-        <!-- Left Hero Branding column -->
-        <div class="landing-left-col" style="align-items: center; justify-content: center; width: 100%; position: relative;">
-          <!-- Glowing background contrast bubble to pop the logo out -->
-          <div style="position: absolute; width: 260px; height: 260px; background: radial-gradient(circle, rgba(85, 169, 238, 0.25) 0%, rgba(21, 83, 111, 0.12) 50%, transparent 80%); filter: blur(30px); pointer-events: none; z-index: 0;"></div>
-          
-          <div class="logo-wrapper" style="position: relative; z-index: 1; padding: 0; background: transparent; border-radius: 50%; display: flex; align-items: center; justify-content: center; filter: drop-shadow(0 0 25px rgba(67, 188, 235, 0.75));">
-            <img src="dept_logo.jpg" alt="Departments Emblem Logo" style="width: 200px; height: 200px; border-radius: 50%; object-fit: cover; border: 4px solid #ffffff; box-shadow: 0 10px 30px rgba(13, 64, 89, 0.12), 0 0 35px rgba(67, 188, 235, 0.6), 0 0 15px rgba(255, 255, 255, 0.5);">
-          </div>
-        </div>
-
-        <!-- Center Column: Animated Robot -->
-        <div class="landing-center-col">
+              <!-- Left Column: Animated Robot -->
+        <div class="landing-left-col" style="align-items: center; justify-content: center; width: 100%; position: relative; flex-direction: column; display: flex;">
           <div class="speech-bubble" style="background: #0B5873; border: 1.5px solid #0879B5; color: #ffffff; box-shadow: 0 4px 12px rgba(11, 88, 115, 0.15); font-weight: 700;">
             Let's Solve! 💛
           </div>
@@ -151,7 +140,7 @@
             <div class="orbit-ring ring-1"></div>
             <div class="orbit-ring ring-2"></div>
             <div class="orbit-ring ring-3"></div>
-            <svg class="cute-robot-svg" viewBox="0 0 200 200" width="180" height="180">
+            <svg class="cute-robot-svg" viewBox="0 0 200 200" width="210" height="210">
               <defs>
                 <linearGradient id="bodyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
                   <stop offset="0%" stop-color="#ffffff" />
@@ -227,6 +216,16 @@
               <rect x="97" y="16" width="6" height="18" rx="3" fill="url(#bodyGrad)" />
               <circle cx="100" cy="14" r="8" fill="url(#pinkGrad)" class="antenna-glow" />
             </svg>
+          </div>
+        </div>
+
+        <!-- Center Column: Hero Branding Logo -->
+        <div class="landing-center-col" style="align-items: center; justify-content: center; width: 100%; position: relative; display: flex;">
+          <!-- Glowing background contrast bubble to pop the logo out -->
+          <div style="position: absolute; width: 290px; height: 290px; background: radial-gradient(circle, rgba(85, 169, 238, 0.25) 0%, rgba(21, 83, 111, 0.12) 50%, transparent 80%); filter: blur(30px); pointer-events: none; z-index: 0;"></div>
+          
+          <div class="logo-wrapper" style="position: relative; z-index: 1; padding: 0; background: transparent; border-radius: 50%; display: flex; align-items: center; justify-content: center; filter: drop-shadow(0 0 25px rgba(67, 188, 235, 0.75));">
+            <img src="dept_logo.jpg" alt="Departments Emblem Logo" style="width: 230px; height: 230px; border-radius: 50%; object-fit: cover; border: 4px solid #ffffff; box-shadow: 0 10px 30px rgba(13, 64, 89, 0.12), 0 0 35px rgba(67, 188, 235, 0.6), 0 0 15px rgba(255, 255, 255, 0.5);">
           </div>
         </div>
 
@@ -1036,10 +1035,10 @@
   </div>
 
   <!-- SCRIPT LOADING -->
-  <script src="store.js?v=1.1.4"></script>
-  <script src="ai_evaluator.js?v=1.1.4"></script>
-  <script src="student.js?v=1.1.4"></script>
-  <script src="admin.js?v=1.1.4"></script>
-  <script src="app.js?v=1.1.4"></script>
+  <script src="store.js?v=1.1.5"></script>
+  <script src="ai_evaluator.js?v=1.1.5"></script>
+  <script src="student.js?v=1.1.5"></script>
+  <script src="admin.js?v=1.1.5"></script>
+  <script src="app.js?v=1.1.5"></script>
 </body>
 </html>

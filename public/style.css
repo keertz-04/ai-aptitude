@@ -1647,8 +1647,8 @@ header.app-header {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 220px;
-  height: 220px;
+  width: 250px;
+  height: 250px;
   margin-top: 40px;
 }
 
@@ -1659,8 +1659,8 @@ header.app-header {
 }
 
 .ring-1 {
-  width: 220px;
-  height: 220px;
+  width: 250px;
+  height: 250px;
   border: 2px solid rgba(85, 169, 238, 0.4);
   border-top-color: transparent;
   border-bottom-color: transparent;
@@ -1669,8 +1669,8 @@ header.app-header {
 }
 
 .ring-2 {
-  width: 175px;
-  height: 175px;
+  width: 200px;
+  height: 200px;
   border: 1.5px solid rgba(236, 72, 153, 0.4);
   border-left-color: transparent;
   border-right-color: transparent;
@@ -1679,8 +1679,8 @@ header.app-header {
 }
 
 .ring-3 {
-  width: 135px;
-  height: 135px;
+  width: 155px;
+  height: 155px;
   border: 1px solid rgba(255, 255, 255, 0.6);
   border-top-color: transparent;
   border-bottom-color: transparent;
