@@ -120,7 +120,7 @@ const AppRouter = {
         if (instEl) instEl.textContent = state.institutionName || "Ganadipathy Tulsi's Jain Engineering College";
       }
       if (deptEl) {
-        deptEl.innerHTML = `Department of IT, AI&DS and CSBS`;
+        deptEl.innerHTML = `Department of <span style="color: #0879B5; font-weight: 900;">IT</span>, <span style="color: #D69A32; font-weight: 900;">AI&DS</span> and <span style="color: #64748B; font-weight: 900;">CSBS</span>`;
         deptEl.style.color = "#0B5873";
       }
     }
