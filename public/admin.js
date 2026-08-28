@@ -364,7 +364,7 @@ const AdminPortal = {
       }
       questionData.correctAnswerString = correctAns;
       
-      questionData.images = this.uploadedImages; // preserves indices or order
+      questionData.images = this.uploadedImages.map(img => img || ""); // preserves indices or order without sending nulls
     } else {
       questionData.questionType = "mcq";
       const opt0 = document.getElementById("q-opt0").value.trim();
