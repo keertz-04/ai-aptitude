@@ -364,12 +364,6 @@ const AdminPortal = {
       }
       questionData.correctAnswerString = correctAns;
       
-      // Filter out nulls
-      const imgs = this.uploadedImages.filter(x => x !== null);
-      if (imgs.length < 1) {
-        window.showCustomAlert("Validation Alert", "Minimum 1 image is required for Tech Connections.");
-        return;
-      }
       questionData.images = this.uploadedImages; // preserves indices or order
     } else {
       questionData.questionType = "mcq";
