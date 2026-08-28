@@ -366,8 +366,8 @@ const AdminPortal = {
       
       // Filter out nulls
       const imgs = this.uploadedImages.filter(x => x !== null);
-      if (imgs.length < 2) {
-        window.showCustomAlert("Validation Alert", "Minimum 2 images are required for Tech Connections.");
+      if (imgs.length < 1) {
+        window.showCustomAlert("Validation Alert", "Minimum 1 image is required for Tech Connections.");
         return;
       }
       questionData.images = this.uploadedImages; // preserves indices or order
