@@ -335,7 +335,7 @@ const AdminPortal = {
     this.toggleModal("question-modal", true);
   },
 
-  saveQuestion(event) {
+  async saveQuestion(event) {
     event.preventDefault();
     
     const category = document.getElementById("q-category").value;
@@ -381,15 +381,21 @@ const AdminPortal = {
       questionData.correct = correctIndex;
     }
 
+    let success = false;
     if (this.editingQuestionId) {
-      window.AppStore.updateQuestion(this.editingQuestionId, questionData);
+      success = await window.AppStore.updateQuestion(this.editingQuestionId, questionData);
     } else {
-      window.AppStore.addQuestion(questionData);
+      const saved = await window.AppStore.addQuestion(questionData);
+      success = !!saved;
     }
 
-    this.toggleModal("question-modal", false);
-    this.renderQuestionsList();
-    this.renderStats();
+    if (success) {
+      this.toggleModal("question-modal", false);
+      this.renderQuestionsList();
+      this.renderStats();
+    } else {
+      window.showCustomAlert("Error Alert", "Failed to save the question. Please verify your image size or server connectivity.");
+    }
   },
 
   // --- Student Results Management ---
