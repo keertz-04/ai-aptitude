@@ -404,12 +404,12 @@ async function gradeResult(resBody) {
   // Enforce time limit check (capping time to roundDuration limit)
   const actualTime = Math.min(Number(timeTakenSeconds || 0), durationLimitMinutes * 60);
 
-  // 2. Fetch the true questions for this round from database
+  // 2. Fetch the true questions for this round from database (sorted by _id to match client order)
   let questions;
   if (useInMemoryDb) {
-    questions = InMemoryDb.questions.filter(q => q.round === cleanRound);
+    questions = InMemoryDb.questions.filter(q => q.round === cleanRound).sort((a, b) => String(a._id).localeCompare(String(b._id)));
   } else {
-    questions = await Question.find({ round: cleanRound });
+    questions = await Question.find({ round: cleanRound }).sort({ _id: 1 });
   }
 
   let calculatedScore = 0;
@@ -873,12 +873,12 @@ app.get('/api/student/questions', async (req, res) => {
       }
     }
 
-    // 4. Return only this round's questions
+    // 4. Return only this round's questions (sorted by _id to match grading order)
     let questions;
     if (useInMemoryDb) {
-      questions = InMemoryDb.questions.filter(q => q.round === activeRound);
+      questions = InMemoryDb.questions.filter(q => q.round === activeRound).sort((a, b) => String(a._id).localeCompare(String(b._id)));
     } else {
-      questions = await Question.find({ round: activeRound });
+      questions = await Question.find({ round: activeRound }).sort({ _id: 1 });
     }
 
     res.json(questions);
