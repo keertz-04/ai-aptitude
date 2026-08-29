@@ -313,8 +313,8 @@ const StudentPortal = {
       return;
     }
 
-    // Initialize test variables and shuffle questions
-    this.activeQuestions = this.shuffleArray(questions);
+    // Initialize test variables (preserve sorted order from server)
+    this.activeQuestions = questions;
     this.currentIndex = 0;
     this.answers = new Array(this.activeQuestions.length).fill(null);
     this.secondsElapsed = 0;
