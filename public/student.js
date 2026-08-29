@@ -637,7 +637,9 @@ const StudentPortal = {
     // Render Questions Review & Mistakes
     let questions = res.questions;
     if (!questions || questions.length === 0) {
-      questions = window.AppStore.getQuestions().filter(q => q.round === res.round);
+      questions = window.AppStore.getQuestions()
+        .filter(q => q.round === res.round)
+        .sort((a, b) => String(a._id || a.id).localeCompare(String(b._id || b.id)));
     }
     this.renderQuestionsReview(questions || [], res.answers, res);
 
