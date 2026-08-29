@@ -448,6 +448,7 @@ const StudentPortal = {
       optionsContainer.innerHTML = "";
       question.options.forEach((opt, idx) => {
         const optionBtn = document.createElement("button");
+        optionBtn.type = "button";
         optionBtn.className = "option-btn";
         if (this.answers[this.currentIndex] === idx) {
           optionBtn.classList.add("selected");
@@ -482,8 +483,8 @@ const StudentPortal = {
   selectOption(optIndex) {
     this.answers[this.currentIndex] = optIndex;
     
-    // Visual update
-    const btns = document.querySelectorAll(".option-btn");
+    // Visual update - strictly scoped to active question options container
+    const btns = document.querySelectorAll("#test-options-container .option-btn");
     btns.forEach((btn, idx) => {
       if (idx === optIndex) {
         btn.classList.add("selected");
